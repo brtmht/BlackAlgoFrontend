@@ -1,0 +1,215 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        isEmailVerified:
+          type: boolean
+        isBlocked:
+          type: boolean
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        email: fake@example.com
+        name: fake name
+        role: user
+        isEmailVerified: true
+        isBlocked: false
+        isDeleted: false
+        status: true
+
+    Strategy:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        annual_return_percentage:
+          type: number
+          format: float
+        risk_level:
+          type: string
+        max_drawdown_percentage:
+          type: number
+          format: float
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        name: fake name
+        description: fake description
+        annual_return_percentage: 0.1
+        risk_level: low
+        max_drawdown_percentage: 0.1
+        isDeleted: false
+        status: true
+
+    Exchange:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        name: fake name
+        description: fake description
+        url: https://fake.com
+        isDeleted: false
+        status: true
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+          format: float
+        min_portfolio_size:
+          type: number
+          format: float
+        max_portfolio_size:
+          type: number
+          format: float
+      example:
+        id: 5ebac534954b54139806c112
+        name: fake name
+        description: fake description
+        amount: 100
+        min_portfolio_size: 1000
+        max_portfolio_size: 10000
+        isDeleted: false
+        status: true
+
+    Region:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        name: fake name
+        description: fake description
+        isDeleted: false
+        status: true
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+        expires:
+          type: string
+          format: date-time
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg
+        expires: 2023-03-16T16:18:04.793Z
+
+    AuthTokens:
+      type: object
+      properties:
+        access:
+          $ref: '#/components/schemas/Token'
+        refresh:
+          $ref: '#/components/schemas/Token'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+
+  responses:
+    DuplicateEmail:
+      description: Email already taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Email already taken
+    DuplicateName:
+      description: Name already taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Name already taken
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: Please authenticate
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
