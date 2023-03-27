@@ -4,3 +4,4 @@ module.exports.Strategy = require('./strategy.model');
 module.exports.Exchange = require('./exchange.model');
 module.exports.Region = require('./region.model');
 module.exports.SubscriptionPlan = require('./subscriptionPlan.model');
+module.exports.UserStrategy = require('./userStrategy.model');

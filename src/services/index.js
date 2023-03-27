@@ -6,3 +6,4 @@ module.exports.strategyService = require('./strategy.service');
 module.exports.exchangeService = require('./exchange.service');
 module.exports.regionService = require('./region.service');
 module.exports.subscriptionPlanService = require('./subscriptionPlan.service');
+module.exports.userStrategyService = require('./userStrategy.service');

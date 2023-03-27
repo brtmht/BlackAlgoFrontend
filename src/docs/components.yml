@@ -133,6 +133,32 @@ components:
         isDeleted: false
         status: true
 
+    UserStrategy:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        strategyId:
+          type: string
+        exchangeId:
+          type: string
+        subscriptionPlanId:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        userId: 5ebac534954b54139806c112
+        strategyId: 5ebac534954b54139806c112
+        exchangeId: 5ebac534954b54139806c112
+        subscriptionPlanId: 5ebac534954b54139806c112
+        isDeleted: false
+        status: true
+
     Token:
       type: object
       properties:

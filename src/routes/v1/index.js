@@ -5,6 +5,7 @@ const strategyRoute = require('./strategy.route');
 const exchangeRoute = require('./exchange.route');
 const regionRoute = require('./region.route');
 const subscriptionPlanRoute = require('./subscriptionPlan.route');
+const userStrategyRoute = require('./userStrategy.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -34,6 +35,10 @@ const defaultRoutes = [
   {
     path: '/subscriptionPlans',
     route: subscriptionPlanRoute,
+  },
+  {
+    path: '/userStrategies',
+    route: userStrategyRoute,
   },
 ];
 
