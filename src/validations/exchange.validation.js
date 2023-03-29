@@ -4,13 +4,14 @@ const { objectId } = require('./custom.validation');
 const createExchange = {
   body: Joi.object().keys({
     name: Joi.string().required(),
+    description:Joi.string(),
+    url:Joi.string()
   }),
 };
 
 const getExchanges = {
   query: Joi.object().keys({
     name: Joi.string(),
-    role: Joi.string(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
@@ -30,6 +31,7 @@ const updateExchange = {
   body: Joi.object()
     .keys({
       name: Joi.string(),
+      url:Joi.string()
     })
     .min(1),
 };

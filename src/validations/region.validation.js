@@ -4,14 +4,13 @@ const { objectId } = require('./custom.validation');
 const createRegion = {
   body: Joi.object().keys({
     name: Joi.string().required(),
+    description:Joi.string()
   }),
 };
 
 const getRegions = {
   query: Joi.object().keys({
     name: Joi.string(),
-    role: Joi.string(),
-    sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),

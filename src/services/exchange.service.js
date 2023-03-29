@@ -45,7 +45,7 @@ const getExchangeById = async (id) => {
 const getExchangeByName = async (name) => {
   return Exchange.findOne({ name });
 };
-
+  
 /**
  * Update exchange by id
  * @param {ObjectId} exchangeId

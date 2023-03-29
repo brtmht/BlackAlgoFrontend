@@ -10,7 +10,7 @@ const createExchange = catchAsync(async (req, res) => {
 });
 
 const getExchanges = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await exchangeService.queryExchanges(filter, options);
   res.send(result);
