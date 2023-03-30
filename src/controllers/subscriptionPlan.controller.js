@@ -5,12 +5,12 @@ const catchAsync = require('../utils/catchAsync');
 const { subscriptionPlanService } = require('../services');
 
 const createSubscriptionPlan = catchAsync(async (req, res) => {
-  const subscriptionPlan = await subscriptionPlanService.createsubscriptionPlan(req.body);
+  const subscriptionPlan = await subscriptionPlanService.createSubscriptionPlan(req.body);
   res.status(httpStatus.CREATED).send(subscriptionPlan);
 });
 
 const getSubscriptionPlans = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await subscriptionPlanService.querySubscriptionPlans(filter, options);
   res.send(result);

@@ -10,7 +10,7 @@ const createRegion = catchAsync(async (req, res) => {
 });
 
 const getRegions = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await regionService.queryRegions(filter, options);
   res.send(result);
