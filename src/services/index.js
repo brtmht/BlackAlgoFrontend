@@ -7,3 +7,7 @@ module.exports.exchangeService = require('./exchange.service');
 module.exports.regionService = require('./region.service');
 module.exports.subscriptionPlanService = require('./subscriptionPlan.service');
 module.exports.userStrategyService = require('./userStrategy.service');
+module.exports.stripeAccountService = require('./stripeAccount.service');
+module.exports.paymentDetailService = require('./paymentDetail.service');
+module.exports.cryptoAccountService = require('./cryptoAccount.service');
+module.exports.transactionHistoryService = require('./transactionHistory.service');

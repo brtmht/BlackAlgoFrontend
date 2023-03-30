@@ -5,3 +5,4 @@ module.exports.exchangeValidation = require('./exchange.validation');
 module.exports.regionValidation = require('./region.validation');
 module.exports.subscriptionPlanValidation = require('./subscriptionPlan.validation');
 module.exports.userStrategyValidation = require('./userStrategy.validation');
+module.exports.paymentValidation = require('./payment.validation');
