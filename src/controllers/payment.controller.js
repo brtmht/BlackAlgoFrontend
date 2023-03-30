@@ -12,9 +12,7 @@ const createPayment = catchAsync(async (req, res) => {
     if(req.body.paymentType==="crypto"){
          throw new ApiError(httpStatus.NOT_FOUND,"This mode is not ready yet")
     }
-});
-
-
+})
 const getPayment = catchAsync(async (req, res) => {
   const payments = await paymentDetailService.getPayments(req.params.paymentDetailId);
   if (!payments) {
