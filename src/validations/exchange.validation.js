@@ -4,6 +4,8 @@ const { objectId } = require('./custom.validation');
 const createExchange = {
   body: Joi.object().keys({
     name: Joi.string().required(),
+    description:Joi.string(),
+    url:Joi.string()
   }),
 };
 
@@ -29,6 +31,7 @@ const updateExchange = {
   body: Joi.object()
     .keys({
       name: Joi.string(),
+      url:Joi.string()
     })
     .min(1),
 };

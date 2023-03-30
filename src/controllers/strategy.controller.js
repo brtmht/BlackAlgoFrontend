@@ -10,7 +10,7 @@ const createStrategy = catchAsync(async (req, res) => {
 });
 
 const getStrategies = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await strategyService.queryStrategies(filter, options);
   res.send(result);
