@@ -8,6 +8,11 @@ const userStrategySchema = mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    paymentDetailId: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'paymentDetail',
+      required: true,
+    },
     strategyId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Strategy',

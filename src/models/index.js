@@ -5,3 +5,7 @@ module.exports.Exchange = require('./exchange.model');
 module.exports.Region = require('./region.model');
 module.exports.SubscriptionPlan = require('./subscriptionPlan.model');
 module.exports.UserStrategy = require('./userStrategy.model');
+module.exports.CryptoAccount = require('./cryptoAccount.model');
+module.exports.PaymentDetail = require('./paymentDetail.model');
+module.exports.StripeAccount = require('./stripeAccount.model');
+module.exports.TransactionHistyory = require('./transactionHistory.model');
