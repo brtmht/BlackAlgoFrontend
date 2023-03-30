@@ -19,6 +19,11 @@ const paymentDetailSchema = mongoose.Schema(
             ref: 'StripeAccount',
             default: null
         },
+        subscriptionPlanId: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: 'SubscriptionPlan',
+            default: null
+        },
         paymentType: {
             type: String,
             enum: [constants.PAYMENT_TYPE.CARD, constants.PAYMENT_TYPE.CRYPTO],
@@ -27,6 +32,10 @@ const paymentDetailSchema = mongoose.Schema(
             type: String,   
             enum: [constants.PAYMENT_STATUS.PENDING, constants.PAYMENT_STATUS.REFUNDED,constants.PAYMENT_STATUS.FAILED, constants.PAYMENT_STATUS.COMPLETED, constants.PAYMENT_STATUS.CANCELLED],
           },
+          isDeleted: {
+            type: Boolean,
+            default: false,
+          }
     },
     {
         timestamps: true,

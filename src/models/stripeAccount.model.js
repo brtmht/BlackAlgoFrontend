@@ -6,7 +6,7 @@ const stripeAccountSchema = mongoose.Schema(
         userId: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'User',
-            required: true,
+          
         },
         customerId: {
             type: String,
@@ -14,25 +14,25 @@ const stripeAccountSchema = mongoose.Schema(
         },
         email: {
             type: String,
-            required: true,
+            
             trim: true,
         },
         phoneNo: {
             type: String,
-            required: true,
-            unique: true,
             trim: true,
         },
         countryCode: {
             type: String,
-            required: true,
-            unique: true,
             trim: true,
         },
         status: {
             type: Boolean,
             default: true,
         },
+        isDeleted: {
+          type: Boolean,
+          default: false,
+        }
     },
     {
         timestamps: true,

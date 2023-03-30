@@ -14,6 +14,10 @@ const transactionHistorySchema = mongoose.Schema(
             ref: 'PaymentDetail',
             default: null
         },
+        paymentStatus: {
+            type: String,   
+            enum: [ constants.PAYMENT_STATUS.FAILED, constants.PAYMENT_STATUS.COMPLETED, constants.PAYMENT_STATUS.CANCELLED],
+          },
     },
     {
         timestamps: true,

@@ -6,22 +6,22 @@ const cryptoAccountSchema = mongoose.Schema(
         userId: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'User',
-            required: true,
+    
         },
         name: {
             type: String,
-            required: true,
+    
             trim: true,
         },
         exchangeName: {
             type: String,
-            required: true,
+    
             unique: true,
             trim: true,
         },
         cryptoAddress: {
             type: String,
-            required: true,
+    
             unique: true,
             trim: true,
         },
@@ -29,6 +29,10 @@ const cryptoAccountSchema = mongoose.Schema(
             type: Number,
             default: 0,
         },
+        isDeleted: {
+          type: Boolean,
+          default: false,
+        }
     },
     {
         timestamps: true,
