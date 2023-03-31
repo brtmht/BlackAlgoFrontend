@@ -7,7 +7,8 @@ const { paymentDetailService,stripeAccountService,transactionHistoryService } = 
 const createPayment = catchAsync(async (req, res) => {
     if(req.body.paymentType==='card'){
         const payment = await stripeAccountService.createStripePayment(req.body)
-        const makepayment= await paymentDetailService.createPaymentService(payment)
+        const makePayment= await paymentDetailService.createPaymentService(payment)
+        res.send(makePayment);
     }
     if(req.body.paymentType==="crypto"){
          throw new ApiError(httpStatus.NOT_FOUND,"This mode is not ready yet")
@@ -17,7 +18,7 @@ const getPayment = catchAsync(async (req, res) => {
   const payments = await paymentDetailService.getPayments(req.params.paymentDetailId);
   if (!payments) {
     throw new ApiError(httpStatus.NOT_FOUND, 'subscriptionPlan not found');
-  }
+  } 
   res.send(payments);
 });
 

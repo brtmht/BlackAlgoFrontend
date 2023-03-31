@@ -3,29 +3,28 @@ const { objectId } = require('./custom.validation');
 
 const createPayment = {
   body: Joi.object().keys({
-    name: Joi.string().required(),
+    email: Joi.string().required().email(),
+    country:Joi.string(),
+    phone:Joi.string(),
+    paymentType:Joi.string()
   }),
 };
 
 
 const getPayment = {
   params: Joi.object().keys({
-    regionId: Joi.string().custom(objectId),
+    paymentId: Joi.string().custom(objectId),
   }),
 };
 
 const getPaymentHistory = {
-  params: Joi.object().keys({
-    regionId: Joi.required().custom(objectId),
-  }),
-  body: Joi.object()
-    .keys({
-      name: Joi.string(),
-    })
-    .min(1),
-};
-
-
+    query: Joi.object().keys({
+      paymentId: Joi.string().custom(objectId),
+      sortBy: Joi.string(),
+      limit: Joi.number().integer(),
+      page: Joi.number().integer(),
+    }),
+  }
 
 module.exports = {
     createPayment,

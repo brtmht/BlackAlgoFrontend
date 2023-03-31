@@ -16,10 +16,8 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
       return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
     }
   }
-
-  resolve();
-};
-
+  resolve()
+}
 const auth = (...requiredRights) => async (req, res, next) => {
   return new Promise((resolve, reject) => {
     passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
