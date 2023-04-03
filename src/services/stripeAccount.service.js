@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-
+// eslint-disable-next-line import/order
 const Stripe = require('stripe')(process.env.STRIPE_KEY);
 /**
  * Create a subscriptionPlan
@@ -25,29 +25,24 @@ const createPaymentIntent = async (stripeAccountBody, id) => {
   });
   return paymentIntent;
 };
-const createStripePayment = async (stripeAccountBody) => {
-  const { email } = stripeAccountBody;
+const createStripePayment = async (stripeUserData) => {
   let customerId;
   const customers = await Stripe.customers.list({
-    email: email,
+    email: stripeUserData.email,
   });
-  if (customers.data.length == 0) {
-    const newCustomer = await createNewCustomer(stripeAccountBody);
+  if (customers.data.length === 0) {
+    const newCustomer = await createNewCustomer(stripeUserData);
     if (newCustomer) {
-      console.log("new customer")
       customerId = newCustomer.id;
     } else {
-      console.log("old customer")
       customerId = customers.data[0].id;
     }
-  }
-  else{
+  } else {
     customerId = customers.data[0].id;
   }
   if (customerId) {
     try {
-      const paymentIntent = await createPaymentIntent(stripeAccountBody, customerId);
-      console.log(paymentIntent)
+      const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
       return paymentIntent;
     } catch (error) {
       throw new ApiError(httpStatus.BAD_REQUEST, error, 'transaction failed while creating charge with existing customer');

@@ -1,33 +1,62 @@
+/* eslint-disable import/order */
 const httpStatus = require('http-status');
 const { SubscriptionPlan } = require('../models');
 const ApiError = require('../utils/ApiError');
+const Stripe = require('stripe')(process.env.STRIPE_KEY);
 
 /**
  * Create a subscriptionPlan
  * @param {Object} subscriptionPlanBody
  * @returns {Promise<SubscriptionPlan>}
  */
-const createSubscriptionPlan = async (subscriptionPlanBody) => {
-  if (await SubscriptionPlan.isNameTaken(subscriptionPlanBody.name)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
+const createSubscriptionPlan = async (subsPlanData) => {
+  const subscriptionPlan = await Stripe.subscriptions.create({
+    // eslint-disable-next-line prettier/prettier
+    customer: subsPlanData.customerId,
+    items: [{ price: subsPlanData.productId }],
+  });
+  if (!subscriptionPlan) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
-  return SubscriptionPlan.create(subscriptionPlanBody);
+
+  return subscriptionPlan;
+};
+// It will retrieve subscription plan
+const retrieveSubsPlan = async (subsPlanData) => {
+  const subscriptionPlan = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId);
+  if (!subscriptionPlan) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return subscriptionPlan;
 };
 
-/**
- * Query for subscriptionPlans
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
- */
-const querySubscriptionPlans = async (filter, options) => {
-  const subscriptionPlans = await SubscriptionPlan.paginate(filter, options);
-  return subscriptionPlans;
+// It will resume the subscription plan with subscription id
+const resumeSubscription = async (subsPlanData) => {
+  const subscription = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId, { billing_cycle_anchor: 'now' });
+  if (!subscription) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return subscription;
 };
 
+// It will need subscription plan id to cancel subscription plan
+const deactivateSubscription = async (subsPlanData) => {
+  const subscription = await Stripe.subscriptions.del(subsPlanData.subsPlanId);
+  if (!subscription) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return subscription;
+};
+
+const getAllSubsPlans = async () => {
+  const subscriptions = await Stripe.subscriptions.list({
+    limit: 3,
+  });
+  if (!subscriptions) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return subscriptions;
+};
 /**
  * Get subscriptionPlan by id
  * @param {ObjectId} id
@@ -35,15 +64,6 @@ const querySubscriptionPlans = async (filter, options) => {
  */
 const getSubscriptionPlanById = async (id) => {
   return SubscriptionPlan.findById(id);
-};
-
-/**
- * Get subscriptionPlan by name
- * @param {string} name
- * @returns {Promise<SubscriptionPlan>}
- */
-const getSubscriptionPlanByName = async (name) => {
-  return SubscriptionPlan.findOne({ name });
 };
 
 /**
@@ -65,25 +85,11 @@ const updateSubscriptionPlanById = async (subscriptionPlanId, updateBody) => {
   return subscriptionPlan;
 };
 
-/**
- * Delete subscriptionPlan by id
- * @param {ObjectId} subscriptionPlanId
- * @returns {Promise<SubscriptionPlan>}
- */
-const deleteSubscriptionPlanById = async (subscriptionPlanId) => {
-  const subscriptionPlan = await getSubscriptionPlanById(subscriptionPlanId);
-  if (!subscriptionPlan) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
-  }
-  await subscriptionPlan.remove();
-  return subscriptionPlan;
-};
-
 module.exports = {
   createSubscriptionPlan,
-  querySubscriptionPlans,
-  getSubscriptionPlanById,
-  getSubscriptionPlanByName,
+  retrieveSubsPlan,
+  deactivateSubscription,
+  resumeSubscription,
+  getAllSubsPlans,
   updateSubscriptionPlanById,
-  deleteSubscriptionPlanById,
 };
