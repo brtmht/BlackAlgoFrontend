@@ -2,41 +2,40 @@ const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 
 const stripeAccountSchema = mongoose.Schema(
-    {
-        userId: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'User',
-          
-        },
-        customerId: {
-            type: String,
-            default: null
-        },
-        email: {
-            type: String,
-            
-            trim: true,
-        },
-        phoneNo: {
-            type: String,
-            trim: true,
-        },
-        countryCode: {
-            type: String,
-            trim: true,
-        },
-        status: {
-            type: Boolean,
-            default: true,
-        },
-        isDeleted: {
-          type: Boolean,
-          default: false,
-        }
+  {
+    userId: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
     },
-    {
-        timestamps: true,
-    }
+    customerId: {
+      type: String,
+      default: null,
+    },
+    email: {
+      type: String,
+
+      trim: true,
+    },
+    phoneNo: {
+      type: String,
+      trim: true,
+    },
+    countryCode: {
+      type: String,
+      trim: true,
+    },
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 // add plugin that converts mongoose to json

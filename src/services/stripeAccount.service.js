@@ -1,61 +1,54 @@
 const httpStatus = require('http-status');
-const { SubscriptionPlan } = require('../models');
 const ApiError = require('../utils/ApiError');
-const Stripe_key="your_key_goes_here"
-const Stripe =require('stripe');
+// eslint-disable-next-line import/order
+const Stripe = require('stripe')(process.env.STRIPE_KEY);
 /**
  * Create a subscriptionPlan
- * @param {Object} subscriptionPlanBody
- * @returns {}
+ * @param {Object} stripeAccountBody
+ * @returns {String}
  */
-
-
-const createStripePayment = async (stripeAccountBody) => {
-    const customer= await Stripe.customers.list({
-        email:stripeAccountBody.email
-    })
-    if(!customer){
-        const newCustomer = await Stripe.customers.create({
-            email:stripeAccountBody.email,
-            address:stripeAccountBody.country,
-            phone:stripeAccountBody.phone
-        })
-        if(newCustomer){
-            try {
-                  const createCharge = await Stripe.charges.create({
-                  receipt_email:stripeAccountBody.email,
-                  ammount:stripeAccountBody.ammount*100,
-                  currency:stripeAccountBody.currency,
-                  payment_method:stripeAccountBody,method,
-                  customer:newCustomer.id
-                })
-    
-                return createCharge;
-            } catch (error) {
-                throw new Error(error)
-            }
-        }
-    }
-    else{
-        try {
-                const createCharge = await Stripe.charges.create({
-                receipt_email:stripeAccountBody.email,
-                ammount:stripeAccountBody.ammount*100,
-                currency:stripeAccountBody.currency,
-                payment_method:stripeAccountBody,method,
-                customer:newCustomer.id
-            })
-
-              return createCharge;
-            } catch (error) {
-                throw new Error(error)
-            }
-    }
+const createNewCustomer = async (stripeAccountBody) => {
+  const newCustomer = await Stripe.customers.create({
+    email: stripeAccountBody.email,
+    address: stripeAccountBody.country,
+    phone: stripeAccountBody.phone,
+  });
+  return newCustomer;
 };
-
-
-
-
+const createPaymentIntent = async (stripeAccountBody, id) => {
+  const paymentIntent = await Stripe.paymentIntents.create({
+    receipt_email: stripeAccountBody.email,
+    amount: stripeAccountBody.amount * 100,
+    currency: stripeAccountBody.currency,
+    payment_method_types: ['card'],
+    customer: id,
+  });
+  return paymentIntent;
+};
+const createStripePayment = async (stripeUserData) => {
+  let customerId;
+  const customers = await Stripe.customers.list({
+    email: stripeUserData.email,
+  });
+  if (customers.data.length === 0) {
+    const newCustomer = await createNewCustomer(stripeUserData);
+    if (newCustomer) {
+      customerId = newCustomer.id;
+    } else {
+      customerId = customers.data[0].id;
+    }
+  } else {
+    customerId = customers.data[0].id;
+  }
+  if (customerId) {
+    try {
+      const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
+      return paymentIntent;
+    } catch (error) {
+      throw new ApiError(httpStatus.BAD_REQUEST, error, 'transaction failed while creating charge with existing customer');
+    }
+  }
+};
 module.exports = {
-    createStripePayment,
+  createStripePayment,
 };

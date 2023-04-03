@@ -5,9 +5,10 @@ const paymentValidation = require('../../validations/payment.validation');
 const paymentController = require('../../controllers/payment.controller')
 const router = express.Router();
 
-router
-  .route('/')
-  .post(auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment)
+// router
+//   .route('/:userId')
+//   .post(auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment)
+  router.post('/createPayment', validate(paymentValidation.register), paymentController.createPayment);
 
 router
   .route('/:paymentId')
