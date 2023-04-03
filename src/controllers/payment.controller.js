@@ -6,9 +6,9 @@ const { paymentDetailService,stripeAccountService,transactionHistoryService } = 
 
 const createPayment = catchAsync(async (req, res) => {
     if(req.body.paymentType==='card'){
-        const payment = await stripeAccountService.createStripePayment(req.body)
-        const makePayment= await paymentDetailService.createPaymentService(payment)
-        res.send(makePayment);
+        const paymentIntent = await stripeAccountService.createStripePayment(req.body)
+        // const makePayment= await paymentDetailService.createPaymentService(payment)
+        res.send(paymentIntent);
     }
     if(req.body.paymentType==="crypto"){
          throw new ApiError(httpStatus.NOT_FOUND,"This mode is not ready yet")

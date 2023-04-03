@@ -13,46 +13,47 @@ const createNewCustomer = async (stripeAccountBody) => {
     address: stripeAccountBody.country,
     phone: stripeAccountBody.phone,
   });
-//   console.log('newCustomer', newCustomer);
   return newCustomer;
 };
 const createPaymentIntent = async (stripeAccountBody, id) => {
   const paymentIntent = await Stripe.paymentIntents.create({
     receipt_email: stripeAccountBody.email,
-    ammount: stripeAccountBody.ammount * 100,
+    amount: stripeAccountBody.amount * 100,
     currency: stripeAccountBody.currency,
-    payment_method: 'card',
+    payment_method_types: ['card'],
     customer: id,
   });
   return paymentIntent;
 };
 const createStripePayment = async (stripeAccountBody) => {
-    const { email } = stripeAccountBody;
-    const customers = await Stripe.customers.list({
-        email:email
-      });
-      console.log("existing customer",customers)
-      if(!customers){
-          const newCustomer = createNewCustomer(stripeAccountBody);
-          if (newCustomer) {
-            try {
-              const paymentIntent = await createPaymentIntent(stripeAccountBody, newCustomer.id);
-              return paymentIntent;
-            } catch (error) {
-              throw new ApiError(httpStatus.BAD_REQUEST, 'transaction failed while creating with new customer');
-            }
-          } 
-         }
-        else {
-            try {
-            const paymentIntent = await createPaymentIntent(stripeAccountBody, customers[0].id);
-            return paymentIntent;
-            } catch (error) {
-            throw new ApiError(httpStatus.BAD_REQUEST, 'transaction failed while creating charge with existing customer');
-            }
-        }
+  const { email } = stripeAccountBody;
+  let customerId;
+  const customers = await Stripe.customers.list({
+    email: email,
+  });
+  if (customers.data.length == 0) {
+    const newCustomer = await createNewCustomer(stripeAccountBody);
+    if (newCustomer) {
+      console.log("new customer")
+      customerId = newCustomer.id;
+    } else {
+      console.log("old customer")
+      customerId = customers.data[0].id;
+    }
+  }
+  else{
+    customerId = customers.data[0].id;
+  }
+  if (customerId) {
+    try {
+      const paymentIntent = await createPaymentIntent(stripeAccountBody, customerId);
+      console.log(paymentIntent)
+      return paymentIntent;
+    } catch (error) {
+      throw new ApiError(httpStatus.BAD_REQUEST, error, 'transaction failed while creating charge with existing customer');
+    }
+  }
 };
-
 module.exports = {
   createStripePayment,
 };
