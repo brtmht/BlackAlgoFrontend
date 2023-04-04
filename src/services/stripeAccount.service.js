@@ -13,9 +13,6 @@ const createNewCustomer = async (stripeAccountBody) => {
     email: stripeAccountBody.email,
     address: { country: stripeAccountBody.country },
     phone: stripeAccountBody.phone,
-    currency: stripeAccountBody.currency,
-    payment_method: stripeAccountBody.paymentType,
-    amount: stripeAccountBody.amount,
   });
   return newCustomer;
 };
