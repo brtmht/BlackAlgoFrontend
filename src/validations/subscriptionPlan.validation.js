@@ -3,21 +3,26 @@ const { objectId } = require('./custom.validation');
 
 const createSubscriptionPlan = {
   body: Joi.object().keys({
-    name: Joi.string().required(),
-    description:Joi.string(),
-    amount:Joi.number(),
-    min_portfolio_size:Joi.number(),
-    max_portfolio_size:Joi.number(),
+    name: Joi.string(),
+    email: Joi.string().email(),
+    address: Joi.string(),
+    description: Joi.string(),
+    amount: Joi.number(),
+    phone: Joi.string(),
+    currency: Joi.string(),
+    paymentType: Joi.string(),
+    min_portfolio_size: Joi.number(),
+    max_portfolio_size: Joi.number(),
   }),
 };
 
 const getSubscriptionPlans = {
   query: Joi.object().keys({
     name: Joi.string(),
-    description:Joi.string(),
-    amount:Joi.number(),
-    min_portfolio_size:Joi.number(),
-    max_portfolio_size:Joi.number(),
+    description: Joi.string(),
+    amount: Joi.number(),
+    min_portfolio_size: Joi.number(),
+    max_portfolio_size: Joi.number(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),

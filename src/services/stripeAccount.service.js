@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
+const { StripeAccount } = require('../models');
 // eslint-disable-next-line import/order
 const Stripe = require('stripe')(process.env.STRIPE_KEY);
 /**
@@ -8,13 +9,25 @@ const Stripe = require('stripe')(process.env.STRIPE_KEY);
  * @returns {String}
  */
 const createNewCustomer = async (stripeAccountBody) => {
+  const paymentMethod = await Stripe.paymentMethods.create({
+    type: 'card',
+    card: {
+      number: '4242424242424242',
+      exp_month: 7,
+      exp_year: 2027,
+      cvc: '314',
+    },
+  });
+
   const newCustomer = await Stripe.customers.create({
     email: stripeAccountBody.email,
-    address: stripeAccountBody.country,
+    address: { country: stripeAccountBody.country },
     phone: stripeAccountBody.phone,
+    payment_method: paymentMethod.id,
   });
   return newCustomer;
 };
+
 const createPaymentIntent = async (stripeAccountBody, id) => {
   const paymentIntent = await Stripe.paymentIntents.create({
     receipt_email: stripeAccountBody.email,
@@ -49,6 +62,19 @@ const createStripePayment = async (stripeUserData) => {
     }
   }
 };
+// user_id stripe customer id , email, phone number , country save in stripe account
+
+const saveStripeAccount = async (saveBody, userData, user) => {
+  const data = await StripeAccount.create({
+    userId: user,
+    customerId: saveBody.customer,
+    email: userData.email,
+    phoneNo: userData.phone,
+    countryCode: userData.address,
+  });
+  return data;
+};
 module.exports = {
   createStripePayment,
+  saveStripeAccount,
 };

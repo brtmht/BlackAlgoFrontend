@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { subscriptionPlanService } = require('../services');
 
 const createSubscriptionPlan = catchAsync(async (req, res) => {
-  const subscriptionPlan = await subscriptionPlanService.createSubscriptionPlan(req.body);
+  const subscriptionPlan = await subscriptionPlanService.createSubscription(req.body);
   res.status(httpStatus.CREATED).send(subscriptionPlan);
 });
 
