@@ -4,21 +4,24 @@ const ApiError = require('../utils/ApiError');
 
 /**
  * Create a subscriptionPlan
- * @param {Object} paymentBody
+ * @param {Object} paymentData
  * @returns {Promise<>}
  */
-const makeTransaction = async (paymentBody, user) => {
+// eslint-disable-next-line camelcase
+const savePaymentDetails = async (paymentData, stripeData, reqData, user_id) => {
   const trasactionData = await PaymentDetail.create({
-    userId: user,
-    stripeAccountId: paymentBody.stripeAccountId,
-    SubscriptionPlanId: paymentBody.subscriptionPlanId,
-    paymentStatus: paymentBody.status,
+    userId: user_id,
+    paymentToken: paymentData.paymentToken,
+    stripeAccountId: stripeData.id,
+    SubscriptionPlanId: reqData.planId,
   });
   if (!trasactionData) {
     throw new ApiError(httpStatus['201_MESSAGE'], 'transaction failed at details');
   }
   return trasactionData;
 };
+
+const updatePaymentDetails = async (paymentData,user) => {};
 
 /**
  * Get subscriptionPlan by id
@@ -30,6 +33,7 @@ const getPayments = async (id) => {
 };
 
 module.exports = {
-  makeTransaction,
+  savePaymentDetails,
   getPayments,
+  updatePaymentDetails,
 };

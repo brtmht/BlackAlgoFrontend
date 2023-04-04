@@ -7,11 +7,12 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} transaction
  * @returns {Object}
  */
-const postHistory = async (transaction, user) => {
+const saveTransactionHistory = async (transaction, user) => {
   const history = await TransactionHistyory.create({
     userId: user,
     paymentDetailId: transaction._id,
     paymmentStatus: transaction.paymentStatus,
+    transactionId: transaction.id,
   });
   if (!history) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
@@ -20,5 +21,5 @@ const postHistory = async (transaction, user) => {
 };
 
 module.exports = {
-  postHistory,
+  saveTransactionHistory,
 };

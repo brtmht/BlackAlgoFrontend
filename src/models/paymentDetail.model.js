@@ -28,18 +28,20 @@ const paymentDetailSchema = mongoose.Schema(
       type: String,
       enum: [constants.PAYMENT_TYPE.CARD, constants.PAYMENT_TYPE.CRYPTO],
     },
-    paymentTransactionid: {
+    paymentToken: {
       type: String,
     },
     paymentStatus: {
       type: String,
       enum: [
+        constants.PAYMENT_STATUS.INCOMLETE,
         constants.PAYMENT_STATUS.PENDING,
         constants.PAYMENT_STATUS.REFUNDED,
         constants.PAYMENT_STATUS.FAILED,
         constants.PAYMENT_STATUS.COMPLETED,
         constants.PAYMENT_STATUS.CANCELLED,
       ],
+      default: constants.PAYMENT_STATUS.INCOMLETE,
     },
     isDeleted: {
       type: Boolean,

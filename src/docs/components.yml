@@ -84,7 +84,6 @@ components:
         url: https://fake.com
         isDeleted: false
         status: true
-
     SubscriptionPlan:
       type: object
       properties:
@@ -112,27 +111,7 @@ components:
         max_portfolio_size: 10000
         isDeleted: false
         status: true
-
-    Region:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        isDeleted:
-          type: boolean
-        status:
-          type: boolean
-      example:
-        id: 5ebac534954b54139806c112
-        name: fake name
-        description: fake description
-        isDeleted: false
-        status: true
-
+        
     UserStrategy:
       type: object
       properties:
@@ -158,6 +137,110 @@ components:
         subscriptionPlanId: 5ebac534954b54139806c112
         isDeleted: false
         status: true
+
+    Region:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        name: fake name
+        description: fake description
+        isDeleted: false
+        status: true
+
+    PaymentDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        cryptoId:
+          type: string
+        stripeAccountId:
+          type: string
+        subscriptionPlanId:
+          type: string
+        paymentType:
+          type: string
+          enum: [card, crypto]
+        paymentTransactionId:
+          type: string
+        paymentStatus:
+          type: string
+        isDeleted:
+           type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        userId: 5ebac534954b54139806c134
+        cryptoId: 34bac534954b54139806c112
+        stripeAccountId: cus_5ebac539954b
+        subscriptionplanId: sub_d534954b54139806
+        paymentType: card
+        paymentTransactionId: ipi_34954b54139806c1
+        isDeleted: false
+        status: true
+
+    StripeAccount:
+      type: object
+      properties:
+        id: 
+          type: string
+        userId:
+          type: string
+        customerId: 
+          type: string
+        email:
+          type: string
+        phoneNo: 
+          type: string
+        countryCode:
+          type: string
+        status: 
+          type: boolean
+        isDeleted:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        userId: 5ebac534954b54139806c112
+        customerId: cus_ycj_eff45
+        email: example@example.com
+        phoneNo: 7384728935
+        countryCode: India
+        isDeleted: false
+        status: true 
+
+    TransactionHistory: 
+      type: object
+      properties:
+        id:
+          type: string
+        userId: 
+          type: string
+        paymentDetailId: 
+          type: string
+        paymentStatus:
+          type: string
+          enum: [failed, completed ,success]
+        paymentTransactionId: 
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        userId: 5ebac534954b54139806c112
+        paymentDetailId: 5ebac534954b54139806c112
+        paymentStatus: success
+        paymentTransactionId: ipi_ejjfk_6vbwy
+  
 
     Token:
       type: object

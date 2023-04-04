@@ -11,7 +11,7 @@ const createPayment = catchAsync(async (req, res) => {
   user = req.user._id;
   if (req.body.paymentType === 'card') {
     paymentIntent = await stripeAccountService.createStripePayment(req.body);
-    res.send(paymentIntent);
+    res.send({ stripe_token: paymentIntent.client_secret });
   }
   if (req.body.paymentType === 'crypto') {
     paymentIntent = '';
@@ -19,21 +19,20 @@ const createPayment = catchAsync(async (req, res) => {
   }
 
   if (paymentIntent) {
-    const stripeDataDb = stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
+    const stripeData = await stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
+    await paymentDetailService.savePaymentDetails(paymentIntent, stripeData, req.body, user);
   }
 });
-// create New Api
-// userid,paymentdetailid, payment status, paymentTransactionid
 
 // save data in transaction table
-const makePayment = catchAsync(async (req, res) => {
+const savePaymentDetails = catchAsync(async (req, res) => {
   const user = req.user._id;
-  const transaction = await paymentDetailService.makeTransaction(req.body, user);
-  if (!transaction) {
+  const PaymentDetails = await paymentDetailService.updatePaymentDetails(req.body, user);
+  if (!PaymentDetails) {
     throw new ApiError(httpStatus['201_MESSAGE'], 'no transaction to save ');
   } else {
-    const transactionHistory = await transactionHistoryService.postHistory(transaction, user);
-    res.send(transaction, transactionHistory);
+    await transactionHistoryService.saveTransactionHistory(PaymentDetails, user);
+    res.send(PaymentDetails);
   }
 });
 
@@ -59,5 +58,5 @@ module.exports = {
   createPayment,
   getPayment,
   getPaymentHistory,
-  makePayment,
+  savePaymentDetails,
 };

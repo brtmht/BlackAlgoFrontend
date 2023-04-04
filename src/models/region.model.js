@@ -41,7 +41,7 @@ regionSchema.plugin(paginate);
 regionSchema.statics.isNameTaken = async function (name, excludeRegionId) {
   const region = await this.findOne({ name, _id: { $ne: excludeRegionId } });
   return !!region;
-}
+};
 /**
  * @typedef Region
  */

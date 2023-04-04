@@ -8,4 +8,4 @@ module.exports.UserStrategy = require('./userStrategy.model');
 module.exports.CryptoAccount = require('./cryptoAccount.model');
 module.exports.PaymentDetail = require('./paymentDetail.model');
 module.exports.StripeAccount = require('./stripeAccount.model');
-module.exports.TransactionHistyory = require('./transactionHistory.model');
+module.exports.TransactionHistory = require('./transactionHistory.model');

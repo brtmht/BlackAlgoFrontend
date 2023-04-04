@@ -383,7 +383,7 @@ describe('Auth routes', () => {
     });
   });
 
-  describe('POST /v1/auth/verify-email', () => {
+  describe('GET /v1/auth/verify-email', () => {
     test('should return 204 and verify the email', async () => {
       await insertUsers([userOne]);
       const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');

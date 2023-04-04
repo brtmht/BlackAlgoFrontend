@@ -176,7 +176,7 @@ List of available routes:
 `POST /v1/auth/forgot-password` - send reset password email\
 `POST /v1/auth/reset-password` - reset password\
 `POST /v1/auth/send-verification-email` - send verification email\
-`POST /v1/auth/verify-email` - verify email
+`GET /v1/auth/verify-email` - verify email
 
 **User routes**:\
 `POST /v1/users` - create a user\

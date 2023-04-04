@@ -5,8 +5,10 @@ const createPayment = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     country: Joi.string(),
+    amount: Joi.number(),
     phone: Joi.string(),
     paymentType: Joi.string(),
+    currency: Joi.string(),
   }),
 };
 const postPaymentDetails = {

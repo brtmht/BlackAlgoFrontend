@@ -9,28 +9,19 @@ const Stripe = require('stripe')(process.env.STRIPE_KEY);
  * @returns {String}
  */
 const createNewCustomer = async (stripeAccountBody) => {
-  const paymentMethod = await Stripe.paymentMethods.create({
-    type: 'card',
-    card: {
-      number: '4242424242424242',
-      exp_month: 7,
-      exp_year: 2027,
-      cvc: '314',
-    },
-  });
-
   const newCustomer = await Stripe.customers.create({
     email: stripeAccountBody.email,
     address: { country: stripeAccountBody.country },
     phone: stripeAccountBody.phone,
-    payment_method: paymentMethod.id,
+    currency: stripeAccountBody.currency,
+    payment_method: stripeAccountBody.paymentType,
+    amount: stripeAccountBody.amount,
   });
   return newCustomer;
 };
 
 const createPaymentIntent = async (stripeAccountBody, id) => {
   const paymentIntent = await Stripe.paymentIntents.create({
-    receipt_email: stripeAccountBody.email,
     amount: stripeAccountBody.amount * 100,
     currency: stripeAccountBody.currency,
     payment_method_types: ['card'],
@@ -47,8 +38,6 @@ const createStripePayment = async (stripeUserData) => {
     const newCustomer = await createNewCustomer(stripeUserData);
     if (newCustomer) {
       customerId = newCustomer.id;
-    } else {
-      customerId = customers.data[0].id;
     }
   } else {
     customerId = customers.data[0].id;
@@ -58,16 +47,16 @@ const createStripePayment = async (stripeUserData) => {
       const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
       return paymentIntent;
     } catch (error) {
-      throw new ApiError(httpStatus.BAD_REQUEST, error, 'transaction failed while creating charge with existing customer');
+      throw new ApiError(httpStatus.BAD_REQUEST, 'transaction failed while creating charge with existing customer');
     }
   }
 };
 // user_id stripe customer id , email, phone number , country save in stripe account
 
-const saveStripeAccount = async (saveBody, userData, user) => {
+const saveStripeAccount = async (paymentIntentData, userData, user) => {
   const data = await StripeAccount.create({
     userId: user,
-    customerId: saveBody.customer,
+    customerId: paymentIntentData.customer,
     email: userData.email,
     phoneNo: userData.phone,
     countryCode: userData.address,
