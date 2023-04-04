@@ -1,5 +1,17 @@
 const allRoles = {
-  user: ['getExchanges','managePayments','manageExchanges','manageRegions','getRegions','manageStrategies','getStrategies','manageSubscriptionPlans','getSubscriptionPlans'],
+  user: [
+    'getExchanges',
+    'managePayments',
+    'manageExchanges',
+    'manageRegions',
+    'getRegions',
+    'manageStrategies',
+    'getStrategies',
+    'manageSubscriptionPlans',
+    'managePayments',
+    'getSubscriptionPlans',
+    'postPayment',
+  ],
   admin: ['getUsers', 'manageUsers'],
 };
 

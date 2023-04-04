@@ -28,6 +28,9 @@ const paymentDetailSchema = mongoose.Schema(
       type: String,
       enum: [constants.PAYMENT_TYPE.CARD, constants.PAYMENT_TYPE.CRYPTO],
     },
+    paymentTransactionid: {
+      type: String,
+    },
     paymentStatus: {
       type: String,
       enum: [

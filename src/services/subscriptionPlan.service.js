@@ -6,20 +6,28 @@ const Stripe = require('stripe')(process.env.STRIPE_KEY);
 
 /**
  * Create a subscriptionPlan
- * @param {Object} subscriptionPlanBody
- * @returns {Promise<SubscriptionPlan>}
+ * @param {Object} subsPlanData
+ * @returns {Object}
  */
-const createSubscriptionPlan = async (subsPlanData) => {
-  const subscriptionPlan = await Stripe.subscriptions.create({
-    // eslint-disable-next-line prettier/prettier
-    customer: subsPlanData.customerId,
-    items: [{ price: subsPlanData.productId }],
+const createSubscription = async () => {
+  const product = await Stripe.products.create({ name: 'Basic Dashboard' });
+
+  const price = await Stripe.prices.create({
+    unit_amount: 750,
+    currency: 'usd',
+    recurring: { interval: 'month' },
+    product: product.id,
   });
-  if (!subscriptionPlan) {
+
+  const subscription = await Stripe.subscriptions.create({
+    customer: 'cus_Ne4uaFQ5WoQiaK',
+    items: [{ price: price.id }],
+  });
+  if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
 
-  return subscriptionPlan;
+  return subscription;
 };
 // It will retrieve subscription plan
 const retrieveSubsPlan = async (subsPlanData) => {
@@ -86,7 +94,7 @@ const updateSubscriptionPlanById = async (subscriptionPlanId, updateBody) => {
 };
 
 module.exports = {
-  createSubscriptionPlan,
+  createSubscription,
   retrieveSubsPlan,
   deactivateSubscription,
   resumeSubscription,

@@ -5,6 +5,11 @@ const subscriptionPlanValidation = require('../../validations/subscriptionPlan.v
 const subscriptionPlanController = require('../../controllers/subscriptionPlan.controller');
 
 const router = express.Router();
+router.post(
+  '/postPlan',
+  validate(subscriptionPlanValidation.createSubscriptionPlan),
+  subscriptionPlanController.createSubscriptionPlan
+);
 
 router
   .route('/')
