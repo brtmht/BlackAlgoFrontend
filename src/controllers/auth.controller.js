@@ -25,7 +25,7 @@ const login = catchAsync(async (req, res) => {
       url: process.env.BASE_URL,
     };
     await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
-    res.status(httpStatus.FORBIDDEN).send();
+    throw new ApiError(httpStatus.FORBIDDEN, 'Verify link sent on your email. Please verify it before login.');
   } else {
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({ user, tokens });
