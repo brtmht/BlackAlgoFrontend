@@ -13,7 +13,6 @@ const savePaymentDetails = async (paymentData, stripeData, reqData, user_id) => 
     userId: user_id,
     paymentToken: paymentData.paymentToken,
     stripeAccountId: stripeData.id,
-    SubscriptionPlanId: reqData.planId,
   });
   if (!trasactionData) {
     throw new ApiError(httpStatus['201_MESSAGE'], 'transaction failed at details');
@@ -21,7 +20,17 @@ const savePaymentDetails = async (paymentData, stripeData, reqData, user_id) => 
   return trasactionData;
 };
 
-const updatePaymentDetails = async (paymentData,user) => {};
+// To update payment details after a transaction is processed
+const updatePaymentDetails = async (reqData) => {
+  const uddatedPaymentDetails = await PaymentDetail.findByIdAndUpdate(reqData.paymentDetailId, {
+    stripeTransactionId: reqData.transactionId,
+    paymentStatus: reqData.paymentStatus,
+  });
+  if (!uddatedPaymentDetails) {
+    throw new ApiError(httpStatus['100_MESSAGE'], 'the payment data cannot be updated');
+  }
+  return uddatedPaymentDetails;
+};
 
 /**
  * Get subscriptionPlan by id

@@ -28,12 +28,10 @@ const createPayment = catchAsync(async (req, res) => {
 const savePaymentDetails = catchAsync(async (req, res) => {
   const user = req.user._id;
   const PaymentDetails = await paymentDetailService.updatePaymentDetails(req.body, user);
-  if (!PaymentDetails) {
-    throw new ApiError(httpStatus['201_MESSAGE'], 'no transaction to save ');
-  } else {
+  if (PaymentDetails) {
     await transactionHistoryService.saveTransactionHistory(PaymentDetails, user);
-    res.send(PaymentDetails);
   }
+  res.send(PaymentDetails);
 });
 
 // get user payment detail

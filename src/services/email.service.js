@@ -1,4 +1,9 @@
+/* eslint-disable no-path-concat */
+/* eslint-disable prefer-template */
 const nodemailer = require('nodemailer');
+const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const ejs = require('ejs');
 const config = require('../config/config');
 const logger = require('../config/logger');
 
@@ -18,46 +23,38 @@ if (config.env !== 'test') {
  * @param {string} text
  * @returns {Promise}
  */
-const sendEmail = async (to, subject, text) => {
-  const msg = { from: config.email.from, to, subject, text };
-  await transport.sendMail(msg);
-};
-
-/**
- * Send reset password email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
- */
-const sendResetPasswordEmail = async (to, token) => {
-  const subject = 'Reset password';
-  // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `http://${process.env.APP_URL}/reset-password?token=${token}`;
-  const text = `Dear user,
-To reset your password, click on this link: ${resetPasswordUrl}
-If you did not request any password resets, then ignore this email.`;
-  await sendEmail(to, subject, text);
-};
-
-/**
- * Send verification email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
- */
-const sendVerificationEmail = async (to, token) => {
-  const subject = 'Email Verification';
-  // replace this url with the link to the email verification page of your front-end app
-  const verificationEmailUrl = `http://${process.env.BASE_URL}/verify-email?token=${token}`;
-  const text = `Dear user,
-To verify your email, click on this link: ${verificationEmailUrl}
-If you did not create an account, then ignore this email.`;
-  await sendEmail(to, subject, text);
+const sendEmail = async (receiver, content, tempData) => {
+  // const templatePath = path.join(__dirname, '../utils/templates/verify.email.ejs');
+  // const data = ejs.renderFile(templatePath);
+  ejs.renderFile(
+    path.join(__dirname, '../utils//templates/' + tempData.template_name),
+    { receiver, content },
+    (err, data) => {
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.log(err);
+      } else {
+        const mailOptions = {
+          from: config.email.from,
+          to: receiver.email,
+          subject: tempData.subject,
+          html: data,
+        };
+        // const msg = { from: config.email.from, to, subject, text };
+        transport.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            // eslint-disable-next-line no-console
+            return console.log(error);
+          }
+          // eslint-disable-next-line no-console
+          console.log('Message sent: %s', info.messageId);
+        });
+      }
+    }
+  );
 };
 
 module.exports = {
   transport,
   sendEmail,
-  sendResetPasswordEmail,
-  sendVerificationEmail,
 };

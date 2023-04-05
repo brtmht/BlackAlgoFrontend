@@ -16,11 +16,11 @@ const postPaymentDetails = {
     userId: Joi.string().custom(objectId),
     cryptoId: Joi.string().custom(objectId),
     stripeAccountId: Joi.string().custom(objectId),
-    paymentDetailsId: Joi.string().custom(objectId),
+    paymentDetailId: Joi.string().custom(objectId),
     subscriptionPlanId: Joi.string().custom(objectId),
-    paymentTrasactionId: Joi.string(),
+    stripeTransactionId: Joi.string(),
     paymentType: Joi.boolean(),
-    paymentStatus: Joi.boolean(),
+    paymentStatus: Joi.string(),
   }),
 };
 const createSubscription = {

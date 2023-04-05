@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { TransactionHistyory } = require('../models');
+const { TransactionHistory } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -7,12 +7,13 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} transaction
  * @returns {Object}
  */
-const saveTransactionHistory = async (transaction, user) => {
-  const history = await TransactionHistyory.create({
-    userId: user,
-    paymentDetailId: transaction._id,
-    paymmentStatus: transaction.paymentStatus,
-    transactionId: transaction.id,
+// eslint-disable-next-line camelcase
+const saveTransactionHistory = async (transaction, user_id) => {
+  const history = await TransactionHistory.create({
+    userId: user_id,
+    paymentDetailId: transaction.id,
+    paymentStatus: transaction.paymentStatus,
+    transactionId: transaction.transactionId,
   });
   if (!history) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');

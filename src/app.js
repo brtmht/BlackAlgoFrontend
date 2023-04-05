@@ -16,6 +16,9 @@ const ApiError = require('./utils/ApiError');
 
 const app = express();
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);

@@ -1,12 +1,17 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
+const constants = require('../config/constants');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
-  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
+  const contentData = {
+    token: verifyEmailToken,
+    url: process.env.BASE_URL,
+  };
+  await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
   res.send({ user, tokens });
 });
 
@@ -14,6 +19,12 @@ const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   if (user.isEmailVerified === false) {
+    const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
+    const contentData = {
+      token: verifyEmailToken,
+      url: process.env.BASE_URL,
+    };
+    await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
     res.status(httpStatus.UNAUTHORIZED).send();
   } else {
     const tokens = await tokenService.generateAuthTokens(user);
@@ -33,7 +44,11 @@ const refreshTokens = catchAsync(async (req, res) => {
 
 const forgotPassword = catchAsync(async (req, res) => {
   const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
-  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
+  const contentData = {
+    token: resetPasswordToken,
+    url: process.env.APP_URL,
+  };
+  await emailService.sendEmail(req.body, contentData, constants.RESETPASSWORD_EMAIL_OPTIONS);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
@@ -49,8 +64,17 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  await authService.verifyEmail(req.query.token);
-  res.status(httpStatus.NO_CONTENT).send();
+  const userData = await authService.verifyEmail(req.query.token);
+  // eslint-disable-next-line no-console
+  if (userData != null || !userData) {
+    if (userData.isEmailVerified === true) {
+      res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
+    } else {
+      res.redirect(`${process.env.APP_URL}/?confirm=error`);
+    }
+  } else {
+    res.redirect(`${process.env.APP_URL}/?confirm=error`);
+  }
 });
 
 module.exports = {

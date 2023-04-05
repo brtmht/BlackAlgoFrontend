@@ -11,13 +11,13 @@ const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  const {name,email,password} = userBody
-  const newName = name.toLowerCase()
+  const { name, email, password } = userBody;
+  const newName = name.toLowerCase();
   // const newMail = email.toLowerCase()
   return User.create({
-    name:newName,
+    name: newName,
     email,
-    password
+    password,
   });
 };
 

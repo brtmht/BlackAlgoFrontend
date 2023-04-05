@@ -174,7 +174,7 @@ components:
         paymentType:
           type: string
           enum: [card, crypto]
-        paymentTransactionId:
+        stripeTransactionId:
           type: string
         paymentStatus:
           type: string
@@ -187,7 +187,7 @@ components:
         stripeAccountId: cus_5ebac539954b
         subscriptionplanId: sub_d534954b54139806
         paymentType: card
-        paymentTransactionId: ipi_34954b54139806c1
+        stripeTransactionId: ipi_34954b54139806c1
         isDeleted: false
         status: true
 

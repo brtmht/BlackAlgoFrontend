@@ -24,6 +24,10 @@ const paymentDetailSchema = mongoose.Schema(
       ref: 'SubscriptionPlan',
       default: null,
     },
+    stripeTransactionId: {
+      type: String,
+      default: null,
+    },
     paymentType: {
       type: String,
       enum: [constants.PAYMENT_TYPE.CARD, constants.PAYMENT_TYPE.CRYPTO],

@@ -11,7 +11,7 @@ const router = express.Router();
 //   .post(auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment)
 router.post('/', auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment);
 router.post(
-  '/',
+  '/savePayment',
   auth('managePayments'),
   validate(paymentValidation.postPaymentDetails),
   paymentController.savePaymentDetails
@@ -80,6 +80,111 @@ module.exports = router;
  *           application/json:
  *             schema:
  *                $ref: '#/components/schemas/StripeAccount'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *
+ *   get:
+ *     summary: Get all payments
+ *     description: Only admins can retrieve all subscriptionPlans.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: SubscriptionPlan name
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *         description: sort by query in the form of field:desc/asc (ex. name:asc)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         default: 10
+ *         description: Maximum number of subscriptionPlans
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/StripeAccount'
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 totalResults:
+ *                   type: integer
+ *                   example: 1
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /payment/savePayment:
+ *   post:
+ *     summary: Update your payment details
+ *     description: User's payment details will be updated after this transaction is made.
+ *     tags: [Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - transactionId
+ *               - paymentStatus
+ *               - planId
+ *             properties:
+ *               stripeTransactionId:
+ *                 type: string
+ *               planId:
+ *                 type: string
+ *               paymentStatus:
+ *                 type: string
+ *                 enum: [incomplete,pending,refunded,failed,completed,cancelled]
+ *             example:
+ *               paymentDetailId: "642c5224d1ad6a54f0407072"
+ *               stripeTransactionId: "ipi_ue73f_4yei"
+ *               paymentStatus: pending
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/PaymentDetail'
  *       "400":
  *         $ref: '#/components/responses/DuplicateName'
  *       "401":
