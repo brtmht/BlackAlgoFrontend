@@ -25,7 +25,7 @@ const login = catchAsync(async (req, res) => {
       url: process.env.BASE_URL,
     };
     await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
-    res.status(httpStatus.UNAUTHORIZED).send();
+    res.status(httpStatus.FORBIDDEN).send();
   } else {
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({ user, tokens });
@@ -65,7 +65,6 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
 
 const verifyEmail = catchAsync(async (req, res) => {
   const userData = await authService.verifyEmail(req.query.token);
-  // eslint-disable-next-line no-console
   if (userData != null || !userData) {
     if (userData.isEmailVerified === true) {
       res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
