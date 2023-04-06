@@ -16,9 +16,16 @@ const transactionHistorySchema = mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: [constants.PAYMENT_STATUS.FAILED, constants.PAYMENT_STATUS.COMPLETED, constants.PAYMENT_STATUS.CANCELLED],
+      enum: [
+        constants.PAYMENT_STATUS.INCOMLETE,
+        constants.PAYMENT_STATUS.PENDING,
+        constants.PAYMENT_STATUS.REFUNDED,
+        constants.PAYMENT_STATUS.FAILED,
+        constants.PAYMENT_STATUS.COMPLETED,
+        constants.PAYMENT_STATUS.CANCELLED,
+      ],
     },
-    paymentTransactionId: {
+    stripeTransactionId: {
       type: String,
     },
   },

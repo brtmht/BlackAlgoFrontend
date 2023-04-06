@@ -9,19 +9,32 @@ const router = express.Router();
 // router
 //   .route('/:userId')
 //   .post(auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment)
-router.post('/', auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment);
 router.post(
-  '/savePayment',
+  '/createPayment',
+  auth('managePayments'),
+  validate(paymentValidation.createPayment),
+  paymentController.createPayment
+);
+router.post(
+  '/updatePayment',
   auth('managePayments'),
   validate(paymentValidation.postPaymentDetails),
   paymentController.savePaymentDetails
 );
+router.post(
+  '/createSubscription',
+  auth('manageSubscriptionPlans'),
+  validate(paymentValidation.createSubscription),
+  paymentController.createSubscriptionplan
+);
 router
-  .route('/:paymentId')
-  .get(auth('getPayments'), validate(paymentValidation.getPayment), paymentController.getPayment)
+  .route('/paymentHistory')
   .get(auth('getPayments'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
 module.exports = router;
 
+router.post('/binance', auth('managePayments'), paymentController.postBinance);
+
+router.get('/binance', auth('managePayments'), paymentController.getBinance);
 /**
  * @swagger
  * tags:
@@ -31,7 +44,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /payment:
+ * /createPayment:
  *   post:
  *     summary: Create a payment using card and crypto
  *     description: User can create the plan payment using card and crypto .
@@ -66,12 +79,11 @@ module.exports = router;
  *               country:
  *                  type: string
  *             example:
- *               email: exampl'@'example.com
- *               phone: 8973655725
+ *               email: exampl@example.com
+ *               phone: "8973655725"
  *               amount: 100
  *               currency: inr
  *               country: india
- *               planId: 1875432376765
  *               paymentType: card
  *     responses:
  *       "201":
@@ -86,19 +98,19 @@ module.exports = router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
- *
+ * /paymentHistory:
  *   get:
- *     summary: Get all payments
- *     description: Only admins can retrieve all subscriptionPlans.
- *     tags: [SubscriptionPlans]
+ *     summary: Get transaction history
+ *     description: User can see their past transaction history.
+ *     tags: [Payment]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: name
+ *         name: userId
  *         schema:
  *           type: string
- *         description: SubscriptionPlan name
+ *         description: Transaction Id
  *       - in: query
  *         name: sortBy
  *         schema:
@@ -110,7 +122,7 @@ module.exports = router;
  *           type: integer
  *           minimum: 1
  *         default: 10
- *         description: Maximum number of subscriptionPlans
+ *         description: Maximum number of transaction history
  *       - in: query
  *         name: page
  *         schema:
@@ -129,7 +141,7 @@ module.exports = router;
  *                 results:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/StripeAccount'
+ *                     $ref: '#/components/schemas/TransactionHistory'
  *                 page:
  *                   type: integer
  *                   example: 1
@@ -149,7 +161,7 @@ module.exports = router;
  */
 /**
  * @swagger
- * /payment/savePayment:
+ * /updatePayment:
  *   post:
  *     summary: Update your payment details
  *     description: User's payment details will be updated after this transaction is made.
@@ -192,63 +204,87 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *
+ */
+
+/**
+ * @swagger
+ * /binance:
  *   get:
- *     summary: Get all payments
- *     description: Only admins can retrieve all subscriptionPlans.
- *     tags: [SubscriptionPlans]
+ *     summary: Create a payment using card and crypto
+ *     description: User can create the plan payment using card and crypto .
+ *     tags: [Payment]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: SubscriptionPlan name
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *         description: sort by query in the form of field:desc/asc (ex. name:asc)
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of subscriptionPlans
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
  *     responses:
- *       "200":
- *         description: OK
+ *       "201":
+ *         description: Created
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 results:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/StripeAccount'
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   example: 10
- *                 totalPages:
- *                   type: integer
- *                   example: 1
- *                 totalResults:
- *                   type: integer
- *                   example: 1
+ *                $ref: '#/components/schemas/StripeAccount'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
+ *
+ */
+/**
+ * @swagger
+ * /binance:
+ *   post:
+ *     summary: Create a payment using card and crypto
+ *     description: User can create the plan payment using card and crypto .
+ *     tags: [Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - country
+ *               - phone
+ *               - planId
+ *               - paymentType
+ *               - currency
+ *             properties:
+ *               email:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               amount:
+ *                 type: number
+ *               paymentType:
+ *                 type: string
+ *                 enum: [card,crypto]
+ *               currency:
+ *                 type: string
+ *               country:
+ *                  type: string
+ *             example:
+ *               email: exampl@example.com
+ *               phone: "8973655725"
+ *               amount: 100
+ *               currency: inr
+ *               country: india
+ *               paymentType: card
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/StripeAccount'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *
  */

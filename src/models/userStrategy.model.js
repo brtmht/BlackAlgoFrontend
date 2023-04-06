@@ -11,27 +11,22 @@ const userStrategySchema = mongoose.Schema(
     paymentDetailId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'paymentDetail',
-      required: true,
     },
     strategyId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Strategy',
-      required: true,
     },
     exchangeId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Exchange',
-      required: true,
     },
     regionId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Region',
-      required: true,
     },
     subscriptionPlanId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'SubscriptionPlan',
-      required: true,
     },
     isDeleted: {
       type: Boolean,

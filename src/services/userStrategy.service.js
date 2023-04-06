@@ -7,11 +7,11 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} userStrategyBody
  * @returns {Promise<UserStrategy>}
  */
-const createUserStrategy = async (userStrategyBody) => {
-  if (await UserStrategy.isNameTaken(userStrategyBody.name)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  return UserStrategy.create(userStrategyBody);
+const createUserStrategy = async (userStrategyBody, userId) => {
+  return UserStrategy.create({
+    userId,
+    ...userStrategyBody,
+  });
 };
 
 /**
@@ -34,7 +34,7 @@ const queryUserStrategies = async (filter, options) => {
  * @returns {Promise<UserStrategy>}
  */
 const getUserStrategyById = async (id) => {
-  return UserStrategy.findById(id);
+  return UserStrategy.find({ userId: id });
 };
 
 /**
@@ -52,17 +52,13 @@ const getUserStrategyByName = async (name) => {
  * @param {Object} updateBody
  * @returns {Promise<UserStrategy>}
  */
-const updateUserStrategyById = async (userStrategyId, updateBody) => {
-  const userStrategy = await getUserStrategyById(userStrategyId);
+const updateUserStrategyById = async (userId, updateBody) => {
+  const userStrategy = await getUserStrategyById(userId);
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  if (updateBody.name && (await UserStrategy.isNameTaken(updateBody.name, userStrategyId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(userStrategy, updateBody);
-  await userStrategy.save();
-  return userStrategy;
+  const userData = UserStrategy.findByIdAndUpdate(userStrategy._id, { ...updateBody });
+  return userData;
 };
 
 /**

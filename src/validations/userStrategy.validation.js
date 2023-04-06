@@ -3,7 +3,11 @@ const { objectId } = require('./custom.validation');
 
 const createUserStrategy = {
   body: Joi.object().keys({
-    name: Joi.string().required(),
+    userId: Joi.string().custom(objectId),
+    paymentDetailId: Joi.string().custom(objectId),
+    strategyId: Joi.string().custom(objectId),
+    exchangeId: Joi.string().custom(objectId),
+    regionId: Joi.string().custom(objectId),
   }),
 };
 
@@ -29,7 +33,11 @@ const updateUserStrategy = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string(),
+      userId: Joi.string().custom(objectId),
+      paymentDetailId: Joi.string().custom(objectId),
+      strategyId: Joi.string().custom(objectId),
+      exchangeId: Joi.string().custom(objectId),
+      regionId: Joi.string().custom(objectId),
     })
     .min(1),
 };

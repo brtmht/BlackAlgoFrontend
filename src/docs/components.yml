@@ -239,7 +239,7 @@ components:
         userId: 5ebac534954b54139806c112
         paymentDetailId: 5ebac534954b54139806c112
         paymentStatus: success
-        paymentTransactionId: ipi_ejjfk_6vbwy
+        stripeTransactionId: ipi_ejjfk_6vbwy
   
 
     Token:

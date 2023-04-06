@@ -25,9 +25,7 @@ const postPaymentDetails = {
 };
 const createSubscription = {
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    address: Joi.string(),
-    phone: Joi.string(),
+    plan: Joi.string(),
   }),
 };
 
@@ -39,7 +37,7 @@ const getPayment = {
 
 const getPaymentHistory = {
   query: Joi.object().keys({
-    paymentId: Joi.string().custom(objectId),
+    userId: Joi.string().custom(objectId),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),

@@ -8,14 +8,30 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageUserStrategies'), validate(userStrategyValidation.createUserStrategy), userStrategyController.createUserStrategy)
-  .get(auth('getUserStrategies'), validate(userStrategyValidation.getUserStrategies), userStrategyController.getUserStrategies);
+  .post(
+    auth('manageUserStrategies'),
+    validate(userStrategyValidation.createUserStrategy),
+    userStrategyController.createUserStrategy
+  )
+  .get(
+    auth('getUserStrategies'),
+    validate(userStrategyValidation.getUserStrategies),
+    userStrategyController.getUserStrategies
+  );
 
 router
   .route('/:userStrategyId')
   .get(auth('getUserStrategies'), validate(userStrategyValidation.getUserStrategy), userStrategyController.getUserStrategy)
-  .patch(auth('manageUserStrategies'), validate(userStrategyValidation.updateUserStrategy), userStrategyController.updateUserStrategy)
-  .delete(auth('manageUserStrategies'), validate(userStrategyValidation.deleteUserStrategy), userStrategyController.deleteUserStrategy);
+  .patch(
+    auth('manageUserStrategies'),
+    validate(userStrategyValidation.updateUserStrategy),
+    userStrategyController.updateUserStrategy
+  )
+  .delete(
+    auth('manageUserStrategies'),
+    validate(userStrategyValidation.deleteUserStrategy),
+    userStrategyController.deleteUserStrategy
+  );
 
 module.exports = router;
 

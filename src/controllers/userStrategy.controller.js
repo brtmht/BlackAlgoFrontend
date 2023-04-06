@@ -5,7 +5,8 @@ const catchAsync = require('../utils/catchAsync');
 const { userStrategyService } = require('../services');
 
 const createUserStrategy = catchAsync(async (req, res) => {
-  const userStrategy = await userStrategyService.createUserStrategy(req.body);
+  const userId = req.user._id;
+  const userStrategy = await userStrategyService.createUserStrategy(req.body, userId);
   res.status(httpStatus.CREATED).send(userStrategy);
 });
 
@@ -17,7 +18,8 @@ const getUserStrategies = catchAsync(async (req, res) => {
 });
 
 const getUserStrategy = catchAsync(async (req, res) => {
-  const userStrategy = await userStrategyService.getUserStrategyById(req.params.userStrategyId);
+  const userId = req.user._id;
+  const userStrategy = await userStrategyService.getUserStrategyById(userId);
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
@@ -25,7 +27,8 @@ const getUserStrategy = catchAsync(async (req, res) => {
 });
 
 const updateUserStrategy = catchAsync(async (req, res) => {
-  const userStrategy = await userStrategyService.updateUserStrategyById(req.params.userStrategyId, req.body);
+  const userId = req.user._id;
+  const userStrategy = await userStrategyService.updateUserStrategyById(userId, req.body);
   res.send(userStrategy);
 });
 

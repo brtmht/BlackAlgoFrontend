@@ -13,14 +13,23 @@ const saveTransactionHistory = async (transaction, user_id) => {
     userId: user_id,
     paymentDetailId: transaction.id,
     paymentStatus: transaction.paymentStatus,
-    transactionId: transaction.transactionId,
+    stripeTransactionId: transaction.stripeTransactionId,
   });
   if (!history) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
   }
   return history;
 };
-
+const getPaymnetsById = async (id) => {
+  const paymentHistory = await TransactionHistory.findById({ userId: id });
+  // eslint-disable-next-line no-console
+  console.log(paymentHistory);
+  if (!paymentHistory) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
+  }
+  return paymentHistory;
+};
 module.exports = {
   saveTransactionHistory,
+  getPaymnetsById,
 };

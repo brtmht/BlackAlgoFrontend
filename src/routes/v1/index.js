@@ -22,7 +22,7 @@ const defaultRoutes = [
     route: userRoute,
   },
   {
-    path: '/payment',
+    path: '',
     route: paymentRoute,
   },
   {

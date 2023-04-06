@@ -23,7 +23,7 @@ const savePaymentDetails = async (paymentData, stripeData, reqData, user_id) => 
 // To update payment details after a transaction is processed
 const updatePaymentDetails = async (reqData) => {
   const uddatedPaymentDetails = await PaymentDetail.findByIdAndUpdate(reqData.paymentDetailId, {
-    stripeTransactionId: reqData.transactionId,
+    stripeTransactionId: reqData.stripeTransactionId,
     paymentStatus: reqData.paymentStatus,
   });
   if (!uddatedPaymentDetails) {
