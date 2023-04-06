@@ -21,12 +21,7 @@ router.post(
   validate(paymentValidation.postPaymentDetails),
   paymentController.savePaymentDetails
 );
-router.post(
-  '/createSubscription',
-  auth('manageSubscriptionPlans'),
-  validate(paymentValidation.createSubscription),
-  paymentController.createSubscriptionplan
-);
+
 router
   .route('/paymentHistory')
   .get(auth('getPayments'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);

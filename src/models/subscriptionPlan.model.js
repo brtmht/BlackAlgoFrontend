@@ -27,8 +27,8 @@ const subscriptionPlanSchema = mongoose.Schema(
       default: false,
     },
     status: {
-      type: Boolean,
-      default: true,
+      type: String,
+      default: 'inactive',
     },
   },
   {

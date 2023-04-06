@@ -29,6 +29,8 @@ const createSubscription = async (subscriptionData) => {
   // eslint-disable-next-line no-unused-vars
   const paymentMethod = await Stripe.paymentMethods.attach(paymentM.id, { customer: 'cus_Ne4uaFQ5WoQiaK' });
   const subscription = await Stripe.subscriptions.create({
+    collection_method: 'send_invoice',
+    days_until_due: 30,
     customer: 'cus_Ne4uaFQ5WoQiaK',
     items: [{ price: price.id }],
   });

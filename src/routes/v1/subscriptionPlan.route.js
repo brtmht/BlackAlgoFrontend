@@ -6,31 +6,19 @@ const subscriptionPlanController = require('../../controllers/subscriptionPlan.c
 
 const router = express.Router();
 router.post(
-  '/postPlan',
+  '',
+  auth('manageSubscriptionPlans'),
   validate(subscriptionPlanValidation.createSubscriptionPlan),
   subscriptionPlanController.createSubscriptionPlan
 );
+router.get(
+  '',
+  auth('getSubscriptionPlans'),
+  validate(subscriptionPlanValidation.getSubscriptionPlans),
+  subscriptionPlanController.getSubscriptionPlans
+);
 
 router
-  .route('/')
-  .post(
-    auth('manageSubscriptionPlans'),
-    validate(subscriptionPlanValidation.createSubscriptionPlan),
-    subscriptionPlanController.createSubscriptionPlan
-  )
-  .get(
-    auth('getSubscriptionPlans'),
-    validate(subscriptionPlanValidation.getSubscriptionPlans),
-    subscriptionPlanController.getSubscriptionPlans
-  );
-
-router
-  .route('/:subscriptionPlanId')
-  .get(
-    auth('getSubscriptionPlans'),
-    validate(subscriptionPlanValidation.getSubscriptionPlan),
-    subscriptionPlanController.getSubscriptionPlan
-  )
   .patch(
     auth('manageSubscriptionPlans'),
     validate(subscriptionPlanValidation.updateSubscriptionPlan),
@@ -67,7 +55,6 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
  *               - description
  *               - amount
  *               - min_portfolio_size
@@ -109,31 +96,6 @@ module.exports = router;
  *     tags: [SubscriptionPlans]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: SubscriptionPlan name
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *         description: sort by query in the form of field:desc/asc (ex. name:asc)
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of subscriptionPlans
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
  *     responses:
  *       "200":
  *         description: OK
@@ -176,7 +138,6 @@ module.exports = router;
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
  *         description: SubscriptionPlan id
@@ -203,7 +164,6 @@ module.exports = router;
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
  *         description: SubscriptionPlan id
@@ -243,7 +203,6 @@ module.exports = router;
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
  *         description: SubscriptionPlan id

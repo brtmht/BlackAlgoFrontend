@@ -1,12 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const {
-  paymentDetailService,
-  stripeAccountService,
-  transactionHistoryService,
-  subscriptionPlanService,
-} = require('../services');
+const { paymentDetailService, stripeAccountService, transactionHistoryService } = require('../services');
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
@@ -49,14 +44,6 @@ const savePaymentDetails = catchAsync(async (req, res) => {
   res.send(PaymentDetails);
 });
 
-// Recurring payment
-const createSubscriptionplan = catchAsync(async (req, res) => {
-  const subscriptionPlan = await subscriptionPlanService.createSubscription(req.body);
-  if (!subscriptionPlan) {
-    throw new ApiError(httpStatus['402_MESSAGE']);
-  }
-  res.send(subscriptionPlan);
-});
 // get user payment detail
 const getPayment = catchAsync(async (req, res) => {
   const payments = await paymentDetailService.getPayments(req.user._id);
@@ -83,5 +70,4 @@ module.exports = {
   getPayment,
   getPaymentHistory,
   savePaymentDetails,
-  createSubscriptionplan,
 };

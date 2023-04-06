@@ -13,12 +13,13 @@ const createSubscriptionPlan = {
     paymentType: Joi.string(),
     min_portfolio_size: Joi.number(),
     max_portfolio_size: Joi.number(),
+    plan: Joi.string(),
   }),
 };
 
 const getSubscriptionPlans = {
   query: Joi.object().keys({
-    name: Joi.string(),
+    subscriptionPlanId: Joi.string(),
     description: Joi.string(),
     amount: Joi.number(),
     min_portfolio_size: Joi.number(),
