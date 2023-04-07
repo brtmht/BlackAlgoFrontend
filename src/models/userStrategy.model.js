@@ -7,6 +7,7 @@ const userStrategySchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
       required: true,
+      unique: true,
     },
     paymentDetailId: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -20,9 +21,8 @@ const userStrategySchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Exchange',
     },
-    regionId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'Region',
+    use_futures: {
+      type: mongoose.SchemaTypes.Boolean,
     },
     subscriptionPlanId: {
       type: mongoose.SchemaTypes.ObjectId,

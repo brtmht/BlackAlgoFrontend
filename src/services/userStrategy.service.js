@@ -7,11 +7,79 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} userStrategyBody
  * @returns {Promise<UserStrategy>}
  */
-const createUserStrategy = async (userStrategyBody, userId) => {
-  return UserStrategy.create({
-    userId,
-    ...userStrategyBody,
-  });
+const createUserStrategy = async (userStrategyBody, id) => {
+  const userExist = await UserStrategy.findOne({ userId: id });
+  const { step } = userStrategyBody;
+  let strategyId;
+  if (!userExist) {
+    const userStrategydata = await UserStrategy.create({
+      userId: id,
+    });
+    strategyId = userStrategydata.id;
+  } else {
+    strategyId = userExist._id;
+  }
+  let response;
+  switch (step) {
+    case 'strategy':
+      await UserStrategy.updateOne(
+        { _id: strategyId },
+        {
+          $set: {
+            strategyId: userStrategyBody.strategyId,
+          },
+        }
+      );
+      break;
+    case 'exchange':
+      await UserStrategy.updateOne(
+        { _id: strategyId },
+        {
+          $set: {
+            exchangeId: userStrategyBody.exchangeId,
+          },
+        }
+      );
+      break;
+    case 'use_futures':
+      await UserStrategy.updateOne(
+        { _id: strategyId },
+        {
+          $set: {
+            use_futures: userStrategyBody.use_futures,
+          },
+        }
+      );
+      break;
+    case 'plan':
+      await UserStrategy.updateOne(
+        { _id: strategyId },
+        {
+          $set: {
+            subscriptionPlanId: userStrategyBody.subscriptionPlanId,
+          },
+        }
+      );
+      break;
+    case 'payment':
+      await UserStrategy.updateOne(
+        { _id: strategyId },
+        {
+          $set: {
+            paymentDatailId: userStrategyBody.paymentDatailId,
+          },
+        }
+      );
+      break;
+    case 'connectApi':
+      response = '16';
+      break;
+    default:
+      response = '';
+      break;
+  }
+  // eslint-disable-next-line no-console
+  console.log(response);
 };
 
 /**

@@ -22,8 +22,6 @@ const saveTransactionHistory = async (transaction, user_id) => {
 };
 const getPaymnetsById = async (id) => {
   const paymentHistory = await TransactionHistory.findById({ userId: id });
-  // eslint-disable-next-line no-console
-  console.log(paymentHistory);
   if (!paymentHistory) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
   }

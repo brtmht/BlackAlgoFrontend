@@ -6,7 +6,6 @@ const subscriptionPlanSchema = mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      lowercase: true,
     },
     description: {
       type: String,

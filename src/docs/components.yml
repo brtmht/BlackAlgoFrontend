@@ -117,6 +117,8 @@ components:
       properties:
         id:
           type: string
+        step:
+          type: string
         userId:
           type: string
         strategyId:
@@ -125,19 +127,21 @@ components:
           type: string
         subscriptionPlanId:
           type: string
+        paymentDetail:
+          type: string
+        use_futures:
+          type: boolean
         isDeleted:
           type: boolean
         status:
           type: boolean
       example:
-        id: 5ebac534954b54139806c112
-        userId: 5ebac534954b54139806c112
         strategyId: 5ebac534954b54139806c112
         exchangeId: 5ebac534954b54139806c112
         subscriptionPlanId: 5ebac534954b54139806c112
-        isDeleted: false
-        status: true
-
+        paymentDetailId: 642a8cea3554c041da1da346
+        use_futures: false
+        step: exchangeId
     Region:
       type: object
       properties:

@@ -38,32 +38,35 @@ const createSubscription = async (subscriptionData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   } else {
     const subscriptionPlan = await SubscriptionPlan.create({
-      ...subscription,
+      name: subscriptionData.plan,
+      amount: subscriptionData.amount,
+      min_portfolio_size: subscriptionData.min_portfolio_size,
+      max_portfolio_size: subscriptionData.max_portfolio_size,
     });
     return subscriptionPlan;
   }
 };
 // It will retrieve subscription plan
 const retrieveSubsPlan = async (subsPlanData) => {
-  const subscriptionPlan = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId);
+  const subscriptionPlan = await Stripe.subscriptions.retrieve(subsPlanData.subscriptionId);
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
   return subscriptionPlan;
 };
 
-// It will resume the subscription plan with subscription id
-const resumeSubscription = async (subsPlanData) => {
-  const subscription = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId, { billing_cycle_anchor: 'now' });
+// It will need subscription plan id to cancel subscription plan
+const deactivateSubscription = async (subsPlanData) => {
+  const subscription = await Stripe.subscriptions.del(subsPlanData.subscriptionId);
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
   return subscription;
 };
 
-// It will need subscription plan id to cancel subscription plan
-const deactivateSubscription = async (subsPlanData) => {
-  const subscription = await Stripe.subscriptions.del(subsPlanData.subsPlanId);
+// It will resume the subscription plan with subscription id
+const resumeSubscription = async (subsPlanData) => {
+  const subscription = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId, { billing_cycle_anchor: 'now' });
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }

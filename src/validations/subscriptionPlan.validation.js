@@ -3,7 +3,7 @@ const { objectId } = require('./custom.validation');
 
 const createSubscriptionPlan = {
   body: Joi.object().keys({
-    name: Joi.string(),
+    planName: Joi.string(),
     email: Joi.string().email(),
     address: Joi.string(),
     description: Joi.string(),
@@ -32,7 +32,7 @@ const getSubscriptionPlans = {
 
 const getSubscriptionPlan = {
   params: Joi.object().keys({
-    subscriptionPlanId: Joi.string().custom(objectId),
+    subscriptionId: Joi.string(),
   }),
 };
 

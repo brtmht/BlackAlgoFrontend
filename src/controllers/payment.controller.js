@@ -13,6 +13,11 @@ const postBinance = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+// stripe webhook controller
+const stripeWebhook = catchAsync(async (req) => {
+  const user = req.user._id;
+  await stripeAccountService.stripeWebhook(req, user);
+});
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
   let paymentIntent;

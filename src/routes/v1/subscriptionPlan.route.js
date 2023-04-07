@@ -17,7 +17,12 @@ router.get(
   validate(subscriptionPlanValidation.getSubscriptionPlans),
   subscriptionPlanController.getSubscriptionPlans
 );
-
+router.get(
+  '/retrieve',
+  auth('manageSubscriptionPlans'),
+  validate(subscriptionPlanValidation.getSubscriptionPlan),
+  subscriptionPlanController.retrieveSubscriptionPlan
+);
 router
   .patch(
     auth('manageSubscriptionPlans'),
@@ -55,12 +60,12 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - description
+ *               - name
  *               - amount
  *               - min_portfolio_size
  *               - max_portfolio_size
  *             properties:
- *               name:
+ *               planName:
  *                 type: string
  *               description:
  *                 type: string
@@ -71,7 +76,7 @@ module.exports = router;
  *               max_portfolio_size:
  *                 type: number
  *             example:
- *               name: fake name
+ *               name: fake plan
  *               description: fake description
  *               amount: 100
  *               min_portfolio_size: 1000
@@ -215,4 +220,42 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /subscriptionPlans/retrieve:
+ *   get:
+ *     summary: Retrieve a subscriptionPlan
+ *     description: Logged in user can only retrieve their own subscription plan. Only admins can retrieve other subscriptionPlans.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subscriptionId:
+ *                 type: string
+ *             example:
+ *               subscriptionId: sub_1Mu7v7Ey4gM8gXFtLa0gDb3n
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SubscriptionPlan'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
  */

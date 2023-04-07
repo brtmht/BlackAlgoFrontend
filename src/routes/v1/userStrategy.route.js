@@ -53,6 +53,7 @@ module.exports = router;
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
+ *       description: <h4>Options for step ( strategy,exchange,use_futures,plan,payment,connectApi).</h4>
  *       content:
  *         application/json:
  *           schema:
@@ -69,13 +70,21 @@ module.exports = router;
  *                 type: string
  *               exchangeId:
  *                 type: string
- *               regionId:
+ *               subscriptionPlanId:
+ *                 type: string
+ *               paymentDetailId:
+ *                 type: string
+ *               use_futures:
+ *                 type: boolean
+ *               step:
  *                 type: string
  *             example:
- *               userId: 5f0b9299f0f17200179d7e0f
  *               strategyId: 5f0b9299f0f17200179d7e0f
  *               exchangeId: 5f0b9299f0f17200179d7e0f
- *               regionId: 5f0b9299f0f17200179d7e0f
+ *               paymentDetailId: 642a8cea3554c041da1da346
+ *               subscriptionPlanId: 642fab169ed2def7c1649dd2
+ *               use_futures: false
+ *               step: exchange
  *     responses:
  *       "201":
  *         description: Created

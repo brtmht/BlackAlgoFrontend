@@ -3,11 +3,12 @@ const { objectId } = require('./custom.validation');
 
 const createUserStrategy = {
   body: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
+    step: Joi.string(),
     paymentDetailId: Joi.string().custom(objectId),
     strategyId: Joi.string().custom(objectId),
     exchangeId: Joi.string().custom(objectId),
     regionId: Joi.string().custom(objectId),
+    subscriptionPlanId: Joi.string().custom(objectId),
   }),
 };
 
