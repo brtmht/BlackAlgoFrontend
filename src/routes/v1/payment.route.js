@@ -6,30 +6,16 @@ const paymentController = require('../../controllers/payment.controller');
 
 const router = express.Router();
 
-// router
-//   .route('/:userId')
-//   .post(auth('managePayments'), validate(paymentValidation.createPayment), paymentController.createPayment)
-router.post(
-  '/createPayment',
-  auth('managePayments'),
-  validate(paymentValidation.createPayment),
-  paymentController.createPayment
-);
-router.post(
-  '/updatePayment',
-  auth('managePayments'),
-  validate(paymentValidation.postPaymentDetails),
-  paymentController.savePaymentDetails
-);
-
 router
-  .route('/paymentHistory')
-  .get(auth('getPayments'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
+  .route('/stripePayment')
+  .get(paymentController.getStripeConfig)
+  .post(validate(paymentValidation.createPayment), paymentController.createPayment)
+  .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails)
+  .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
+router.route('/binance').post(auth(), paymentController.postBinance).get(auth(), paymentController.getBinance);
+
 module.exports = router;
 
-router.post('/binance', auth('managePayments'), paymentController.postBinance);
-
-router.get('/binance', auth('managePayments'), paymentController.getBinance);
 /**
  * @swagger
  * tags:
@@ -39,7 +25,7 @@ router.get('/binance', auth('managePayments'), paymentController.getBinance);
 
 /**
  * @swagger
- * /createPayment:
+ * /payment/stripePayment:
  *   post:
  *     summary: Create a payment using card and crypto
  *     description: User can create the plan payment using card and crypto .
@@ -93,7 +79,6 @@ router.get('/binance', auth('managePayments'), paymentController.getBinance);
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
- * /paymentHistory:
  *   get:
  *     summary: Get transaction history
  *     description: User can see their past transaction history.
@@ -156,8 +141,8 @@ router.get('/binance', auth('managePayments'), paymentController.getBinance);
  */
 /**
  * @swagger
- * /updatePayment:
- *   post:
+ * /stripe:
+ *   patch:
  *     summary: Update your payment details
  *     description: User's payment details will be updated after this transaction is made.
  *     tags: [Payment]

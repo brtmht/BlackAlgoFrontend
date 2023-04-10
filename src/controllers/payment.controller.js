@@ -1,10 +1,17 @@
+/* eslint-disable no-unused-vars */
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { paymentDetailService, stripeAccountService, transactionHistoryService } = require('../services');
+const {
+  paymentDetailService,
+  stripeAccountService,
+  transactionHistoryService,
+  cryptoAccountService,
+} = require('../services');
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
+  const binanceData = await cryptoAccountService.getBinance();
   res.status(httpStatus.NO_CONTENT).send();
 });
 // post binanace
@@ -12,7 +19,11 @@ const getBinance = catchAsync(async (req, res) => {
 const postBinance = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
-
+// stripe config
+const getStripeConfig = catchAsync(async (req, res) => {
+  const clientSecret = await stripeAccountService.configStripe();
+  res.send({ clientSecret });
+});
 // stripe webhook controller
 const stripeWebhook = catchAsync(async (req) => {
   const user = req.user._id;
@@ -23,20 +34,20 @@ const createPayment = catchAsync(async (req, res) => {
   let paymentIntent;
   let user;
   // eslint-disable-next-line prefer-const
-  user = req.user._id;
+  // user = req.user._id;
   if (req.body.paymentType === 'card') {
     paymentIntent = await stripeAccountService.createStripePayment(req.body);
+    res.send({ stripe_token: paymentIntent.client_secret });
   }
   if (req.body.paymentType === 'crypto') {
     paymentIntent = '';
     throw new ApiError(httpStatus.NOT_FOUND, 'This mode is not ready yet');
   }
 
-  if (paymentIntent) {
-    const stripeData = await stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
-    const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentIntent, stripeData, req.body, user);
-    res.send({ stripe_token: paymentIntent.client_secret, stripePaymentDetail });
-  }
+  // if (paymentIntent) {
+  //   const stripeData = await stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
+  //   const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentIntent, stripeData, req.body, user);
+  // }
 });
 
 // save data in transaction table
@@ -69,6 +80,8 @@ const getPaymentHistory = catchAsync(async (req) => {
 });
 
 module.exports = {
+  stripeWebhook,
+  getStripeConfig,
   getBinance,
   postBinance,
   createPayment,

@@ -5,25 +5,25 @@ const subscriptionPlanValidation = require('../../validations/subscriptionPlan.v
 const subscriptionPlanController = require('../../controllers/subscriptionPlan.controller');
 
 const router = express.Router();
-router.post(
-  '',
-  auth('manageSubscriptionPlans'),
-  validate(subscriptionPlanValidation.createSubscriptionPlan),
-  subscriptionPlanController.createSubscriptionPlan
-);
-router.get(
-  '',
-  auth('getSubscriptionPlans'),
-  validate(subscriptionPlanValidation.getSubscriptionPlans),
-  subscriptionPlanController.getSubscriptionPlans
-);
-router.get(
-  '/retrieve',
-  auth('manageSubscriptionPlans'),
-  validate(subscriptionPlanValidation.getSubscriptionPlan),
-  subscriptionPlanController.retrieveSubscriptionPlan
-);
 router
+  .route('/')
+  .post(
+    auth('postSubscriptionPlans'),
+    validate(subscriptionPlanValidation.createSubscriptionPlan),
+    subscriptionPlanController.createSubscriptionPlan
+  )
+  .get(
+    auth('getSubscriptionPlans'),
+    validate(subscriptionPlanValidation.getSubscriptionPlans),
+    subscriptionPlanController.getSubscriptionPlans
+  );
+router
+  .route('/:subscriptionPlanId')
+  .get(
+    auth('manageSubscriptionPlans'),
+    validate(subscriptionPlanValidation.getSubscriptionPlan),
+    subscriptionPlanController.retrieveSubscriptionPlan
+  )
   .patch(
     auth('manageSubscriptionPlans'),
     validate(subscriptionPlanValidation.updateSubscriptionPlan),
@@ -35,6 +35,19 @@ router
     subscriptionPlanController.deleteSubscriptionPlan
   );
 
+router
+  .route('/:stripePlansId')
+  .get(auth(), validate(subscriptionPlanValidation.getSubscriptionPlan), subscriptionPlanController.retrieveSubscriptionPlan)
+  .patch(
+    auth(),
+    validate(subscriptionPlanValidation.updateSubscriptionPlan),
+    subscriptionPlanController.updateSubscriptionPlan
+  )
+  .delete(
+    auth(),
+    validate(subscriptionPlanValidation.deleteSubscriptionPlan),
+    subscriptionPlanController.deleteSubscriptionPlan
+  );
 module.exports = router;
 
 /**
@@ -224,7 +237,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /subscriptionPlans/retrieve:
+ * /stripePlans/{stripePlansId}:
  *   get:
  *     summary: Retrieve a subscriptionPlan
  *     description: Logged in user can only retrieve their own subscription plan. Only admins can retrieve other subscriptionPlans.

@@ -5,7 +5,12 @@ const { StripeAccount, PaymentDetail } = require('../models');
 // eslint-disable-next-line import/order
 const Stripe = require('stripe')(process.env.STRIPE_KEY);
 
-const endpointSecret = 'whsec_5cd19db1106287cab6dd4a3b2aa86d364ffa986b002c436046ce4f453af1cc8e';
+const stripeEndPointSecret = process.env.END_POINT_SECRET;
+
+const configStripe = async (req, res) => {
+  const clientKey = await process.env.STRIPE_PUBLISHABLE_KEY;
+  return clientKey;
+};
 
 const stripeWebhook = async (req, user) => {
   const sig = req.headers['stripe-signature'];
@@ -13,7 +18,7 @@ const stripeWebhook = async (req, user) => {
   let event;
 
   try {
-    event = Stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    event = Stripe.webhooks.constructEvent(req.body, sig, stripeEndPointSecret);
   } catch (err) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'stripe webhook error');
   }
@@ -38,7 +43,6 @@ const stripeWebhook = async (req, user) => {
       break;
     case 'payment_intent.created':
       paymentIntentData = event.data.object;
-      console.log('created');
       await PaymentDetail.findOneAndUpdate(
         { _id: user },
         {
@@ -116,7 +120,7 @@ const createNewCustomer = async (stripeAccountBody) => {
 const createPaymentIntent = async (stripeAccountBody, id) => {
   const paymentIntent = await Stripe.paymentIntents.create({
     amount: stripeAccountBody.amount * 100,
-    currency: stripeAccountBody.currency,
+    currency: 'usd',
     payment_method_types: ['card'],
     customer: id,
   });
@@ -160,4 +164,5 @@ module.exports = {
   createStripePayment,
   saveStripeAccount,
   stripeWebhook,
+  configStripe,
 };

@@ -1,7 +1,7 @@
 const allRoles = {
   user: [
     'getExchanges',
-    'managePayments',
+    'makePayments',
     'manageExchanges',
     'manageRegions',
     'getRegions',
@@ -11,8 +11,8 @@ const allRoles = {
     'manageUserStrategies',
     'getStrategies',
     'manageSubscriptionPlans',
-    'managePayments',
     'getSubscriptionPlans',
+    'getStripeSubscriptions',
     'postPayment',
   ],
   admin: ['getUsers', 'manageUsers'],

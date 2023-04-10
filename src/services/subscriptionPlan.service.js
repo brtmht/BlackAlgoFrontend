@@ -47,7 +47,7 @@ const createSubscription = async (subscriptionData) => {
   }
 };
 // It will retrieve subscription plan
-const retrieveSubsPlan = async (subsPlanData) => {
+const retrieveStripeSubsPlan = async (subsPlanData) => {
   const subscriptionPlan = await Stripe.subscriptions.retrieve(subsPlanData.subscriptionId);
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
@@ -56,7 +56,7 @@ const retrieveSubsPlan = async (subsPlanData) => {
 };
 
 // It will need subscription plan id to cancel subscription plan
-const deactivateSubscription = async (subsPlanData) => {
+const deactivateStripeSubscription = async (subsPlanData) => {
   const subscription = await Stripe.subscriptions.del(subsPlanData.subscriptionId);
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
@@ -65,7 +65,7 @@ const deactivateSubscription = async (subsPlanData) => {
 };
 
 // It will resume the subscription plan with subscription id
-const resumeSubscription = async (subsPlanData) => {
+const resumeStripeSubscription = async (subsPlanData) => {
   const subscription = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId, { billing_cycle_anchor: 'now' });
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
@@ -73,7 +73,7 @@ const resumeSubscription = async (subsPlanData) => {
   return subscription;
 };
 
-const getAllSubsPlans = async () => {
+const getAllStripeSubsPlans = async () => {
   const subscriptions = await Stripe.subscriptions.list({
     limit: 3,
   });
@@ -82,12 +82,13 @@ const getAllSubsPlans = async () => {
   }
   return subscriptions;
 };
+// db services
 /**
  * Get subscriptionPlan by id
  * @param {ObjectId} id
  * @returns {Promise<SubscriptionPlan>}
  */
-const getSubscriptionPlanById = async (id) => {
+const findSubscriptionPlanById = async (id) => {
   return SubscriptionPlan.findById(id);
 };
 
@@ -98,7 +99,7 @@ const getSubscriptionPlanById = async (id) => {
  * @returns {Promise<SubscriptionPlan>}
  */
 const updateSubscriptionPlanById = async (subscriptionPlanId, updateBody) => {
-  const subscriptionPlan = await getSubscriptionPlanById(subscriptionPlanId);
+  const subscriptionPlan = await findSubscriptionPlanById(subscriptionPlanId);
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
@@ -109,12 +110,36 @@ const updateSubscriptionPlanById = async (subscriptionPlanId, updateBody) => {
   await subscriptionPlan.save();
   return subscriptionPlan;
 };
-
+const getSubscriptionPlanById = async (id) => {
+  const subscriptionPlan = await findSubscriptionPlanById(id);
+  if (!subscriptionPlan) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return subscriptionPlan;
+};
+const getAllSubscriptionPlans = async () => {
+  const allPlans = await SubscriptionPlan.find({});
+  if (!allPlans) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return allPlans;
+};
+const deleteSubscriptionPlanById = async (subscriptionPlanId) => {
+  const subscriptionPlan = await findSubscriptionPlanById(subscriptionPlanId);
+  if (!subscriptionPlan) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  await subscriptionPlan.remove();
+  return subscriptionPlan;
+};
 module.exports = {
   createSubscription,
-  retrieveSubsPlan,
-  deactivateSubscription,
-  resumeSubscription,
-  getAllSubsPlans,
+  retrieveStripeSubsPlan,
+  deactivateStripeSubscription,
+  resumeStripeSubscription,
+  getAllStripeSubsPlans,
+  getSubscriptionPlanById,
+  getAllSubscriptionPlans,
   updateSubscriptionPlanById,
+  deleteSubscriptionPlanById,
 };

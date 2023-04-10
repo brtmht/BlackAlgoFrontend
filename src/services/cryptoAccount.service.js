@@ -1,7 +1,12 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 const httpStatus = require('http-status');
+const express = require('express')
 const { CryptoAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
 
+const app = express();
 /**
  * Create a subscriptionPlan
  * @param {Object} subscriptionPlanBody
@@ -12,6 +17,15 @@ const createCryptoAccount = async (cryptoAccountBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
   }
   return CryptoAccount.create(subscriptionPlanBody);
+};
+const getBinance = async () => {
+  await app.get(
+    'https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&state=CSRF_TOKEN&scope=SCOPES',
+    function (req, res) {
+      console.log(res, 'response');
+      return res;
+    }
+  );
 };
 
 /**
@@ -33,7 +47,7 @@ const queryCryptoAccount = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<SubscriptionPlan>}
  */
-const getCryptoAccountById= async (id) => {
+const getCryptoAccountById = async (id) => {
   return SubscriptionPlan.findById(id);
 };
 
@@ -52,24 +66,18 @@ const getCryptoAccountByName = async (name) => {
  * @param {Object} updateBody
  * @returns {Promise<SubscriptionPlan>}
  */
-const updateCryptoAccountById= async (cryptoId, updateBody) => {
+const updateCryptoAccountById = async (crypoId, updateBody) => {
   const subscriptionPlan = await getSubscriptionPlanById(cryptoId);
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
-  if (updateBody.name && (await CryptoAccount.isNameTaken(updateBody.name, cryptoId))) {
+  if (updateBody.name && (await CryptoAccot.isNameTaken(updateBody.name, cryptoId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
   }
   Object.assign(subscriptionPlan, updateBody);
   await subscriptionPlan.save();
   return subscriptionPlan;
 };
-
-/**
- * Delete subscriptionPlan by id
- * @param {ObjectId} subscriptionPlanId
- * @returns {Promise<SubscriptionPlan>}
- */
 const deleteCryptoAccountById = async (cryptoId) => {
   const cryptoAcccount = await getSubscriptionPlanById(cryptoId);
   if (!subscriptionPlan) {
@@ -80,10 +88,11 @@ const deleteCryptoAccountById = async (cryptoId) => {
 };
 
 module.exports = {
-    createCryptoAccount,
-    queryCryptoAccount,
-    getCryptoAccountById,
-    getCryptoAccountByName,
-    updateCryptoAccountById,
-    deleteCryptoAccountById,
+  getBinance,
+  createCryptoAccount,
+  queryCryptoAccount,
+  getCryptoAccountById,
+  getCryptoAccountByName,
+  updateCryptoAccountById,
+  deleteCryptoAccountById,
 };
