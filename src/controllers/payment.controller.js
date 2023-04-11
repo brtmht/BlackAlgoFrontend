@@ -43,11 +43,10 @@ const createPayment = catchAsync(async (req, res) => {
     paymentIntent = '';
     throw new ApiError(httpStatus.NOT_FOUND, 'This mode is not ready yet');
   }
-
-  // if (paymentIntent) {
-  //   const stripeData = await stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
-  //   const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentIntent, stripeData, req.body, user);
-  // }
+  if (paymentIntent) {
+    const stripeData = await stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
+    const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentIntent, stripeData, req.body, user);
+  }
 });
 
 // save data in transaction table

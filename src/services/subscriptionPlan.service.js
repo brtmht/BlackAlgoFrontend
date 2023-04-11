@@ -10,9 +10,9 @@ const Stripe = require('stripe')(process.env.STRIPE_KEY);
  * @returns {Object}
  */
 const createSubscription = async (subscriptionData) => {
-  const product = await Stripe.products.create({ name: subscriptionData.plan });
+  const product = await Stripe.products.create({ name: subscriptionData.name });
   const price = await Stripe.prices.create({
-    unit_amount: 750,
+    unit_amount: subscriptionData.amount * 100,
     currency: 'usd',
     recurring: { interval: 'month' },
     product: product.id,
@@ -20,7 +20,7 @@ const createSubscription = async (subscriptionData) => {
   const paymentM = await Stripe.paymentMethods.create({
     type: 'card',
     card: {
-      number: '4000056655665556',
+      number: '4242424242424242',
       exp_month: 7,
       exp_year: 2027,
       cvc: '314',
@@ -38,7 +38,8 @@ const createSubscription = async (subscriptionData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   } else {
     const subscriptionPlan = await SubscriptionPlan.create({
-      name: subscriptionData.plan,
+      subscriptionPlanId: subscription.id,
+      name: subscriptionData.name,
       amount: subscriptionData.amount,
       min_portfolio_size: subscriptionData.min_portfolio_size,
       max_portfolio_size: subscriptionData.max_portfolio_size,
@@ -46,6 +47,8 @@ const createSubscription = async (subscriptionData) => {
     return subscriptionPlan;
   }
 };
+
+// Stripe services
 // It will retrieve subscription plan
 const retrieveStripeSubsPlan = async (subsPlanData) => {
   const subscriptionPlan = await Stripe.subscriptions.retrieve(subsPlanData.subscriptionId);
@@ -73,6 +76,7 @@ const resumeStripeSubscription = async (subsPlanData) => {
   return subscription;
 };
 
+// List all the subscriptionplans from stripe
 const getAllStripeSubsPlans = async () => {
   const subscriptions = await Stripe.subscriptions.list({
     limit: 3,
@@ -110,6 +114,7 @@ const updateSubscriptionPlanById = async (subscriptionPlanId, updateBody) => {
   await subscriptionPlan.save();
   return subscriptionPlan;
 };
+// Get subscription plan by id
 const getSubscriptionPlanById = async (id) => {
   const subscriptionPlan = await findSubscriptionPlanById(id);
   if (!subscriptionPlan) {
@@ -117,6 +122,7 @@ const getSubscriptionPlanById = async (id) => {
   }
   return subscriptionPlan;
 };
+// Get all subscriptionPlans from db
 const getAllSubscriptionPlans = async () => {
   const allPlans = await SubscriptionPlan.find({});
   if (!allPlans) {
@@ -124,6 +130,7 @@ const getAllSubscriptionPlans = async () => {
   }
   return allPlans;
 };
+// Delete subscription plan by id
 const deleteSubscriptionPlanById = async (subscriptionPlanId) => {
   const subscriptionPlan = await findSubscriptionPlanById(subscriptionPlanId);
   if (!subscriptionPlan) {

@@ -20,7 +20,7 @@ const stripeAccountSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    countryCode: {
+    country: {
       type: String,
       trim: true,
     },

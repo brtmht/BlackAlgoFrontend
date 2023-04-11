@@ -8,8 +8,8 @@ const router = express.Router();
 
 router
   .route('/stripePayment')
-  .get(paymentController.getStripeConfig)
-  .post(validate(paymentValidation.createPayment), paymentController.createPayment)
+  .get(auth(), paymentController.getStripeConfig)
+  .post(auth('payment'), validate(paymentValidation.createPayment), paymentController.createPayment)
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails)
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
 router.route('/binance').post(auth(), paymentController.postBinance).get(auth(), paymentController.getBinance);

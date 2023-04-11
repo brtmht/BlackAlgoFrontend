@@ -4,20 +4,21 @@ const { objectId } = require('./custom.validation');
 const createStrategy = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    description:Joi.string(),
-    annual_return_percentage:Joi.number(),
-    risk_level:Joi.string(),
-    max_drawdown_percentage:Joi.number(),
+    description: Joi.string(),
+    annual_return_percentage: Joi.number(),
+    min_portfolio: Joi.number(),
+    risk_level: Joi.string(),
+    max_drawdown_percentage: Joi.number(),
   }),
 };
 
 const getStrategies = {
   query: Joi.object().keys({
     name: Joi.string(),
-    description:Joi.string(),
-    annual_return_percentage:Joi.number(),
-    risk_level:Joi.string(),
-    max_drawdown_percentage:Joi.number(),
+    description: Joi.string(),
+    annual_return_percentage: Joi.number(),
+    risk_level: Joi.string(),
+    max_drawdown_percentage: Joi.number(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),

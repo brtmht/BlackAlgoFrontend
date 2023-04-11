@@ -156,7 +156,7 @@ const saveStripeAccount = async (paymentIntentData, userData, user) => {
     customerId: paymentIntentData.customer,
     email: userData.email,
     phoneNo: userData.phone,
-    countryCode: userData.address,
+    country: userData.address,
   });
   return data;
 };
