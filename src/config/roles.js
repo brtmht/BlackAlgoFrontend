@@ -14,6 +14,7 @@ const allRoles = {
     'getSubscriptionPlans',
     'getStripeSubscriptions',
     'postPayment',
+    'postSubscriptionPlans',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

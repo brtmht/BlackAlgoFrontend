@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageStrategies'), validate(strategyValidation.createStrategy), strategyController.createStrategy)
-  .get(auth('getStrategies'), validate(strategyValidation.getStrategies), strategyController.getStrategies);
+  .get(validate(strategyValidation.getStrategies), strategyController.getStrategies);
 
 router
   .route('/:strategyId')
@@ -62,8 +62,9 @@ module.exports = router;
  *               name: fake name
  *               description: fake description
  *               annual_return_percentage: 0
+ *               min_portfolio: 2
  *               risk_level: low
- *               max_drawdown_percentage: 0
+ *               max_drawdown_percentage: 10
  *     responses:
  *       "201":
  *         description: Created

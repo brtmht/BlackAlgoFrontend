@@ -43,6 +43,8 @@ components:
         annual_return_percentage:
           type: number
           format: float
+        min_portfolio:
+          type: number
         risk_level:
           type: string
         max_drawdown_percentage:
@@ -57,8 +59,9 @@ components:
         name: fake name
         description: fake description
         annual_return_percentage: 0.1
+        min_portfolio: 2
         risk_level: low
-        max_drawdown_percentage: 0.1
+        max_drawdown_percentage: 10
         isDeleted: false
         status: true
 

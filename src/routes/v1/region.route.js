@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageRegions'), validate(regionValidation.createRegion), regionController.createRegion)
-  .get(auth('getRegions'), validate(regionValidation.getRegions), regionController.getRegions);
+  .get(validate(regionValidation.getRegions), regionController.getRegions);
 
 router
   .route('/:regionId')

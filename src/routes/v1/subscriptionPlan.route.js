@@ -12,11 +12,7 @@ router
     validate(subscriptionPlanValidation.createSubscriptionPlan),
     subscriptionPlanController.createSubscriptionPlan
   )
-  .get(
-    auth('getSubscriptionPlans'),
-    validate(subscriptionPlanValidation.getSubscriptionPlans),
-    subscriptionPlanController.getSubscriptionPlans
-  );
+  .get(validate(subscriptionPlanValidation.getSubscriptionPlans), subscriptionPlanController.getAllSubscriptionPlans);
 router
   .route('/:subscriptionPlanId')
   .get(

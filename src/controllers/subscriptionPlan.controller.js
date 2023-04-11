@@ -36,6 +36,13 @@ const deactivateSubscriptionPlan = catchAsync(async (req, res) => {
 });
 
 // db apis
+const getAllSubscriptionPlans = catchAsync(async (req, res) => {
+  const subscriptionPlan = await subscriptionPlanService.getAllSubscriptionPlans();
+  if (!subscriptionPlan) {
+    throw new ApiError(httpStatus.BAD_REQUEST);
+  }
+  res.send(subscriptionPlan);
+});
 const getSubscriptionPlan = catchAsync(async (req, res) => {
   const subscriptionPlan = await subscriptionPlanService.getSubscriptionPlanById(req.params.subscriptionPlanId);
   if (!subscriptionPlan) {
@@ -60,4 +67,5 @@ module.exports = {
   deleteSubscriptionPlan,
   deactivateSubscriptionPlan,
   getSubscriptionPlan,
+  getAllSubscriptionPlans,
 };

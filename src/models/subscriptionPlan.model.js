@@ -3,6 +3,9 @@ const { toJSON, paginate } = require('./plugins');
 
 const subscriptionPlanSchema = mongoose.Schema(
   {
+    subscriptionPlanId: {
+      type: String,
+    },
     name: {
       type: String,
       trim: true,

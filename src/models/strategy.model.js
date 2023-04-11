@@ -22,6 +22,10 @@ const strategySchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    min_portfolio: {
+      type: Number,
+      default: 0,
+    },
     max_drawdown_percentage: {
       type: Number,
       default: 0,
