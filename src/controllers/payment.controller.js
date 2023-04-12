@@ -7,7 +7,10 @@ const {
   stripeAccountService,
   transactionHistoryService,
   cryptoAccountService,
+  binanceService,
 } = require('../services');
+const PaymentDetail = require('../models/paymentDetail.model');
+const { binance, loginBinanceManually } = require('../services/binance.service');
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
@@ -18,6 +21,11 @@ const getBinance = catchAsync(async (req, res) => {
 
 const postBinance = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
+});
+// log in binance
+const loginBinance = catchAsync(async (req, res) => {
+  const result = await binanceService.loginBinanceManually(req.body);
+  res.send(result);
 });
 // stripe config
 const getStripeConfig = catchAsync(async (req, res) => {
@@ -31,30 +39,31 @@ const stripeWebhook = catchAsync(async (req) => {
 });
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
-  let paymentIntent;
+  let paymentData;
   let user;
   // eslint-disable-next-line prefer-const
   // user = req.user._id;
   if (req.body.paymentType === 'card') {
-    paymentIntent = await stripeAccountService.createStripePayment(req.body);
-    res.send({ stripe_token: paymentIntent.client_secret });
+    paymentData = await stripeAccountService.createStripePayment(req.body, '642d770a050d1c76cc8f9198');
+    res.send({ stripe_token: paymentData.paymentIntent.client_secret });
   }
   if (req.body.paymentType === 'crypto') {
-    paymentIntent = '';
+    paymentData = '';
     throw new ApiError(httpStatus.NOT_FOUND, 'This mode is not ready yet');
   }
-  if (paymentIntent) {
-    const stripeData = await stripeAccountService.saveStripeAccount(paymentIntent, req.body, user);
-    const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentIntent, stripeData, req.body, user);
+  if (paymentData) {
+    const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentData, paymentData.stripeData, req.body);
   }
 });
 
 // save data in transaction table
 const savePaymentDetails = catchAsync(async (req, res) => {
   const user = req.user._id;
-  const PaymentDetails = await paymentDetailService.updatePaymentDetails(req.body, user);
+  await paymentDetailService.updatePaymentDetails(req.body, user);
+  const PaymentDetails = await PaymentDetail.findOne({ paymentToken: req.body.paymentToken });
   if (PaymentDetails) {
-    await transactionHistoryService.saveTransactionHistory(PaymentDetails, user);
+    await transactionHistoryService.saveTransactionHistory(PaymentDetails, req);
+    await stripeAccountService.updateStripeAccount(PaymentDetails.stripeAccountId, req.body.customerCardId);
   }
   res.send(PaymentDetails);
 });
@@ -87,4 +96,5 @@ module.exports = {
   getPayment,
   getPaymentHistory,
   savePaymentDetails,
+  loginBinance,
 };

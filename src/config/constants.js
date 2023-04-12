@@ -4,7 +4,7 @@ module.exports = {
     PENDING: 'pending',
     REFUNDED: 'refunded',
     FAILED: 'failed',
-    COMPLETED: 'completed',
+    SUCCEDED: 'succeded',
     CANCELLED: 'cancelled',
   },
   PAYMENT_TYPE: {

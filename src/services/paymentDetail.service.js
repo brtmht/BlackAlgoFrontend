@@ -8,11 +8,12 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<>}
  */
 // eslint-disable-next-line camelcase
-const savePaymentDetails = async (paymentData, stripeData, reqData, user_id) => {
+const savePaymentDetails = async (paymentData, stripeData, reqData) => {
   const trasactionData = await PaymentDetail.create({
-    userId: user_id,
-    paymentToken: paymentData.paymentToken,
+    userId: stripeData.user_id,
+    paymentToken: paymentData.paymentIntent.client_secret,
     stripeAccountId: stripeData.id,
+    subscriptionPlanId: reqData.subscriptionplanId,
   });
   if (!trasactionData) {
     throw new ApiError(httpStatus['201_MESSAGE'], 'transaction failed at details');
@@ -22,14 +23,18 @@ const savePaymentDetails = async (paymentData, stripeData, reqData, user_id) => 
 
 // To update payment details after a transaction is processed
 const updatePaymentDetails = async (reqData) => {
-  const uddatedPaymentDetails = await PaymentDetail.findByIdAndUpdate(reqData.paymentDetailId, {
-    stripeTransactionId: reqData.stripeTransactionId,
-    paymentStatus: reqData.paymentStatus,
-  });
-  if (!uddatedPaymentDetails) {
+  const udatedPaymentDetails = await PaymentDetail.updateOne(
+    { paymentToken: reqData.paymentToken },
+    {
+      $set: {
+        paymentStatus: reqData.paymentStatus,
+      },
+    }
+  );
+  if (!udatedPaymentDetails) {
     throw new ApiError(httpStatus['100_MESSAGE'], 'the payment data cannot be updated');
   }
-  return uddatedPaymentDetails;
+  return udatedPaymentDetails;
 };
 
 /**

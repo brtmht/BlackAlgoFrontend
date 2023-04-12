@@ -8,12 +8,12 @@ const ApiError = require('../utils/ApiError');
  * @returns {Object}
  */
 // eslint-disable-next-line camelcase
-const saveTransactionHistory = async (transaction, user_id) => {
+const saveTransactionHistory = async (paymentData, reqData) => {
   const history = await TransactionHistory.create({
-    userId: user_id,
-    paymentDetailId: transaction.id,
-    paymentStatus: transaction.paymentStatus,
-    stripeTransactionId: transaction.stripeTransactionId,
+    userId: reqData.user._id,
+    paymentDetailId: paymentData._id,
+    paymentStatus: reqData.body.paymentStatus,
+    stripeTransactionId: reqData.body.stripeTransactionId,
   });
   if (!history) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');

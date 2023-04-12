@@ -8,11 +8,13 @@ const router = express.Router();
 
 router
   .route('/stripePayment')
-  .get(auth(), paymentController.getStripeConfig)
-  .post(auth('payment'), validate(paymentValidation.createPayment), paymentController.createPayment)
-  .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails)
+  .get(paymentController.getStripeConfig)
+  .post(paymentController.createPayment)
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
-router.route('/binance').post(auth(), paymentController.postBinance).get(auth(), paymentController.getBinance);
+router.route('/binance').post(paymentController.loginBinance).get(auth(), paymentController.getBinance);
+router
+  .route('/stripe')
+  .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
 
 module.exports = router;
 
@@ -45,6 +47,7 @@ module.exports = router;
  *               - planId
  *               - paymentType
  *               - currency
+ *               - subscriptionplanId
  *             properties:
  *               email:
  *                 type: string
@@ -59,6 +62,8 @@ module.exports = router;
  *                 type: string
  *               country:
  *                  type: string
+ *               subscriptionplanId:
+ *                  type: string
  *             example:
  *               email: exampl@example.com
  *               phone: "8973655725"
@@ -66,6 +71,7 @@ module.exports = router;
  *               currency: inr
  *               country: india
  *               paymentType: card
+ *               subscriptionplanId: sub_1MvaMLEy4gM8gXFtBuRGHpna
  *     responses:
  *       "201":
  *         description: Created
@@ -141,7 +147,7 @@ module.exports = router;
  */
 /**
  * @swagger
- * /stripe:
+ * /payment/stripe:
  *   patch:
  *     summary: Update your payment details
  *     description: User's payment details will be updated after this transaction is made.
@@ -157,7 +163,7 @@ module.exports = router;
  *             required:
  *               - transactionId
  *               - paymentStatus
- *               - planId
+ *               - paymentToken
  *             properties:
  *               stripeTransactionId:
  *                 type: string
@@ -166,9 +172,12 @@ module.exports = router;
  *               paymentStatus:
  *                 type: string
  *                 enum: [incomplete,pending,refunded,failed,completed,cancelled]
+ *               customerCardId:
+ *                 type: string
  *             example:
- *               paymentDetailId: "642c5224d1ad6a54f0407072"
+ *               paymentToken: "642c5224d1ad6a54f0407072"
  *               stripeTransactionId: "ipi_ue73f_4yei"
+ *               customerCardId: card_1Mvy6nLbnBoaTE81lvCbY1lM
  *               paymentStatus: pending
  *     responses:
  *       "201":
@@ -188,7 +197,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /binance:
+ * /payment/binance:
  *   get:
  *     summary: Create a payment using card and crypto
  *     description: User can create the plan payment using card and crypto .

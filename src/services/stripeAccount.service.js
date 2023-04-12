@@ -12,6 +12,26 @@ const configStripe = async (req, res) => {
   return clientKey;
 };
 
+const saveStripeAccount = async (StripeData, customerID, user) => {
+  const data = await StripeAccount.create({
+    userId: user,
+    customerId: customerID,
+    email: StripeData.email,
+    phoneNo: StripeData.phone,
+    country: StripeData.address,
+  });
+  return data;
+};
+const updateStripeAccount = async (id, customerCardId) => {
+  const udatedPaymentDetails = await StripeAccount.updateOne(
+    { _id: id },
+    {
+      $set: {
+        customerCardId,
+      },
+    }
+  );
+};
 const stripeWebhook = async (req, user) => {
   const sig = req.headers['stripe-signature'];
 
@@ -126,7 +146,7 @@ const createPaymentIntent = async (stripeAccountBody, id) => {
   });
   return paymentIntent;
 };
-const createStripePayment = async (stripeUserData) => {
+const createStripePayment = async (stripeUserData, userId) => {
   let customerId;
   const customers = await Stripe.customers.list({
     email: stripeUserData.email,
@@ -139,30 +159,23 @@ const createStripePayment = async (stripeUserData) => {
   } else {
     customerId = customers.data[0].id;
   }
+  // eslint-disable-next-line no-console
+  console.log(customerId);
   if (customerId) {
-    try {
-      const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
-      return paymentIntent;
-    } catch (error) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'transaction failed while creating charge with existing customer');
+    // eslint-disable-next-line no-console
+    const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
+    if (paymentIntent) {
+      let stripeData = await StripeAccount.findOne({ customerId });
+      stripeData = await saveStripeAccount(stripeUserData, customerId, userId);
+      return { paymentIntent, stripeData };
     }
   }
 };
-// user_id stripe customer id , email, phone number , country save in stripe account
 
-const saveStripeAccount = async (paymentIntentData, userData, user) => {
-  const data = await StripeAccount.create({
-    userId: user,
-    customerId: paymentIntentData.customer,
-    email: userData.email,
-    phoneNo: userData.phone,
-    country: userData.address,
-  });
-  return data;
-};
 module.exports = {
   createStripePayment,
   saveStripeAccount,
   stripeWebhook,
   configStripe,
+  updateStripeAccount,
 };

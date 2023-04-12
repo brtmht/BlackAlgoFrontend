@@ -9,7 +9,7 @@ const createSubscriptionPlan = catchAsync(async (req, res) => {
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus['402_MESSAGE']);
   }
-  res.status(httpStatus.CREATED).send();
+  res.status(httpStatus.CREATED).send(subscriptionPlan);
 });
 
 // Stripe Apis
