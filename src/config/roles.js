@@ -15,6 +15,8 @@ const allRoles = {
     'getStripeSubscriptions',
     'postPayment',
     'postSubscriptionPlans',
+    'webhookResponse',
+    'manageUsers',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

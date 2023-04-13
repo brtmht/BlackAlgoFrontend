@@ -7,7 +7,6 @@ const paymentDetailSchema = mongoose.Schema(
     userId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
-      required: true,
     },
     cryptoId: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -20,11 +19,6 @@ const paymentDetailSchema = mongoose.Schema(
       default: null,
     },
     subscriptionPlanId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'SubscriptionPlan',
-      default: null,
-    },
-    stripeTransactionId: {
       type: String,
       default: null,
     },
@@ -34,6 +28,7 @@ const paymentDetailSchema = mongoose.Schema(
     },
     paymentToken: {
       type: String,
+      unique: true,
     },
     paymentStatus: {
       type: String,
@@ -42,7 +37,7 @@ const paymentDetailSchema = mongoose.Schema(
         constants.PAYMENT_STATUS.PENDING,
         constants.PAYMENT_STATUS.REFUNDED,
         constants.PAYMENT_STATUS.FAILED,
-        constants.PAYMENT_STATUS.COMPLETED,
+        constants.PAYMENT_STATUS.SUCCEDED,
         constants.PAYMENT_STATUS.CANCELLED,
       ],
       default: constants.PAYMENT_STATUS.INCOMLETE,

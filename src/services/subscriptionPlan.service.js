@@ -17,21 +17,24 @@ const createSubscription = async (subscriptionData) => {
     recurring: { interval: 'month' },
     product: product.id,
   });
+
+  // eslint-disable-next-line no-unused-vars
+  // const card = await Stripe.customers.retrieveSource(subscriptionData.customerId, subscriptionData.cardId);
   const paymentM = await Stripe.paymentMethods.create({
     type: 'card',
     card: {
       number: '4242424242424242',
-      exp_month: 7,
+      exp_month: 2,
       exp_year: 2027,
-      cvc: '314',
+      cvc: '123',
     },
   });
   // eslint-disable-next-line no-unused-vars
-  const paymentMethod = await Stripe.paymentMethods.attach(paymentM.id, { customer: 'cus_Ne4uaFQ5WoQiaK' });
+  const paymentMethod = await Stripe.paymentMethods.attach(paymentM.id, { customer: 'cus_Nh4zE9WTN76s40' });
   const subscription = await Stripe.subscriptions.create({
     collection_method: 'send_invoice',
     days_until_due: 30,
-    customer: 'cus_Ne4uaFQ5WoQiaK',
+    customer: 'cus_Nh4zE9WTN76s40',
     items: [{ price: price.id }],
   });
   if (!subscription) {

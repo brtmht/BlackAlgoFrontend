@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
-const constants = require('../config/constants');
+// const constants = require('../config/constants');
 
 const transactionHistorySchema = mongoose.Schema(
   {
@@ -13,17 +13,18 @@ const transactionHistorySchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'PaymentDetail',
       default: null,
+      unique: true,
     },
     paymentStatus: {
       type: String,
-      enum: [
-        constants.PAYMENT_STATUS.INCOMLETE,
-        constants.PAYMENT_STATUS.PENDING,
-        constants.PAYMENT_STATUS.REFUNDED,
-        constants.PAYMENT_STATUS.FAILED,
-        constants.PAYMENT_STATUS.COMPLETED,
-        constants.PAYMENT_STATUS.CANCELLED,
-      ],
+      // enum: [
+      //   constants.PAYMENT_STATUS.INCOMLETE,
+      //   constants.PAYMENT_STATUS.PENDING,
+      //   constants.PAYMENT_STATUS.REFUNDED,
+      //   constants.PAYMENT_STATUS.FAILED,
+      //   constants.PAYMENT_STATUS.SUCCEDED,
+      //   constants.PAYMENT_STATUS.CANCELLED,
+      // ],
     },
     stripeTransactionId: {
       type: String,

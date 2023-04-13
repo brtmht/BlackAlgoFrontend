@@ -10,6 +10,11 @@ const stripeAccountSchema = mongoose.Schema(
     customerId: {
       type: String,
       default: null,
+      unique: true,
+    },
+    customerCardId: {
+      type: String,
+      default: null,
     },
     email: {
       type: String,

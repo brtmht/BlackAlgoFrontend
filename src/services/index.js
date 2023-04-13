@@ -10,4 +10,5 @@ module.exports.userStrategyService = require('./userStrategy.service');
 module.exports.stripeAccountService = require('./stripeAccount.service');
 module.exports.paymentDetailService = require('./paymentDetail.service');
 module.exports.cryptoAccountService = require('./cryptoAccount.service');
+module.exports.binanceService = require('./binance.service');
 module.exports.transactionHistoryService = require('./transactionHistory.service');

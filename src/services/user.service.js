@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
+const multer = require('multer');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
-
 /**
  * Create a user
  * @param {Object} userBody
@@ -59,17 +59,47 @@ const getUserByEmail = async (email) => {
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
-const updateUserById = async (userId, updateBody) => {
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: './public/uploads',
+    filename: (req, file, cb) => {
+      console.log('saving image');
+      const {
+        query: { id },
+      } = req;
+      cb(null, `${id}.jpeg`);
+    },
+  }),
+});
+const updateUserById = async (userId, updatereq) => {
+  console.log(updatereq.file);
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+  if (updatereq.body.email && (await User.isEmailTaken(updatereq.body.email, userId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  Object.assign(user, updateBody);
-  await user.save();
-  return user;
+  if (updatereq.file === 'undefined') {
+    console.log('undefined');
+    Object.assign(user, updatereq.body);
+    await user.save();
+    return user;
+  }
+  await upload.single('image');
+  const url = `http://localhost:3000/uploads/${userId}`;
+  const { name } = updatereq.body;
+  const singleUser = await User.findOneAndUpdate(
+    { _id: userId },
+    {
+      $set: {
+        name,
+        image: url,
+      },
+    }
+  );
+  return singleUser;
 };
 
 /**
