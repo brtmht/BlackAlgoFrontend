@@ -159,8 +159,6 @@ const createStripePayment = async (stripeUserData, userId) => {
   } else {
     customerId = customers.data[0].id;
   }
-  // eslint-disable-next-line no-console
-  console.log(customerId);
   if (customerId) {
     // eslint-disable-next-line no-console
     const paymentIntent = await createPaymentIntent(stripeUserData, customerId);

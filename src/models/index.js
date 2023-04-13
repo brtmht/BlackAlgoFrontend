@@ -9,3 +9,5 @@ module.exports.CryptoAccount = require('./cryptoAccount.model');
 module.exports.PaymentDetail = require('./paymentDetail.model');
 module.exports.StripeAccount = require('./stripeAccount.model');
 module.exports.TransactionHistory = require('./transactionHistory.model');
+module.exports.MtAccount = require('./mtAccount.model');
+module.exports.MtBroker = require('./mtBroker.model');
