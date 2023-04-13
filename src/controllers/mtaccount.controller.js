@@ -1,12 +1,12 @@
-/* eslint-disable prettier/prettier */
 const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { exchangeService } = require('../services');
+const { mtAccountService, mtBrokerService } = require('../services');
 
+// Mt account crud apis
 const createMtAccount = catchAsync(async (req, res) => {
-  const mtAccount = await exchangeService.createMtAccountNew(req.body);
+  const mtAccount = await mtAccountService.createMtAccountNew(req.body);
   if (!mtAccount) {
     throw new ApiError(httpStatus.EXPECTATION_FAILED);
   }
@@ -16,7 +16,7 @@ const createMtAccount = catchAsync(async (req, res) => {
 const getMtAccount = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await exchangeService.queryMTAccount(filter, options);
+  const result = await mtAccountService.queryMTAccount(filter, options);
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND);
   }
@@ -24,7 +24,7 @@ const getMtAccount = catchAsync(async (req, res) => {
 });
 
 const updateMtAccount = catchAsync(async (req, res) => {
-  const mtAccount = await exchangeService.updateMtAccountById(req, req.body);
+  const mtAccount = await mtAccountService.updateMtAccountById(req, req.body);
   if (!mtAccount) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
@@ -32,7 +32,39 @@ const updateMtAccount = catchAsync(async (req, res) => {
 });
 
 const deleteMtAccount = catchAsync(async (req, res) => {
-  await exchangeService.deleteMtAccountId(req);
+  await mtAccountService.deleteMtAccountById(req);
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
+// mtBroker crud Apis
+const createMtBroker = catchAsync(async (req, res) => {
+  const mtAccount = await mtBrokerService.createMtBrokerNew(req.body);
+  if (!mtAccount) {
+    throw new ApiError(httpStatus.EXPECTATION_FAILED);
+  }
+  res.status(httpStatus.CREATED).send(mtAccount);
+});
+
+const getMtBroker = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['name']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const result = await mtBrokerService.queryMTBroker(filter, options);
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+  res.send(result);
+});
+
+const updateMtBroker = catchAsync(async (req, res) => {
+  const mtAccount = await mtBrokerService.updateMtBrokerById(req, req.body);
+  if (!mtAccount) {
+    throw new ApiError(httpStatus.NOT_ACCEPTABLE);
+  }
+  res.send(mtAccount);
+});
+
+const deleteMtBroker = catchAsync(async (req, res) => {
+  await mtBrokerService.deleteMtBrokerById(req);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
@@ -41,4 +73,8 @@ module.exports = {
   getMtAccount,
   updateMtAccount,
   deleteMtAccount,
+  createMtBroker,
+  getMtBroker,
+  updateMtBroker,
+  deleteMtBroker,
 };

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 const httpStatus = require('http-status');
 const { MtAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
@@ -9,9 +8,6 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<MtAccount>}
  */
 const createMtAccountNew = async (mtAccountBody) => {
-  if (await MtAccount.isNameTaken(mtAccountBody.name)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
   return MtAccount.create(mtAccountBody);
 };
 
@@ -70,7 +66,7 @@ const updateMtAccountById = async (mtAccountId, updateBody) => {
  * @param {ObjectId} mtAccountId
  * @returns {Promise<MtAccount>}
  */
-const deleteExchangeById = async (mtAccountId) => {
+const deleteMtAccountById = async (mtAccountId) => {
   const exchange = await getMtAccountById(mtAccountId);
   if (!exchange) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MtAccount not found');
@@ -80,10 +76,10 @@ const deleteExchangeById = async (mtAccountId) => {
 };
 
 module.exports = {
-    createMtAccountNew,
-    queryMTAccount,
-    getMtAccountById,
+  createMtAccountNew,
+  queryMTAccount,
+  getMtAccountById,
   getMtAccountByName,
   updateMtAccountById,
-  deleteExchangeById,
+  deleteMtAccountById,
 };

@@ -8,6 +8,7 @@ const subscriptionPlanRoute = require('./subscriptionPlan.route');
 const userStrategyRoute = require('./userStrategy.route');
 const docsRoute = require('./docs.route');
 const paymentRoute = require('./payment.route');
+const mtRoute = require('./mt.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -44,6 +45,10 @@ const defaultRoutes = [
   {
     path: '/userStrategies',
     route: userStrategyRoute,
+  },
+  {
+    path: '/mt',
+    route: mtRoute,
   },
 ];
 

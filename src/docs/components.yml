@@ -252,7 +252,56 @@ components:
         paymentStatus: success
         stripeTransactionId: ipi_ejjfk_6vbwy
   
-
+    MtAccount:
+      type: object
+      properties:
+        name:
+          type: string
+        login:
+          type: string
+        password:
+          type: string
+        serverName:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        name: blackAlgo
+        login: blackalgo@yopmail.com
+        password: password1
+        serverName: server1
+        isdeleted: false
+        status: true
+    MtBroker:
+      type: object
+      properties:
+        name:
+          type: string
+        mtVersion:
+          type: string
+        mtServerFile:
+          type: string
+        brokerTimeZone:
+          type: string
+        brokerDSTSwitchTimeZone:
+          type: string
+        brokerTime:
+          type: string
+        isDeleted:
+          type: false
+        status:
+          type: boolean
+      example:
+        name: blackAlgo
+        mtVersion: 5.9.2
+        mtServerFile: file.zip
+        brokerTimeZone: 19:23:56 GTC
+        brokerDSTSwitchTimeZone: 19:23:56 GTC
+        brokerTime: 17:23:56 GTC
+        isDeleted: false
+        status: false
     Token:
       type: object
       properties:

@@ -20,13 +20,6 @@ module.exports = router;
 
 /**
  * @swagger
- * tags:
- *   name: Payments
- *   description: Payment management and retrieval
- */
-
-/**
- * @swagger
  * /payment/stripePayment:
  *   post:
  *     summary: Create a payment using card and crypto
