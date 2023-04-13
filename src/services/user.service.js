@@ -64,7 +64,6 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: './public/uploads',
     filename: (req, file, cb) => {
-      console.log('saving image');
       const {
         query: { id },
       } = req;
@@ -73,7 +72,6 @@ const upload = multer({
   }),
 });
 const updateUserById = async (userId, updatereq) => {
-  console.log(updatereq.file);
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -82,7 +80,6 @@ const updateUserById = async (userId, updatereq) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   if (updatereq.file === 'undefined') {
-    console.log('undefined');
     Object.assign(user, updatereq.body);
     await user.save();
     return user;

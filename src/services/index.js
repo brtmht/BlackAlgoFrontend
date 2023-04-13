@@ -12,3 +12,5 @@ module.exports.paymentDetailService = require('./paymentDetail.service');
 module.exports.cryptoAccountService = require('./cryptoAccount.service');
 module.exports.binanceService = require('./binance.service');
 module.exports.transactionHistoryService = require('./transactionHistory.service');
+module.exports.mtAccountService = require('./mtAccount.service');
+module.exports.mtBrokerService = require('./mtBroker.service');
