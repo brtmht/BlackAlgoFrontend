@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageExchanges'), validate(exchangeValidation.createExchange), exchangeController.createExchange)
-  .get(validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
+  .get(auth(), validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
 
 router
   .route('/:exchangeId')

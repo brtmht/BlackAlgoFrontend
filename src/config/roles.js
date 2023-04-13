@@ -19,6 +19,13 @@ const allRoles = {
     'manageUsers',
     'getUsers',
     'updateUser',
+    'getMtAccount',
+    'postMtAccount',
+    'getMtBroker',
+    'postMtBroker',
+    'updateBroker',
+    'updateAccount',
+    'deleteAccount',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

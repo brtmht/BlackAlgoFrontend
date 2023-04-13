@@ -9,9 +9,8 @@ const mtAccountSchema = mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    logIn: {
+    login: {
       type: String,
-      default: '',
     },
     password: {
       type: String,

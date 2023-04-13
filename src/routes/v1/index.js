@@ -47,7 +47,7 @@ const defaultRoutes = [
     route: userStrategyRoute,
   },
   {
-    path: '/mt',
+    path: '',
     route: mtRoute,
   },
 ];

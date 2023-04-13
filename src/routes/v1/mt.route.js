@@ -1,13 +1,30 @@
 const express = require('express');
-// const auth = require('../../middlewares/auth');
-// const validate = require('../../middlewares/validate');
-const mtController = require('../../controllers/mtaccount.controller');
+const auth = require('../../middlewares/auth');
+const validate = require('../../middlewares/validate');
+const mtValidation = require('../../validations/mt.validation');
+// eslint-disable-next-line import/extensions
+const mtaccountController = require('../../controllers/mtAccount.controller.js');
 
 const router = express.Router();
 
-router.route('/mtAccount').get(mtController.getMtAccount).post(mtController.createMtAccount);
-router.route('/mtBroker').get(mtController.getMtBroker).post(mtController.createMtBroker);
+router
+  .route('/mtAccount')
+  .get(auth('getMtAccount'), validate(mtValidation.getMtAccount), mtaccountController.getMtAccount)
+  .post(auth('postMtAccount'), validate(mtValidation.createMtAccount), mtaccountController.createMtAccount);
 
+router
+  .route('/:mtAccountId')
+  .patch(auth('updateAccount'), mtaccountController.updateMtAccount)
+  .delete(auth('deleteAccount'), mtaccountController.deleteMtAccount);
+router
+  .route('/mtBroker')
+  .get(auth('getMtBroker'), validate(mtValidation.getMtBroker), mtaccountController.getMtBroker)
+  .post(auth('postMtBroker'), validate(mtValidation.createMtBroker), mtaccountController.createMtBroker);
+
+router
+  .route('/mtBroker/:mtBrokerId')
+  .patch(auth('updateBroker'), mtaccountController.updateMtBroker)
+  .delete(auth('deleteBroker'), mtaccountController.deleteMtBroker);
 module.exports = router;
 
 /**
@@ -18,7 +35,7 @@ module.exports = router;
  */
 /**
  * @swagger
- * /mt/mtAccount:
+ * /mtAccount:
  *   get:
  *     summary: MT Account handling
  *     description: User can create and get the mtAccount and MtBroker .
@@ -108,9 +125,73 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  */
+
 /**
  * @swagger
- * /mt/mtBroker:
+ * /mtAccount/{id}:
+ *   patch:
+ *     summary: Update a MT Account
+ *     description: Logged in users can only update their own information. Only admins can update other MT Account.
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: mtAccountId
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: fake name
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Exchange'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ *   delete:
+ *     summary: Delete a MT Account
+ *     description: Logged in exchanges can delete only themselves. Only admins can delete other MT Account.
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: mtAccountId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /mtBroker:
  *   get:
  *     summary: MT Broker handling
  *     description: User can create and get the mtAccount and MtBroker .
@@ -211,4 +292,67 @@ module.exports = router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
+ */
+
+/**
+ * @swagger
+ * /mtBroker/{id}:
+ *   patch:
+ *     summary: Update a MT Broker
+ *     description: Logged in users can only update their own information. Only admins can update other MT Broker.
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: mtBrokerId
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: fake name
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Exchange'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ *   delete:
+ *     summary: Delete a MT Broker
+ *     description: Logged in exchanges can delete only themselves. Only admins can delete other Broker.
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: mtBrokerId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
