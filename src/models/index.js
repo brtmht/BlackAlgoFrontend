@@ -11,3 +11,4 @@ module.exports.StripeAccount = require('./stripeAccount.model');
 module.exports.TransactionHistory = require('./transactionHistory.model');
 module.exports.MtAccount = require('./mtAccount.model');
 module.exports.MtBroker = require('./mtBroker.model');
+module.exports.Notification = require('./notification.model');

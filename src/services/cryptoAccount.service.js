@@ -57,23 +57,36 @@ const getCryptoAccountByName = async (name) => {
 
 /**
  * Update subscriptionPlan by id
- * @param {ObjectId} subscriptionPlanId
+ * @param {ObjectId} cryptoId
  * @param {Object} updateBody
  * @returns {Promise<SubscriptionPlan>}
  */
 const updateCryptoAccountById = async (cryptoId, updateBody) => {
-  const subscriptionPlan = await getCryptoAccountById(cryptoId);
-  if (!subscriptionPlan) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  const crypto = await getCryptoAccountById(cryptoId);
+  if (!crypto) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Crypto not found');
   }
-  if (updateBody.name && (await CryptoAccount.isNameTaken(updateBody.name, cryptoId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(subscriptionPlan, updateBody);
-  await subscriptionPlan.save();
-  return subscriptionPlan;
+  const updateCrypto = await CryptoAccount.findByIdAndUpdate(cryptoId, {
+    ...updateBody,
+  });
+
+  return updateCrypto;
 };
-const deleteCryptoAccountById = async () => {};
+
+/**
+ * Delete exchange by id
+ * @param {ObjectId} cryptoId
+ * @returns {Promise<Exchange>}
+ */
+
+const deleteCryptoAccountById = async (cryptoId) => {
+  const crypto = await getCryptoAccountById(cryptoId);
+  if (!crypto) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'crypto not found');
+  }
+  const cryptoDeleted = await CryptoAccount.findByIdAndUpdate(cryptoId, { isDeleted: true });
+  return cryptoDeleted;
+};
 
 module.exports = {
   getBinance,

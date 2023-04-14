@@ -110,14 +110,18 @@ const updateSubscriptionPlanById = async (subscriptionPlanId, updateBody) => {
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
-  if (updateBody.name && (await SubscriptionPlan.isNameTaken(updateBody.name, subscriptionPlanId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(subscriptionPlan, updateBody);
-  await subscriptionPlan.save();
-  return subscriptionPlan;
+  const updatedSubscriptionPlan = await SubscriptionPlan.findByIdAndUpdate(subscriptionPlanId, {
+    ...updateBody,
+  });
+
+  return updatedSubscriptionPlan;
 };
 // Get subscription plan by id
+/**
+ * get subscriptionPlan by id
+ * @param {ObjectId} subscriptionPlanId
+ * @returns {Promise<SubscriptionPlan>}
+ */
 const getSubscriptionPlanById = async (id) => {
   const subscriptionPlan = await findSubscriptionPlanById(id);
   if (!subscriptionPlan) {
@@ -126,6 +130,9 @@ const getSubscriptionPlanById = async (id) => {
   return subscriptionPlan;
 };
 // Get all subscriptionPlans from db
+/**
+ * @returns {Promise<SubscriptionPlan>}
+ */
 const getAllSubscriptionPlans = async () => {
   const allPlans = await SubscriptionPlan.find({});
   if (!allPlans) {
@@ -134,13 +141,18 @@ const getAllSubscriptionPlans = async () => {
   return allPlans;
 };
 // Delete subscription plan by id
+/**
+ * Delete subscriptioPlan by id
+ * @param {ObjectId} subscriptionPlanId
+ * @returns {Promise<SubscriptionPlan>}
+ */
 const deleteSubscriptionPlanById = async (subscriptionPlanId) => {
   const subscriptionPlan = await findSubscriptionPlanById(subscriptionPlanId);
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
-  await subscriptionPlan.remove();
-  return subscriptionPlan;
+  const subscriptionDeleted = await SubscriptionPlan.findByIdAndUpdate(subscriptionPlanId, { isDeleted: true });
+  return subscriptionDeleted;
 };
 module.exports = {
   createSubscription,

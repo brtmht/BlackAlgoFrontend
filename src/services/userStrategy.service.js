@@ -139,8 +139,8 @@ const deleteUserStrategyById = async (userStrategyId) => {
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  await userStrategy.remove();
-  return userStrategy;
+  const userStrategyDeleted = await UserStrategy.findByIdAndUpdate(userStrategyId, { isDeleted: true });
+  return userStrategyDeleted;
 };
 
 module.exports = {

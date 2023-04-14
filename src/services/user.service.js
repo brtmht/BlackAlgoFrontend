@@ -1,5 +1,4 @@
 const httpStatus = require('http-status');
-const multer = require('multer');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 /**
@@ -60,43 +59,25 @@ const getUserByEmail = async (email) => {
  * @returns {Promise<User>}
  */
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: './public/uploads',
-    filename: (req, file, cb) => {
-      const {
-        query: { id },
-      } = req;
-      cb(null, `${id}.jpeg`);
-    },
-  }),
-});
-const updateUserById = async (userId, updatereq) => {
+const updateUserById = async (userId, updateData) => {
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  if (updatereq.body.email && (await User.isEmailTaken(updatereq.body.email, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  const { file } = updateData;
+  if (file || Object.keys(updateData.body).length !== 0) {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          name: updateData.body.name ? updateData.body.name : user.name,
+          image: file ? updateData.file.path : user.image,
+        },
+      }
+    );
+    return updatedUser;
   }
-  if (updatereq.file === 'undefined') {
-    Object.assign(user, updatereq.body);
-    await user.save();
-    return user;
-  }
-  await upload.single('image');
-  const url = `http://localhost:3000/uploads/${userId}`;
-  const { name } = updatereq.body;
-  const singleUser = await User.findOneAndUpdate(
-    { _id: userId },
-    {
-      $set: {
-        name,
-        image: url,
-      },
-    }
-  );
-  return singleUser;
+  throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Request data not found');
 };
 
 /**
@@ -109,8 +90,8 @@ const deleteUserById = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  await user.remove();
-  return user;
+  const userDeleted = await User.findByIdAndUpdate(userId, { isDeleted: true });
+  return userDeleted;
 };
 
 module.exports = {

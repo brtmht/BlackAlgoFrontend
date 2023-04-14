@@ -128,7 +128,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /mtAccount/{id}:
+ * /mtAccount?mtAccountId:
  *   patch:
  *     summary: Update a MT Account
  *     description: Logged in users can only update their own information. Only admins can update other MT Account.
@@ -296,7 +296,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /mtBroker/{id}:
+ * /mtBroker/mtbroker/?mtBrokerId:
  *   patch:
  *     summary: Update a MT Broker
  *     description: Logged in users can only update their own information. Only admins can update other MT Broker.

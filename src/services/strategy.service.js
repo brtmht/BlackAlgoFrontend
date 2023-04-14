@@ -57,12 +57,12 @@ const updateStrategyById = async (strategyId, updateBody) => {
   if (!strategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Strategy not found');
   }
-  if (updateBody.name && (await Strategy.isNameTaken(updateBody.name, strategyId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(strategy, updateBody);
-  await strategy.save();
-  return strategy;
+
+  const updateStrategy = await Strategy.findByIdAndUpdate(strategyId, {
+    ...updateBody,
+  });
+
+  return updateStrategy;
 };
 
 /**
@@ -75,8 +75,8 @@ const deleteStrategyById = async (strategyId) => {
   if (!strategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Strategy not found');
   }
-  await strategy.remove();
-  return strategy;
+  const strategyDeleted = await Strategy.findByIdAndUpdate(strategyId, { isDeleted: true });
+  return strategyDeleted;
 };
 
 module.exports = {
