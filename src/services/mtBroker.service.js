@@ -51,16 +51,15 @@ const getMtBrokerByName = async (name) => {
  * @returns {Promise<MtBroker>}
  */
 const updateMtBrokerById = async (mtBrokerId, updateBody) => {
-  const exchange = await getMtBrokerById(mtBrokerId);
-  if (!exchange) {
+  const mtBroker = await getMtBrokerById(mtBrokerId);
+  if (!mtBroker) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MtBroker not found');
   }
-  if (updateBody.name && (await MtBroker.isNameTaken(updateBody.name, mtBrokerId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(exchange, updateBody);
-  await exchange.save();
-  return exchange;
+  const mtBrokerUpdated = await MtBroker.findByIdAndUpdate(mtBrokerId, {
+    ...updateBody,
+  });
+
+  return mtBrokerUpdated;
 };
 
 /**
@@ -69,12 +68,12 @@ const updateMtBrokerById = async (mtBrokerId, updateBody) => {
  * @returns {Promise<MtBroker>}
  */
 const deleteMtBrokerById = async (mtBrokerId) => {
-  const exchange = await getMtBrokerById(mtBrokerId);
-  if (!exchange) {
+  const mtBroker = await getMtBrokerById(mtBrokerId);
+  if (!mtBroker) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MtBroker not found');
   }
-  await exchange.remove();
-  return exchange;
+  const mtBrokerDeleted = await MtBroker.findByIdAndDelete(mtBrokerId);
+  return mtBrokerDeleted;
 };
 
 module.exports = {

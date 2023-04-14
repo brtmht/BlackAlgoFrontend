@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageStrategies'), validate(strategyValidation.createStrategy), strategyController.createStrategy)
-  .get(validate(strategyValidation.getStrategies), strategyController.getStrategies);
+  .get(auth(), validate(strategyValidation.getStrategies), strategyController.getStrategies);
 
 router
   .route('/:strategyId')
