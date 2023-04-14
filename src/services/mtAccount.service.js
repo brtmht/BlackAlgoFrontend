@@ -71,7 +71,7 @@ const deleteMtAccountById = async (mtAccountId) => {
   if (!mtAccount) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MtAccount not found');
   }
-  const mtAccountDeleted = await MtAccount.findByIdAndDelete(mtAccountId);
+  const mtAccountDeleted = await MtAccount.findByIdAndUpdate(mtAccountId, { isDeleted: true });
   return mtAccountDeleted;
 };
 

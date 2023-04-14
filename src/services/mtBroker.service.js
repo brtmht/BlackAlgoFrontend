@@ -19,7 +19,7 @@ const createMtBrokerNew = async (mtBrokerBody) => {
  * @param {Object} options - Query options
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
  * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
+ * @param {number} [options.page] - Current
  * @returns {Promise<QueryResult>}
  */
 const queryMTBroker = async (filter, options) => {
@@ -72,7 +72,7 @@ const deleteMtBrokerById = async (mtBrokerId) => {
   if (!mtBroker) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MtBroker not found');
   }
-  const mtBrokerDeleted = await MtBroker.findByIdAndDelete(mtBrokerId);
+  const mtBrokerDeleted = await MtBroker.findByIdAndUpdate(mtBrokerId, { isDeleted: true });
   return mtBrokerDeleted;
 };
 

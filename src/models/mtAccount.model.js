@@ -4,6 +4,10 @@ const { toJSON, paginate } = require('./plugins');
 
 const mtAccountSchema = mongoose.Schema(
   {
+    userId: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
     name: {
       type: String,
       trim: true,
@@ -16,9 +20,30 @@ const mtAccountSchema = mongoose.Schema(
       type: String,
       default: '',
     },
-    serverName: {
+    server: {
       type: String,
       default: '',
+    },
+    type: {
+      type: String,
+    },
+    baseCurrency: {
+      type: String,
+    },
+    copyFactoryRoles: {
+      type: Boolean,
+    },
+    manualTrading: {
+      type: Boolean,
+    },
+    region: {
+      type: String,
+    },
+    reliability:{
+      type: String,
+    },
+    rersourceSlot: {
+      type: Number,
     },
     isDeleted: {
       type: Boolean,

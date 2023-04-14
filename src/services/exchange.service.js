@@ -56,12 +56,11 @@ const updateExchangeById = async (exchangeId, updateBody) => {
   if (!exchange) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Exchange not found');
   }
-  if (updateBody.name && (await Exchange.isNameTaken(updateBody.name, exchangeId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(exchange, updateBody);
-  await exchange.save();
-  return exchange;
+  const updateExchange = await Exchange.findByIdAndUpdate(exchangeId, {
+    ...updateBody,
+  });
+
+  return updateExchange;
 };
 
 /**
@@ -74,8 +73,8 @@ const deleteExchangeById = async (exchangeId) => {
   if (!exchange) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Exchange not found');
   }
-  await exchange.remove();
-  return exchange;
+  const exchangeDeleted = await Exchange.updateUserById(exchangeId, { isDeleted: true });
+  return exchangeDeleted;
 };
 
 module.exports = {

@@ -57,12 +57,11 @@ const updateRegionById = async (regionId, updateBody) => {
   if (!region) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Region not found');
   }
-  if (updateBody.name && (await Region.isNameTaken(updateBody.name, regionId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  Object.assign(region, updateBody);
-  await region.save();
-  return region;
+  const updateRegion = await Region.findByIdAndUpdate(regionId, {
+    ...updateBody,
+  });
+
+  return updateRegion;
 };
 
 /**
@@ -75,8 +74,8 @@ const deleteRegionById = async (regionId) => {
   if (!region) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Region not found');
   }
-  await region.remove();
-  return region;
+  const regionDeleted = await Region.findByIdAndUpdate(regionId, { isDeleted: true });
+  return regionDeleted;
 };
 
 module.exports = {
