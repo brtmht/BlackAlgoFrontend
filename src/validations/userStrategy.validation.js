@@ -7,7 +7,7 @@ const createUserStrategy = {
     paymentDetailId: Joi.string().custom(objectId),
     strategyId: Joi.string().custom(objectId),
     exchangeId: Joi.string().custom(objectId),
-    regionId: Joi.string().custom(objectId),
+    use_futures: Joi.boolean(),
     subscriptionPlanId: Joi.string().custom(objectId),
   }),
 };
