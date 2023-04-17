@@ -5,23 +5,26 @@ const createMtAccount = {
   body: Joi.object().keys({
     userId: Joi.string().custom(objectId),
     name: Joi.string().required(),
-    login: Joi.string(),
+    login: Joi.number(),
     password: Joi.string(),
     server: Joi.string(),
     type: Joi.string(),
     baseCurrency: Joi.string(),
-    copyFactoryRoles: Joi.boolean(),
+    copyFactoryRoles: Joi.string(),
     connectionStatus: Joi.string(),
     manualTrading: Joi.boolean(),
     region: Joi.string(),
-    reliaability: Joi.string(),
-    resourceSlot: Joi.string(),
-    isDeleted: Joi.boolean(),
+    reliability: Joi.string(),
+    resourceSlot: Joi.number(),
+    isdeleted: Joi.boolean(),
     status: Joi.boolean(),
   }),
 };
 
 const getMtAccount = {
+  params: Joi.object().keys({
+    mtAccountId: Joi.string(),
+  }),
   query: Joi.object().keys({
     name: Joi.string(),
     sortBy: Joi.string(),
@@ -30,9 +33,9 @@ const getMtAccount = {
   }),
 };
 
-const getMtAccountById = {
-  params: Joi.object().keys({
-    mtAccountId: Joi.string().custom(objectId),
+const getMtAccountUsingId = {
+  query: Joi.object().keys({
+    mtAccountId: Joi.string(),
   }),
 };
 
@@ -60,7 +63,7 @@ const updateMtAccount = {
 
 const deleteMtAccount = {
   params: Joi.object().keys({
-    exchangeId: Joi.string().custom(objectId),
+    mtAccountId: Joi.string().custom(objectId),
   }),
   body: Joi.object()
     .keys({
@@ -92,15 +95,15 @@ const getMtBroker = {
   }),
 };
 
-const getMtBrokerById = {
+const getMtBrokerUsingId = {
   params: Joi.object().keys({
-    exchangeId: Joi.string().custom(objectId),
+    mtBrokerId: Joi.string(),
   }),
 };
 
 const updateMtBrokerById = {
   params: Joi.object().keys({
-    exchangeId: Joi.required().custom(objectId),
+    mtBrokerId: Joi.required().custom(objectId),
   }),
   body: Joi.object()
     .keys({
@@ -117,7 +120,7 @@ const updateMtBrokerById = {
 
 const deleteMtBroker = {
   params: Joi.object().keys({
-    exchangeId: Joi.string().custom(objectId),
+    brokerId: Joi.string().custom(objectId),
   }),
   body: Joi.object()
     .keys({
@@ -128,12 +131,12 @@ const deleteMtBroker = {
 module.exports = {
   createMtAccount,
   getMtAccount,
-  getMtAccountById,
+  getMtAccountUsingId,
   updateMtAccount,
   deleteMtAccount,
   createMtBroker,
   getMtBroker,
-  getMtBrokerById,
+  getMtBrokerUsingId,
   updateMtBrokerById,
   deleteMtBroker,
 };

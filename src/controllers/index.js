@@ -6,3 +6,5 @@ module.exports.regionController = require('./region.controller');
 module.exports.subscriptionPlanController = require('./subscriptionPlan.controller');
 module.exports.userStrategyController = require('./userStrategy.controller');
 module.exports.paymentController = require('./payment.controller');
+module.exports.notificationController = require('./notification.controller');
+module.exports.mtaccountController = require('./mtaccount.controller');

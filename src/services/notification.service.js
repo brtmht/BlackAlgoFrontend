@@ -7,6 +7,11 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} notificationData
  * @returns {Promise<Notification>}
  */
+
+const createNotificationToken = async() => {
+    
+};
+
 const createNotification = async (notificationData) => {
   const notification = await Notification.create({
     title: notificationData.title,
@@ -66,6 +71,7 @@ const deleteNotification = async (notificationId) => {
 };
 
 module.exports = {
+  createNotificationToken,
   createNotification,
   updateNotificationStatus,
   deleteNotification,

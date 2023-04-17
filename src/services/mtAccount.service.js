@@ -31,7 +31,8 @@ const queryMTAccount = async (filter, options) => {
  * @returns {Promise<MtAccount>}
  */
 const getMtAccountById = async (id) => {
-  return MtAccount.findById(id);
+  const mtAccount = MtAccount.findById(id);
+  return mtAccount;
 };
 
 /**
@@ -50,14 +51,12 @@ const getMtAccountByName = async (name) => {
  */
 const updateMtAccountById = async (mtAccountId, updateBody) => {
   const mtAccount = await getMtAccountById(mtAccountId);
-
   if (!mtAccount) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MtAccount not found');
   }
   const updateMtAccount = await MtAccount.findByIdAndUpdate(mtAccountId, {
     ...updateBody,
   });
-
   return updateMtAccount;
 };
 

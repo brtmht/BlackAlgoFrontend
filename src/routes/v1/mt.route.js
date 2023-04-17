@@ -13,8 +13,9 @@ router
   .post(auth('postMtAccount'), validate(mtValidation.createMtAccount), mtaccountController.createMtAccount);
 
 router
-  .route('/:mtAccountId')
-  .patch(auth('updateAccount'), mtaccountController.updateMtAccount)
+  .route('/mtAccount/:mtAccountId')
+  .get(auth('getMtAccountById'), validate(mtValidation.getMtAccountUsingId), mtaccountController.getMtAccountById)
+  .patch(auth('updateMTAccount'), mtaccountController.updateMtAccount)
   .delete(auth('deleteAccount'), mtaccountController.deleteMtAccount);
 router
   .route('/mtBroker')
@@ -23,6 +24,7 @@ router
 
 router
   .route('/mtBroker/:mtBrokerId')
+  .get(auth('getMtBrokerById'), validate(mtValidation.getMtBrokerUsingId), mtaccountController.getMtBrokerById)
   .patch(auth('updateBroker'), mtaccountController.updateMtBroker)
   .delete(auth('deleteBroker'), mtaccountController.deleteMtBroker);
 module.exports = router;
@@ -138,7 +140,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /mtAccount?mtAccountId:
+ * /mtAccount/mtAccount/?mtAccountId:
  *   patch:
  *     summary: Update a MT Account
  *     description: Logged in users can only update their own information. Only admins can update other MT Account.
@@ -170,6 +172,30 @@ module.exports = router;
  *               reliability: High
  *               resourceSlot: 1
  *               status: true
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/MtAccount'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *   get:
+ *     summary: get a MT Account by ID
+ *     description: Logged in users can only get their own information.
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: mtAccountId
+ *         schema:
+ *           type: string
  *     responses:
  *       "200":
  *         description: OK
@@ -316,6 +342,26 @@ module.exports = router;
 /**
  * @swagger
  * /mtBroker/mtbroker/?mtBrokerId:
+ *   get:
+ *     summary: get a MT Broker
+ *     description: Logged in Broker can get only themselves.
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: mtBrokerId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   patch:
  *     summary: Update a MT Broker
  *     description: Logged in users can only update their own information. Only admins can update other MT Broker.
@@ -337,7 +383,12 @@ module.exports = router;
  *               name:
  *                 type: string
  *             example:
- *               name: fake name
+ *               name: axi-0us3-Live
+ *               mtVersion: mt4
+ *               mtServerFile: mtFile.zip
+ *               brokerTimeZone: EET
+ *               brokerDSTSwitchTimeZone: America/New_york
+ *               brokerTime: 16:44:23, 6/7/2024
  *     responses:
  *       "200":
  *         description: OK
@@ -356,7 +407,7 @@ module.exports = router;
  *
  *   delete:
  *     summary: Delete a MT Broker
- *     description: Logged in exchanges can delete only themselves. Only admins can delete other Broker.
+ *     description: Logged in brokers can delete only themselves. Only admins can delete other Broker.
  *     tags: [MtAccount]
  *     security:
  *       - bearerAuth: []

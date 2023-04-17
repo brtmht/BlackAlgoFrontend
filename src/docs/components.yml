@@ -268,7 +268,7 @@ components:
         baseCurrency:
           type: string
         copyFactoryRoles:
-          type: boolean
+          type: string
         manualTrading:
           type: boolean
         region:

@@ -1,8 +1,8 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
-const subscriptionPlanValidation = require('../../validations/subscriptionPlan.validation');
-const subscriptionPlanController = require('../../controllers/subscriptionPlan.controller');
+const { subscriptionPlanValidation } = require('../../validations');
+const { subscriptionPlanController } = require('../../controllers');
 
 const router = express.Router();
 router

@@ -14,3 +14,4 @@ module.exports.binanceService = require('./binance.service');
 module.exports.transactionHistoryService = require('./transactionHistory.service');
 module.exports.mtAccountService = require('./mtAccount.service');
 module.exports.mtBrokerService = require('./mtBroker.service');
+module.exports.notificationService = require('./notification.service');
