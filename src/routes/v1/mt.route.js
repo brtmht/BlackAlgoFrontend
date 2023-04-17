@@ -3,7 +3,7 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const mtValidation = require('../../validations/mt.validation');
 // eslint-disable-next-line import/extensions
-const mtaccountController = require('../../controllers/mtAccount.controller.js');
+const mtaccountController = require('../../controllers/mtaccount.controller.js');
 
 const router = express.Router();
 
