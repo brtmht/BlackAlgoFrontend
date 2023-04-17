@@ -1,8 +1,8 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
-const userStrategyValidation = require('../../validations/userStrategy.validation');
-const userStrategyController = require('../../controllers/userStrategy.controller');
+const { userStrategyValidation } = require('../../validations');
+const { userStrategyController } = require('../../controllers');
 
 const router = express.Router();
 

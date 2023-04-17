@@ -22,11 +22,12 @@ const getMtAccount = catchAsync(async (req, res) => {
   }
   res.send(result);
 });
+const getMtAccountById = catchAsync(async (req, res) => {
+  const mtAccount = await mtAccountService.getMtAccountById(req.query.mtAccountId);
+  res.send(mtAccount);
+});
 
 const updateMtAccount = catchAsync(async (req, res) => {
-  console.log(req.params);
-  console.log(req.query);
-
   const mtAccount = await mtAccountService.updateMtAccountById(req.query.mtAccountId, req.body);
   if (!mtAccount) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
@@ -41,11 +42,11 @@ const deleteMtAccount = catchAsync(async (req, res) => {
 
 // mtBroker crud Apis
 const createMtBroker = catchAsync(async (req, res) => {
-  const mtAccount = await mtBrokerService.createMtBrokerNew(req.body);
-  if (!mtAccount) {
+  const mtBroker = await mtBrokerService.createMtBrokerNew(req.body);
+  if (!mtBroker) {
     throw new ApiError(httpStatus.EXPECTATION_FAILED);
   }
-  res.status(httpStatus.CREATED).send(mtAccount);
+  res.status(httpStatus.CREATED).send(mtBroker);
 });
 
 const getMtBroker = catchAsync(async (req, res) => {
@@ -57,14 +58,16 @@ const getMtBroker = catchAsync(async (req, res) => {
   }
   res.send(result);
 });
-
+const getMtBrokerById = catchAsync(async (req, res) => {
+  const mtBroker = await mtBrokerService.getMtBrokerById(req.query.mtBrokerId);
+  res.send(mtBroker);
+});
 const updateMtBroker = catchAsync(async (req, res) => {
-  console.log(req.query.mtBrokerId);
   const mtBrokert = await mtBrokerService.updateMtBrokerById(req.query.mtBrokerId, req.body);
   if (!mtBrokert) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
-  res.send(mtBrokert);
+  res.status(httpStatus.CREATED);
 });
 
 const deleteMtBroker = catchAsync(async (req, res) => {
@@ -74,11 +77,13 @@ const deleteMtBroker = catchAsync(async (req, res) => {
 
 module.exports = {
   createMtAccount,
+  getMtAccountById,
   getMtAccount,
   updateMtAccount,
   deleteMtAccount,
   createMtBroker,
   getMtBroker,
+  getMtBrokerById,
   updateMtBroker,
   deleteMtBroker,
 };

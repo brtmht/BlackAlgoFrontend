@@ -4,7 +4,7 @@ const { objectId } = require('./custom.validation');
 const createRegion = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    description:Joi.string()
+    description: Joi.string(),
   }),
 };
 
