@@ -261,17 +261,39 @@ components:
           type: string
         password:
           type: string
-        serverName:
+        server:
           type: string
+        type:
+          type: string
+        baseCurrency:
+          type: string
+        copyFactoryRoles:
+          type: boolean
+        manualTrading:
+          type: boolean
+        region:
+          type: string
+        reliability:
+          type: string
+        resourceSlot:
+          type: number
         isDeleted:
           type: boolean
         status:
           type: boolean
       example:
-        name: blackAlgo
-        login: blackalgo@yopmail.com
+        name: ICN - blackalgo@yopmail.com
+        login: 60013069
         password: password1
-        serverName: server1
+        server: ICMmarketsSC-Live
+        type: cloud-g0
+        baseCurrency: USD
+        copyFactoryRoles: SUBSCRIBER
+        connectionStatus: connected
+        manualTrading: true
+        region: New-York
+        reliability: High
+        resourceSlot: 1
         isdeleted: false
         status: true
     MtBroker:
@@ -294,12 +316,12 @@ components:
         status:
           type: boolean
       example:
-        name: blackAlgo
-        mtVersion: 5.9.2
+        name: axi-0us3-Live
+        mtVersion: mt4
         mtServerFile: file.zip
-        brokerTimeZone: 19:23:56 GTC
-        brokerDSTSwitchTimeZone: 19:23:56 GTC
-        brokerTime: 17:23:56 GTC
+        brokerTimeZone: EET
+        brokerDSTSwitchTimeZone: America/New_york
+        brokerTime: 17:23:56
         isDeleted: false
         status: false
     Token:
