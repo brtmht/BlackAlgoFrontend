@@ -33,6 +33,9 @@ const mtAccountSchema = mongoose.Schema(
     copyFactoryRoles: {
       type: Boolean,
     },
+    connectionStatus: {
+      type: String
+    },
     manualTrading: {
       type: Boolean,
     },

@@ -107,10 +107,20 @@ module.exports = router;
  *               serverName:
  *                 type: string
  *             example:
- *               name: black algo mt
- *               login: exampl@example.com
+ *               name: ICN - blackalgo@yopmail.com
+ *               login: 60013069
  *               password: password1
- *               serverName: server101
+ *               serverName: ICMmarketsSC-Live
+ *               type: cloud-g0
+ *               baseCurrency: USD
+ *               copyFactoryRoles: SUBSCRIBER
+ *               connectionStatus: connected
+ *               manualTrading: true
+ *               region: New-York
+ *               reliability: High
+ *               resourceSlot: 1
+ *               isdeleted: false
+ *               status: true
  *     responses:
  *       "201":
  *         description: Created
@@ -150,14 +160,23 @@ module.exports = router;
  *               name:
  *                 type: string
  *             example:
- *               name: fake name
+ *               serverName: ICMmarketsSC-Live
+ *               type: cloud-g0
+ *               baseCurrency: USD
+ *               copyFactoryRoles: SUBSCRIBER
+ *               connectionStatus: connected
+ *               manualTrading: true
+ *               region: New-York
+ *               reliability: High
+ *               resourceSlot: 1
+ *               status: true
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/Exchange'
+ *                $ref: '#/components/schemas/MtAccount'
  *       "400":
  *         $ref: '#/components/responses/DuplicateName'
  *       "401":
@@ -273,11 +292,11 @@ module.exports = router;
  *               status:
  *                 type: boolean
  *             example:
- *               name: black algo mt
- *               mtVersion: 2.09.4
+ *               name: axi-0us3-Live
+ *               mtVersion: mt4
  *               mtServerFile: mtFile.zip
- *               brokerTimeZone: 76-4y7ge-3er
- *               brokerDSTSwitchTimeZone: 5e6-7r56-e44
+ *               brokerTimeZone: EET
+ *               brokerDSTSwitchTimeZone: America/New_york
  *               brokerTime: 16:44:23, 6/7/2024
  *     responses:
  *       "201":

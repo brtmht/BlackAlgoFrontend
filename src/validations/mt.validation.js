@@ -3,10 +3,19 @@ const { objectId } = require('./custom.validation');
 
 const createMtAccount = {
   body: Joi.object().keys({
+    userId: Joi.string().custom(objectId),
     name: Joi.string().required(),
     login: Joi.string(),
     password: Joi.string(),
-    serverName: Joi.string(),
+    server: Joi.string(),
+    type: Joi.string(),
+    baseCurrency: Joi.string(),
+    copyFactoryRoles: Joi.boolean(),
+    connectionStatus: Joi.string(),
+    manualTrading: Joi.boolean(),
+    region: Joi.string(),
+    reliaability: Joi.string(),
+    resourceSlot: Joi.string(),
     isDeleted: Joi.boolean(),
     status: Joi.boolean(),
   }),
@@ -33,10 +42,16 @@ const updateMtAccount = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string(),
-      login: Joi.string(),
-      password: Joi.string(),
-      serverName: Joi.string(),
+      userId: Joi.string().custom(objectId),
+      server: Joi.string(),
+      type: Joi.string(),
+      baseCurrency: Joi.string(),
+      copyFactoryRoles: Joi.boolean(),
+      connectionStatus: Joi.string(),
+      manualTrading: Joi.boolean(),
+      region: Joi.string(),
+      reliaability: Joi.string(),
+      resourceSlot: Joi.string(),
       isDeleted: Joi.boolean(),
       status: Joi.boolean(),
     })
@@ -47,6 +62,12 @@ const deleteMtAccount = {
   params: Joi.object().keys({
     exchangeId: Joi.string().custom(objectId),
   }),
+  body: Joi.object()
+    .keys({
+      userId: Joi.string().custom(objectId),
+      isDeleted: Joi.boolean(),
+    })
+    .min(1),
 };
 
 const createMtBroker = {
@@ -83,7 +104,6 @@ const updateMtBrokerById = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string().required(),
       mtVersion: Joi.string(),
       mtServerFile: Joi.string(),
       brokenTimeZone: Joi.string(),
@@ -99,6 +119,11 @@ const deleteMtBroker = {
   params: Joi.object().keys({
     exchangeId: Joi.string().custom(objectId),
   }),
+  body: Joi.object()
+    .keys({
+      isDeleted: Joi.boolean(),
+    })
+    .min(1),
 };
 module.exports = {
   createMtAccount,
