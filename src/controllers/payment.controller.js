@@ -14,8 +14,8 @@ const { binance, loginBinanceManually } = require('../services/binance.service')
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
-  const binanceData = await cryptoAccountService.getBinance();
-  res.status(httpStatus.NO_CONTENT).send();
+  const binanceData = await binanceService.binanceAutoConnect();
+  res.send(binanceData);
 });
 // post binanace
 

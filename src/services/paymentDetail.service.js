@@ -23,18 +23,18 @@ const savePaymentDetails = async (paymentData, stripeData, reqData) => {
 
 // To update payment details after a transaction is processed
 const updatePaymentDetails = async (reqData) => {
-  const udatedPaymentDetails = await PaymentDetail.updateOne(
+  const udatedPaymentDetail = await PaymentDetail.updateOne(
     { paymentToken: reqData.paymentToken },
     {
       $set: {
-        paymentStatus: reqData.paymentStatus,
+        ...reqData,
       },
     }
   );
-  if (!udatedPaymentDetails) {
+  if (!udatedPaymentDetail) {
     throw new ApiError(httpStatus['100_MESSAGE'], 'the payment data cannot be updated');
   }
-  return udatedPaymentDetails;
+  return udatedPaymentDetail;
 };
 
 /**

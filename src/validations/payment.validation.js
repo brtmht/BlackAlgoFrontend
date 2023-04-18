@@ -17,12 +17,12 @@ const postPaymentDetails = {
     cryptoId: Joi.string().custom(objectId),
     stripeAccountId: Joi.string().custom(objectId),
     paymentDetailId: Joi.string().custom(objectId),
-    subscriptionPlanId: Joi.string().custom(objectId),
+    subscriptionPlanId: Joi.string(),
     stripeTransactionId: Joi.string(),
     customerCardId: Joi.string(),
     paymentType: Joi.boolean(),
     paymentStatus: Joi.string(),
-    paymentToken: Joi.string(),
+    paymentToken: Joi.string().required(),
   }),
 };
 const createSubscription = {
