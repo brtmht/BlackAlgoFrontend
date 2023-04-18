@@ -163,8 +163,12 @@ const createStripePayment = async (stripeUserData, userId) => {
     // eslint-disable-next-line no-console
     const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
     if (paymentIntent) {
-      let stripeData = await StripeAccount.findOne({ customerId });
-      stripeData = await saveStripeAccount(stripeUserData, customerId, userId);
+      const stripeData = await StripeAccount.findOne({ customerId });
+
+      if (!stripeData) {
+        await saveStripeAccount(stripeUserData, customerId, userId);
+      }
+
       return { paymentIntent, stripeData };
     }
   }

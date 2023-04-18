@@ -40,11 +40,11 @@ const stripeWebhook = catchAsync(async (req) => {
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
   let paymentData;
-  let user;
   // eslint-disable-next-line prefer-const
-  // user = req.user._id;
+  const user = req.user._id;
+
   if (req.body.paymentType === 'card') {
-    paymentData = await stripeAccountService.createStripePayment(req.body, '642d770a050d1c76cc8f9198');
+    paymentData = await stripeAccountService.createStripePayment(req.body, user);
     res.send({ stripe_token: paymentData.paymentIntent.client_secret });
   }
   if (req.body.paymentType === 'crypto') {

@@ -1,33 +1,33 @@
+/* eslint-disable no-console */
+/* eslint-disable import/no-extraneous-dependencies */
 const httpStatus = require('http-status');
 const { Notification } = require('../models');
 const ApiError = require('../utils/ApiError');
-
+const sendNotification = require('../middlewares/firebaseNotification');
 /**
  * Post notifications
  * @param {Object} notificationData
+ * @param {id} id
  * @returns {Promise<Notification>}
  */
-
-const createNotificationToken = async() => {
-    
-};
-
-const createNotification = async (notificationData) => {
-  const notification = await Notification.create({
+const getToken = async (notificationData, id) => {
+  await sendNotification(notificationData);
+  const msgResponse = await Notification.create({
+    userId: id,
     title: notificationData.title,
     message: notificationData.message,
-    type: notificationData.type,
   });
-  return notification;
+  return msgResponse;
 };
+
 /**
  * Get notifications by userId
  * @param {ObjectId} userId
  * @returns {Promise<Notification>}
  */
 const getAllNotificationByUserID = async (userId) => {
-  const notificatios = await Notification.find({ userId });
-  return notificatios;
+  const notificatinos = await Notification.find({ userId });
+  return notificatinos;
 };
 
 /**
@@ -45,6 +45,7 @@ const getNotificationById = async (id) => {
  * @param {Object} notificationData
  * @returns {Promise<Notification>}
  */
+
 const updateNotificationStatus = async (notificationId, notificationData) => {
   const notification = await getNotificationById(notificationId);
   if (!notification) {
@@ -52,6 +53,7 @@ const updateNotificationStatus = async (notificationId, notificationData) => {
   }
   const notificationBeforeUpdate = await Notification.findByIdAndUpdate(notificationId, {
     isRead: notificationData.status,
+    ...notificationData,
   });
   return notificationBeforeUpdate;
 };
@@ -71,8 +73,8 @@ const deleteNotification = async (notificationId) => {
 };
 
 module.exports = {
-  createNotificationToken,
-  createNotification,
+  getToken,
+  getNotificationById,
   updateNotificationStatus,
   deleteNotification,
   getAllNotificationByUserID,

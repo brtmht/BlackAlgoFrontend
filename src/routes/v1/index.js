@@ -10,6 +10,7 @@ const docsRoute = require('./docs.route');
 const paymentRoute = require('./payment.route');
 const mtRoute = require('./mt.route');
 const config = require('../../config/config');
+const notification = require('./notification.route');
 
 const router = express.Router();
 
@@ -49,6 +50,10 @@ const defaultRoutes = [
   {
     path: '',
     route: mtRoute,
+  },
+  {
+    path: '/notification',
+    route: notification,
   },
 ];
 
