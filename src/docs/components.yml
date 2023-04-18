@@ -324,6 +324,28 @@ components:
         brokerTime: 17:23:56
         isDeleted: false
         status: false
+    Notification:
+      type: object
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+        token: 
+          type: string
+        type:
+          type: string
+        isRead:
+          type: boolean
+        isDeleted:
+          type: boolean
+      example:
+        title: fake name
+        message: You got a new notification
+        type: alert
+        token: fw3c14GLiI_0M1d2CXVwkE:APA91bGmSmpZA7B-3b_YaEOZKlpaOTd-2zGelM60XZWaP2rkzoFC_1QjLW0KAaFLj2pJr07I0T8AIn4qyfwFkgFJ9oDbU36F-3A6BoqSzHktAne2_xjTWOoawGsiGN43rNj6i0_OFR6h
+        isDeleted: false
+        status: true
     Token:
       type: object
       properties:

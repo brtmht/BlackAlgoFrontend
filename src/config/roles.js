@@ -29,6 +29,9 @@ const allRoles = {
     'deleteMTBroker',
     'getMtBrokerById',
     'getMtAccountById',
+    'firebaseToken',
+    'stripePayment',
+    'createPayment',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

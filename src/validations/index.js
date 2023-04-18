@@ -7,3 +7,4 @@ module.exports.subscriptionPlanValidation = require('./subscriptionPlan.validati
 module.exports.userStrategyValidation = require('./userStrategy.validation');
 module.exports.paymentValidation = require('./payment.validation');
 module.exports.mtValidation = require('./mt.validation');
+module.exports.notificationValidation = require('./notification.validation');
