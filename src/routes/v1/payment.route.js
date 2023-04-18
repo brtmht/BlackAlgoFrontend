@@ -11,7 +11,7 @@ router
   .get(auth('stripePayment'), paymentController.getStripeConfig)
   .post(auth('createPayment'), paymentController.createPayment)
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
-router.route('/binance').post(paymentController.loginBinance).get(auth(), paymentController.getBinance);
+router.route('/binance').post(paymentController.loginBinance).get(paymentController.getBinance);
 router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
@@ -158,6 +158,8 @@ module.exports = router;
  *               - paymentStatus
  *               - paymentToken
  *             properties:
+ *               subscriptionPlanId:
+ *                 type: string
  *               stripeTransactionId:
  *                 type: string
  *               planId:
@@ -172,6 +174,7 @@ module.exports = router;
  *               stripeTransactionId: "ipi_ue73f_4yei"
  *               customerCardId: card_1Mvy6nLbnBoaTE81lvCbY1lM
  *               paymentStatus: pending
+ *               subscriptionPlanId: sub_ewcjvwecvbweh
  *     responses:
  *       "201":
  *         description: Created

@@ -8,15 +8,16 @@ const autoBinance = new Binance().options({
 });
 
 const binanceAutoConnect = async () => {
-  const responseType = 'code';
-  const clientId = 'TC5R07Eye0JZmDeDzinPPWoU17eoR0LdQaD6KQXyO96zhsffZCeHiDhXk6BWUb7X';
-  // const redirectUri = 'https%3A%2F%2Fdev.blackalgo.com%2Fv1%2Fbinance';
-  const redirectUri = 'http%3A%2F%2Flocalhost%3A3000%2Fv1%2Fbinance';
+  console.log("binance connecting")
+  // const responseType = 'code';
+  // const clientId = 'TC5R07Eye0JZmDeDzinPPWoU17eoR0LdQaD6KQXyO96zhsffZCeHiDhXk6BWUb7X';
+  // // const redirectUri = 'https%3A%2F%2Fdev.blackalgo.com%2Fv1%2Fbinance';
+  // const redirectUri = 'http%3A%2F%2Flocalhost%3A3000%2Fv1%2Fbinance';
   // const csrfToken = user._id;
   // const scope = user:email,user:address;
 
-  const apiUrl = `https://accounts.binance.com/en/oauth/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=account%3Astatus%2Ccreate%3Aapikey%2Cuser%3AopenId%2Cuser%3Aemail`;
-
+  // const apiUrl = `https://accounts.binance.com/en/oauth/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=account%3Astatus%2Ccreate%3Aapikey%2Cuser%3AopenId%2Cuser%3Aemail`;
+  const apiUrl= `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=wpKNiPLtNG&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fv1%2Fbinance&scope=account%3Astatus%2Ccreate%3Aapikey%2Cuser%3AopenId%2Cuser%3Aemail`
   https
     .get(apiUrl, (response) => {
       let data = '';
@@ -26,6 +27,7 @@ const binanceAutoConnect = async () => {
       response.on('end', () => {
         // eslint-disable-next-line no-console
         console.log(data);
+        return data;
       });
     })
     .on('error', (error) => {
