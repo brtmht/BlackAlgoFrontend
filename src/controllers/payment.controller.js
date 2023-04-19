@@ -78,13 +78,13 @@ const getPayment = catchAsync(async (req, res) => {
 });
 
 // get user payment history
-const getPaymentHistory = catchAsync(async (req) => {
+const getPaymentHistory = catchAsync(async (req, res) => {
   const user = req.user._id;
-  const history = await transactionHistoryService.getPaymnetsById(user);
+  const history = await transactionHistoryService.getPaymentsById(user);
   if (!history) {
     throw new ApiError(httpStatus.NOT_FOUND, 'no history found');
   }
-  return history;
+  res.send(history);
 });
 
 module.exports = {

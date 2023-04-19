@@ -15,11 +15,12 @@ const binanceAutoConnect = async () => {
   // const redirectUri = 'http%3A%2F%2Flocalhost%3A3000%2Fv1%2Fbinance';
   // const csrfToken = user._id;
   // const scope = user:email,user:address;
-
+//  const testUri = `http%3A%2F%2Flocalhost%3A4000%2Fcompletion`
   // const apiUrl = `https://accounts.binance.com/en/oauth/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=account%3Astatus%2Ccreate%3Aapikey%2Cuser%3AopenId%2Cuser%3Aemail`;
-  const apiUrl= `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=wpKNiPLtNG&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fv1%2Fbinance&scope=account%3Astatus%2Ccreate%3Aapikey%2Cuser%3AopenId%2Cuser%3Aemail`
+  const apiUrlTest= `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=wpKNiPLtNG&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Fcompletion&scope=email`
+  const apiUrl = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=wpKNiPLtNG&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fv1%2Fbinance&scope=account%3Astatus%2Ccreate%3Aapikey%2Cuser%3AopenId%2Cuser%3Aemail`;
   https
-    .get(apiUrl, (response) => {
+    .get(apiUrlTest, (response) => {
       let data = '';
       response.on('data', (chunk) => {
         data += chunk;
