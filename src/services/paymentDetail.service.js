@@ -10,7 +10,7 @@ const ApiError = require('../utils/ApiError');
 // eslint-disable-next-line camelcase
 const savePaymentDetails = async (paymentData, stripeData, reqData) => {
   const trasactionData = await PaymentDetail.create({
-    userId: stripeData.user_id,
+    userId: stripeData.userId,
     paymentToken: paymentData.paymentIntent.client_secret,
     stripeAccountId: stripeData.id,
     subscriptionPlanId: reqData.subscriptionplanId,

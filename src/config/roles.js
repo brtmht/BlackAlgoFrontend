@@ -32,6 +32,7 @@ const allRoles = {
     'firebaseToken',
     'stripePayment',
     'createPayment',
+    'history',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

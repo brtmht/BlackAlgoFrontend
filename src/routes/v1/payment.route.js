@@ -8,7 +8,6 @@ const router = express.Router();
 
 router
   .route('/stripePayment')
-  .get(auth('stripePayment'), paymentController.getStripeConfig)
   .post(auth('createPayment'), paymentController.createPayment)
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
 router.route('/binance').post(paymentController.loginBinance).get(paymentController.getBinance);
