@@ -59,7 +59,7 @@ const getUserByEmail = async (email) => {
  * @returns {Promise<User>}
  */
 
-const updateUserById = async (userId, updateData) => {
+const updateUserDataById = async (userId, updateData) => {
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -78,6 +78,25 @@ const updateUserById = async (userId, updateData) => {
     return updatedUser;
   }
   throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Request data not found');
+};
+
+/**
+ * Update user by id
+ * @param {ObjectId} userId
+ * @param {Object} updateBody
+ * @returns {Promise<User>}
+ */
+const updateUserById = async (userId, updateBody) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  }
+  Object.assign(user, updateBody);
+  await user.save();
+  return user;
 };
 
 /**
@@ -100,5 +119,6 @@ module.exports = {
   getUserById,
   getUserByEmail,
   updateUserById,
+  updateUserDataById,
   deleteUserById,
 };
