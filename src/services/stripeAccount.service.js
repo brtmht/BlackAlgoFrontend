@@ -148,6 +148,7 @@ const createPaymentIntent = async (stripeAccountBody, id) => {
 };
 const createStripePayment = async (stripeUserData, userId) => {
   let customerId;
+  let stripeData;
   const customers = await Stripe.customers.list({
     email: stripeUserData.email,
   });
@@ -160,17 +161,14 @@ const createStripePayment = async (stripeUserData, userId) => {
     customerId = customers.data[0].id;
   }
   if (customerId) {
-    // eslint-disable-next-line no-console
     const paymentIntent = await createPaymentIntent(stripeUserData, customerId);
+    stripeData = await StripeAccount.findOne({ customerId });
     if (paymentIntent) {
-      const stripeData = await StripeAccount.findOne({ customerId });
-
       if (!stripeData) {
-        await saveStripeAccount(stripeUserData, customerId, userId);
+        stripeData = await saveStripeAccount(stripeUserData, customerId, userId);
       }
-
-      return { paymentIntent, stripeData };
     }
+    return { paymentIntent, stripeData };
   }
 };
 
