@@ -18,7 +18,6 @@ const getBinance = catchAsync(async (req, res) => {
   res.send(binanceData);
 });
 // post binanace
-
 const postBinance = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
