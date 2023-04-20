@@ -65,6 +65,9 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
 
 const verifyEmail = catchAsync(async (req, res) => {
   const userData = await authService.verifyEmail(req.query.token);
+  if (userData === null) {
+    res.redirect(`${process.env.APP_URL}/?confirm=expired`);
+  }
   if (userData != null || !userData) {
     if (userData.isEmailVerified === true) {
       res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
