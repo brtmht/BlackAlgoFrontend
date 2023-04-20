@@ -8,15 +8,12 @@ const imageUploadMiddleware = require('../../middlewares/imageUpload');
 const router = express.Router();
 
 router
-  .route('/')
+  .route('/users')
   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers)
   .patch(auth('updateUser'), imageUploadMiddleware, userController.updateUser);
-
-router
-  .route('/:userId')
-  .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
-  .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser);
+router.route('/getUser').get(auth('getUser'), validate(userValidation.getUser), userController.getUser);
+router.route('/:userId').delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 
 module.exports = router;
 
@@ -151,6 +148,24 @@ module.exports = router;
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - image
+ *             properties:
+ *               name:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *             example:
+ *               name: fake name
+ *               image: choose a image
  *     responses:
  *       "200":
  *         description: OK
@@ -170,20 +185,13 @@ module.exports = router;
 
 /**
  * @swagger
- * /users/{id}:
+ * /getUser:
  *   get:
- *     summary: Get a user
+ *     summary: Get logged In user
  *     description: Logged in users can fetch only their own user information. Only admins can fetch other users.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: User id
  *     responses:
  *       "200":
  *         description: OK
@@ -198,6 +206,11 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ */
+
+/**
+ * @swagger
+ * /users/{id}:
  *   delete:
  *     summary: Delete a user
  *     description: Logged in users can delete only themselves. Only admins can delete other users.

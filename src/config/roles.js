@@ -33,6 +33,7 @@ const allRoles = {
     'stripePayment',
     'createPayment',
     'history',
+    'getUser',
   ],
   admin: ['getUsers', 'manageUsers'],
 };
