@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { TransactionHistory } = require('../models');
 
 /**
  * Create a userStrategy
@@ -62,14 +63,17 @@ const createUserStrategy = async (userStrategyBody, id) => {
       );
       break;
     case 'payment':
-      await UserStrategy.updateOne(
-        { _id: strategyId },
-        {
-          $set: {
-            paymentDatailId: userStrategyBody.paymentDatailId,
-          },
-        }
-      );
+      const transactionData = await TransactionHistory.findOne({ stripeTransactionId: userStrategyBody.paymentDetailId });
+      if (transactionData) {
+        await UserStrategy.updateOne(
+          { _id: strategyId },
+          {
+            $set: {
+              paymentDetailId: transactionData.paymentDetailId,
+            },
+          }
+        );
+      }
       break;
     case 'connectApi':
       response = '16';

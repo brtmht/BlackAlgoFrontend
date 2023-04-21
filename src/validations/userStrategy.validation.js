@@ -4,7 +4,7 @@ const { objectId } = require('./custom.validation');
 const createUserStrategy = {
   body: Joi.object().keys({
     step: Joi.string(),
-    paymentDetailId: Joi.string().custom(objectId),
+    paymentDetailId: Joi.string(),
     strategyId: Joi.string().custom(objectId),
     exchangeId: Joi.string().custom(objectId),
     use_futures: Joi.boolean(),
