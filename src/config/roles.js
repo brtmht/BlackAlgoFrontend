@@ -34,6 +34,7 @@ const allRoles = {
     'createPayment',
     'history',
     'getUser',
+    'getUserStrategiesByUserID',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

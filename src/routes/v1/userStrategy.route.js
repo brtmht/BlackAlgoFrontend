@@ -18,10 +18,14 @@ router
     validate(userStrategyValidation.getUserStrategies),
     userStrategyController.getUserStrategies
   );
-
+router.route('/userId').get(auth('getUserStrategiesByUserID'), userStrategyController.getUserStrategy);
 router
   .route('/:userStrategyId')
-  .get(auth('getUserStrategies'), validate(userStrategyValidation.getUserStrategy), userStrategyController.getUserStrategy)
+  .get(
+    auth('getUserStrategies'),
+    validate(userStrategyValidation.getUserStrategy),
+    userStrategyController.getUserStrategyById
+  )
   .patch(
     auth('manageUserStrategies'),
     validate(userStrategyValidation.updateUserStrategy),
@@ -153,6 +157,30 @@ module.exports = router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
+ */
+
+/**
+ * @swagger
+ * /userStrategies/userId:
+ *   get:
+ *     summary: Get a userStrategy by token
+ *     description: Logged in userStrategies can fetch only their own userStrategy information. Only admins can fetch other userStrategies.
+ *     tags: [UserStrategies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserStrategy'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
 
 /**
