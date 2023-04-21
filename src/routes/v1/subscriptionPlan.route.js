@@ -22,7 +22,7 @@ router
   .get(
     auth('manageSubscriptionPlans'),
     validate(subscriptionPlanValidation.getSubscriptionPlan),
-    subscriptionPlanController.retrieveSubscriptionPlan
+    subscriptionPlanController.getSubscriptionPlan
   )
   .patch(
     auth('manageSubscriptionPlans'),
