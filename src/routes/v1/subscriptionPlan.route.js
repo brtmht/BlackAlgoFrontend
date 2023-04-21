@@ -34,19 +34,13 @@ router
     validate(subscriptionPlanValidation.deleteSubscriptionPlan),
     subscriptionPlanController.deleteSubscriptionPlan
   );
-
 router
-  .route('/:stripePlansId')
+  .route('/stripe/:stripePlansId')
   .get(auth(), validate(subscriptionPlanValidation.getSubscriptionPlan), subscriptionPlanController.retrieveSubscriptionPlan)
-  .patch(
-    auth(),
-    validate(subscriptionPlanValidation.updateSubscriptionPlan),
-    subscriptionPlanController.updateSubscriptionPlan
-  )
   .delete(
     auth(),
     validate(subscriptionPlanValidation.deleteSubscriptionPlan),
-    subscriptionPlanController.deleteSubscriptionPlan
+    subscriptionPlanController.deactivateSubscriptionPlan
   );
 module.exports = router;
 
@@ -237,9 +231,9 @@ module.exports = router;
 
 /**
  * @swagger
- * /stripePlans/{stripePlansId}:
+ * /stripe/{stripePlansId}:
  *   get:
- *     summary: Retrieve a subscriptionPlan
+ *     summary: Retrieve a subscriptionPlan from  stripe
  *     description: Logged in user can only retrieve their own subscription plan. Only admins can retrieve other subscriptionPlans.
  *     tags: [SubscriptionPlans]
  *     security:
@@ -270,5 +264,25 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *
+ *   delete:
+ *     summary: Delete a stripe subscriptionPlan
+ *     description: Logged in subscriptionPlans can delete only themselves. Only admins can delete other subscriptionPlans.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: SubscriptionPlan id
+ *     responses:
+ *       "200":
+ *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
