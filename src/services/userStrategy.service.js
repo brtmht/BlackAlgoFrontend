@@ -97,12 +97,21 @@ const queryUserStrategies = async (filter, options) => {
 };
 
 /**
+ * Get userStrategy by Userid
+ * @param {ObjectId} id
+ * @returns {Promise<UserStrategy>}
+ */
+const getUserStrategyByUserId = async (id) => {
+  return UserStrategy.find({ userId: id });
+};
+
+/**
  * Get userStrategy by id
  * @param {ObjectId} id
  * @returns {Promise<UserStrategy>}
  */
 const getUserStrategyById = async (id) => {
-  return UserStrategy.find({ userId: id });
+  return UserStrategy.findById(id);
 };
 
 /**
@@ -150,4 +159,5 @@ module.exports = {
   getUserStrategyByName,
   updateUserStrategyById,
   deleteUserStrategyById,
+  getUserStrategyByUserId,
 };

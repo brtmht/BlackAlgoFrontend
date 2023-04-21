@@ -19,7 +19,15 @@ const getUserStrategies = catchAsync(async (req, res) => {
 
 const getUserStrategy = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const userStrategy = await userStrategyService.getUserStrategyById(userId);
+  const userStrategy = await userStrategyService.getUserStrategyByUserId(userId);
+  if (!userStrategy) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
+  }
+  res.send(userStrategy);
+});
+
+const getUserStrategyById = catchAsync(async (req, res) => {
+  const userStrategy = await userStrategyService.getUserStrategyById(req.params.userStrategyId);
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
@@ -43,4 +51,5 @@ module.exports = {
   getUserStrategy,
   updateUserStrategy,
   deleteUserStrategy,
+  getUserStrategyById,
 };
