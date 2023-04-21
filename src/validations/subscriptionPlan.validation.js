@@ -33,7 +33,7 @@ const getSubscriptionPlans = {
 
 const getSubscriptionPlan = {
   params: Joi.object().keys({
-    subscriptionId: Joi.string(),
+    subscriptionPlanId: Joi.string(),
   }),
 };
 
