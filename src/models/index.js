@@ -12,3 +12,5 @@ module.exports.TransactionHistory = require('./transactionHistory.model');
 module.exports.MtAccount = require('./mtAccount.model');
 module.exports.MtBroker = require('./mtBroker.model');
 module.exports.Notification = require('./notification.model');
+module.exports.Support = require('./support.model');
+module.exports.SupportChat = require('./supportChat.model');

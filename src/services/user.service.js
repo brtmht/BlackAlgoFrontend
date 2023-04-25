@@ -1,6 +1,11 @@
+/* eslint-disable no-console */
+/* eslint-disable import/no-extraneous-dependencies */
 const httpStatus = require('http-status');
+const { toDataURL } = require('qrcode');
+const { authenticator } = require('otplib');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
+
 /**
  * Create a user
  * @param {Object} userBody
@@ -100,6 +105,26 @@ const updateUserById = async (userId, updateBody) => {
 };
 
 /**
+ * Update user by id
+ * @param {ObjectId} userId
+ * @param {Object} updateBody
+ * @returns {Promise<User>}
+ */
+const updateUserPasword = async (userId, updateBody) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  if (await user.isPasswordMatch(updateBody.password)) {
+    Object.assign(user, {
+      password: updateBody.newPassword,
+    });
+    await user.save();
+    return user;
+  }
+  throw new ApiError(httpStatus.BAD_REQUEST, 'Password doesnot match');
+};
+/**
  * Delete user by id
  * @param {ObjectId} userId
  * @returns {Promise<User>}
@@ -113,6 +138,67 @@ const deleteUserById = async (userId) => {
   return userDeleted;
 };
 
+const generate2faSecret = async (user) => {
+  const secret = authenticator.generateSecret();
+  await User.findByIdAndUpdate(user._id, {
+    google_2fa_secret: secret,
+  });
+  const otpAuthUrl = authenticator.keyuri(user.email, 'blackalgo', secret);
+  return {
+    secret,
+    url: await toDataURL(otpAuthUrl),
+  };
+};
+const turnOff2fa = async (user) => {
+  const google2faData = await User.findByIdAndUpdate(user._id, {
+    google_2fa_status: false,
+  });
+  return google2faData;
+};
+
+const verify2faSecret = async (req) => {
+  const authCode = req.body.secret;
+  const user = await User.findById(req.user._id);
+  const googleSecret = user.google_2fa_secret;
+  console.log(googleSecret, authCode);
+  const isValid = authenticator.verify({ token: authCode, secret: googleSecret });
+  if (!isValid) {
+    throw new ApiError(httpStatus.BAD_REQUEST);
+  }
+  return isValid;
+};
+
+const turnOn2fa = async (req) => {
+  const turnOn2Fa = await verify2faSecret(req);
+  console.log(turnOn2Fa);
+  if (turnOn2Fa) {
+    await User.findByIdAndUpdate(req.user._id, {
+      google_2fa_status: true,
+    });
+    return turnOn2Fa;
+  }
+  return turnOn2Fa;
+};
+const regenerate2faSecret = async (req) => {
+  const isValid = await verify2faSecret(req);
+  console.log(isValid);
+  if (isValid) {
+    const secret = authenticator.generateSecret();
+    return {
+      secret,
+    };
+  }
+  throw new ApiError(httpStatus.NOT_FOUND);
+};
+const activateNew2faSecret = async (req) => {
+  const googleSecret = req.body.google_2fa_secret;
+  console.log(googleSecret);
+  const userData = await User.findByIdAndUpdate(req.user._id, {
+    google_2fa_secret: googleSecret,
+  });
+
+  return userData;
+};
 module.exports = {
   createUser,
   queryUsers,
@@ -121,4 +207,11 @@ module.exports = {
   updateUserById,
   updateUserDataById,
   deleteUserById,
+  updateUserPasword,
+  generate2faSecret,
+  verify2faSecret,
+  turnOff2fa,
+  turnOn2fa,
+  regenerate2faSecret,
+  activateNew2faSecret,
 };

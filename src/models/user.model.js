@@ -44,6 +44,14 @@ const userSchema = mongoose.Schema(
       enum: roles,
       default: 'user',
     },
+    google_2fa_secret: {
+      type: String,
+      default: '',
+    },
+    google_2fa_status: {
+      type: Boolean,
+      default: false,
+    },
     isEmailVerified: {
       type: Boolean,
       default: false,

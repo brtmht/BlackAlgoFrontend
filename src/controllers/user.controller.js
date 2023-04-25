@@ -24,7 +24,37 @@ const getUser = catchAsync(async (req, res) => {
   }
   res.send(user);
 });
+// 2FA API
+const get2FactorAuthentication = catchAsync(async (req, res) => {
+  const result = await userService.generate2faSecret(req.user);
+  res.send(result);
+});
+const get2FactorVerified = catchAsync(async (req, res) => {
+  const result = await userService.verify2faSecret(req);
+  res.send(result);
+});
 
+const turnOff2fa = catchAsync(async (req, res) => {
+  const result = await userService.turnOff2fa(req.user);
+  res.send(result);
+});
+
+const turnOn2fa = catchAsync(async (req, res) => {
+  const result = await userService.turnOn2fa(req);
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'token not found');
+  }
+  res.send(result);
+});
+
+const regenerate2faSecret = catchAsync(async (req, res) => {
+  const result = await userService.regenerate2faSecret(req);
+  res.send(result);
+});
+const activate2faSecret = catchAsync(async (req, res) => {
+  const result = await userService.activateNew2faSecret(req);
+  res.send(result);
+});
 const updateUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserDataById(userId, req);
@@ -36,10 +66,22 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const changePassword = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  await userService.updateUserPasword(userId, req.body);
+  res.sendStatus(httpStatus.NO_CONTENT);
+});
 module.exports = {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
+  changePassword,
+  get2FactorAuthentication,
+  get2FactorVerified,
+  turnOff2fa,
+  turnOn2fa,
+  regenerate2faSecret,
+  activate2faSecret,
 };

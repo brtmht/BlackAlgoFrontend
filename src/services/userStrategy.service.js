@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 const httpStatus = require('http-status');
 const { UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');

@@ -12,9 +12,19 @@ router
   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers)
   .patch(auth('updateUser'), imageUploadMiddleware, userController.updateUser);
-router.route('/getUser').get(auth('getUser'), validate(userValidation.getUser), userController.getUser);
-router.route('/:userId').delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 
+router.route('/getUser').get(auth('getUser'), validate(userValidation.getUser), userController.getUser);
+router.route('/users/turnOff2fa').get(auth('turnOff2Fa'), userController.turnOff2fa);
+router.route('/users/turnOn2fa').post(auth('turnOn2Fa'), userController.turnOn2fa);
+router.route('/generate2fa').get(auth('generate2fa'), userController.get2FactorAuthentication);
+router.route('/verify2Fa').post(auth('verify2Fa'), userController.get2FactorVerified);
+router.route('/generateNew').post(auth('generateNew'), userController.regenerate2faSecret);
+router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2faSecret);
+
+router
+  .route('/users/:userId')
+  .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
+  .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
 module.exports = router;
 
 /**
@@ -227,6 +237,228 @@ module.exports = router;
  *     responses:
  *       "200":
  *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   patch:
+ *     summary: Change user password
+ *     description: Logged in user can only update their password with current password.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *             example:
+ *               password: password1
+ *               newPassword: password@123
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Exchange'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /generate2fa:
+ *   get:
+ *     summary: get secret token for 2FA
+ *     description: Logged in users can get their 2FA token.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/turnOn2fa:
+ *   post:
+ *     summary: turn on 2 factor authentication
+ *     description: Logged in users can enable their 2FA setting to false.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               secret:
+ *                 type: string
+ *             example:
+ *               secret: 563785
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /verify2Fa:
+ *   post:
+ *     summary: verify 2 factor authentication
+ *     description: With secret key users can enable their 2FA setting to true and verify status to true.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               secret:
+ *                 type: string
+ *             example:
+ *               secret: 563785
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /users/turnOff2fa:
+ *   get:
+ *     summary: turn off 2 factor authentication
+ *     description: Logged in users can disable their 2FA setting to false.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /generateNew:
+ *   post:
+ *     summary: generate new 2FA secret
+ *     description: With this generate new 2FA secret.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               secret:
+ *                 type: string
+ *             example:
+ *               secret: 563785
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /activate2Fa:
+ *   post:
+ *     summary: activate new 2FA secret
+ *     description: With this user can activate new 2FA secret.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               google_2fa_secret:
+ *                 type: string
+ *             example:
+ *               google_2fa_secret: "563785"
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
