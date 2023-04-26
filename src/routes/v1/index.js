@@ -10,7 +10,8 @@ const docsRoute = require('./docs.route');
 const paymentRoute = require('./payment.route');
 const mtRoute = require('./mt.route');
 const config = require('../../config/config');
-const notification = require('./notification.route');
+const notificationRoute = require('./notification.route');
+const supportRoute = require('./support.route');
 
 const router = express.Router();
 
@@ -36,6 +37,10 @@ const defaultRoutes = [
     route: exchangeRoute,
   },
   {
+    path: '/support',
+    route: supportRoute,
+  },
+  {
     path: '/regions',
     route: regionRoute,
   },
@@ -52,8 +57,8 @@ const defaultRoutes = [
     route: mtRoute,
   },
   {
-    path: '/notification',
-    route: notification,
+    path: '',
+    route: notificationRoute,
   },
 ];
 

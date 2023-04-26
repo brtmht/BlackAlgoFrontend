@@ -28,6 +28,10 @@ const userStrategySchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'SubscriptionPlan',
     },
+    onBoardProcess: {
+      type: Boolean,
+      default: false,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

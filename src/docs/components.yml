@@ -346,6 +346,44 @@ components:
         token: fw3c14GLiI_0M1d2CXVwkE:APA91bGmSmpZA7B-3b_YaEOZKlpaOTd-2zGelM60XZWaP2rkzoFC_1QjLW0KAaFLj2pJr07I0T8AIn4qyfwFkgFJ9oDbU36F-3A6BoqSzHktAne2_xjTWOoawGsiGN43rNj6i0_OFR6h
         isDeleted: false
         status: true
+    
+    SupportChat:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        message: this is my first message
+        id: 5ebac534954b54139806c112
+        from: 5ebac534954b54139806c112
+        to: 5ebac534954b54139806c112
+        isDeleted: false
+        status: true
+
+    Support:
+      type: object
+      properties:
+        id:
+          type: string
+        isDeleted:
+          type: boolean
+        status:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        isDeleted: false
+        status: true
+
     Token:
       type: object
       properties:

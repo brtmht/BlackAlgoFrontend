@@ -26,6 +26,15 @@ const getUserStrategy = catchAsync(async (req, res) => {
   res.send(userStrategy);
 });
 
+const onBoardUserStrategy = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const userStrategy = await userStrategyService.updateOnBoardStrategy(userId);
+  if (!userStrategy) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
+  }
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
 const getUserStrategyById = catchAsync(async (req, res) => {
   const userStrategy = await userStrategyService.getUserStrategyById(req.params.userStrategyId);
   if (!userStrategy) {
@@ -35,8 +44,7 @@ const getUserStrategyById = catchAsync(async (req, res) => {
 });
 
 const updateUserStrategy = catchAsync(async (req, res) => {
-  const userId = req.user._id;
-  const userStrategy = await userStrategyService.updateUserStrategyById(userId, req.body);
+  const userStrategy = await userStrategyService.updateUserStrategyById(req.params.userStrategyId, req.body);
   res.send(userStrategy);
 });
 
@@ -52,4 +60,5 @@ module.exports = {
   updateUserStrategy,
   deleteUserStrategy,
   getUserStrategyById,
+  onBoardUserStrategy,
 };

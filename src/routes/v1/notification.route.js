@@ -7,7 +7,7 @@ const { notificationValidation } = require('../../validations');
 const router = express.Router();
 
 router
-  .route('/')
+  .route('/notification')
   .post(
     auth('firebaseToken'),
     validate(notificationValidation.createNotification),
@@ -15,11 +15,12 @@ router
   )
   .get(auth('firebaseToken'), notificationController.getUserNotifications);
 router
-  .route('/:notificationId')
-  .get(notificationController.getNotificationWithId)
-  .patch(notificationController.updateNotification)
-  .delete(notificationController.deleteNotification);
+  .route('/notification/:notificationId')
+  .get(auth('getNotificationById'), notificationController.getNotificationWithId)
+  .patch(auth('patchNotificationById'), notificationController.updateNotification)
+  .delete(auth('deleteNotificationById'), notificationController.deleteNotification);
 
+router.route('/unreadNotification').get(auth('getunreadNotification'), notificationController.getUnreadNotification);
 module.exports = router;
 
 /**
@@ -150,10 +151,10 @@ module.exports = router;
  *           schema:
  *             type: object
  *             properties:
- *               isRead:
+ *               status:
  *                 type: boolean
  *             example:
- *               idRead: true
+ *               status: true
  *     responses:
  *       "200":
  *         description: OK
@@ -192,4 +193,28 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /unreadNotification:
+ *   get:
+ *     summary: get unread notification count
+ *     description: Only logged in user can get their notification count.
+ *     tags: [Notification]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Notification'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */

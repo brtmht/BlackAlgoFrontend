@@ -49,7 +49,7 @@ module.exports = router;
  *         name: name
  *         schema:
  *           type: string
- *         description: Region name
+ *         description: mtAccount name
  *       - in: query
  *         name: sortBy
  *         schema:
@@ -248,7 +248,7 @@ module.exports = router;
  *         name: name
  *         schema:
  *           type: string
- *         description: Region name
+ *         description: MT Broker name
  *       - in: query
  *         name: sortBy
  *         schema:

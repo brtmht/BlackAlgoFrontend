@@ -26,7 +26,11 @@ const getUser = {
   }),
 };
 
-const updateUser = {};
+const updateUser = {
+  params: Joi.object().keys({
+    userId: Joi.string(),
+  }),
+};
 
 const deleteUser = {
   params: Joi.object().keys({

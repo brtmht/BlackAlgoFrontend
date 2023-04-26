@@ -8,3 +8,4 @@ module.exports.userStrategyController = require('./userStrategy.controller');
 module.exports.paymentController = require('./payment.controller');
 module.exports.notificationController = require('./notification.controller');
 module.exports.mtaccountController = require('./mtaccount.controller');
+module.exports.supportController = require('./support.controller');

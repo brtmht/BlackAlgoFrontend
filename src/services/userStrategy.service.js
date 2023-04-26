@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 const httpStatus = require('http-status');
 const { UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');
@@ -129,17 +130,38 @@ const getUserStrategyByName = async (name) => {
 
 /**
  * Update userStrategy by id
- * @param {ObjectId} userStrategyId
+ * @param {ObjectId} strategyId
  * @param {Object} updateBody
  * @returns {Promise<UserStrategy>}
  */
-const updateUserStrategyById = async (userId, updateBody) => {
-  const userStrategy = await getUserStrategyById(userId);
+const updateUserStrategyById = async (strategyId, updateBody) => {
+  const userData = UserStrategy.findByIdAndUpdate(strategyId, { ...updateBody });
+  if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
+  }
+  return userData;
+};
+
+/**
+ * Delete userStrategy by id
+ * @param {ObjectId} userStrategyId
+ * @returns {Promise<UserStrategy>}
+ */
+const updateOnBoardStrategy = async (userStrategyId) => {
+  const userStrategy = await UserStrategy.findOne({ userId: userStrategyId });
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  const userData = UserStrategy.findByIdAndUpdate(userStrategy._id, { ...updateBody });
-  return userData;
+  const userStrategyUpdated = await UserStrategy.updateOne(
+    { _id: userStrategy._id },
+    {
+      $set: {
+        onBoardProcess: true,
+      },
+    }
+  );
+  console.log(userStrategyUpdated);
+  return userStrategyUpdated;
 };
 
 /**
@@ -152,7 +174,7 @@ const deleteUserStrategyById = async (userStrategyId) => {
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  const userStrategyDeleted = await UserStrategy.findByIdAndUpdate(userStrategyId, { isDeleted: true });
+  const userStrategyDeleted = await UserStrategy.findByIdAndUpdate(userStrategy._Id, { isDeleted: true });
   return userStrategyDeleted;
 };
 
@@ -164,4 +186,5 @@ module.exports = {
   updateUserStrategyById,
   deleteUserStrategyById,
   getUserStrategyByUserId,
+  updateOnBoardStrategy,
 };

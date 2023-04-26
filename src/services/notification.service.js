@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 const httpStatus = require('http-status');
 const { Notification } = require('../models');
