@@ -17,7 +17,8 @@ router
     auth('getUserStrategies'),
     validate(userStrategyValidation.getUserStrategies),
     userStrategyController.getUserStrategies
-  );
+  )
+  .patch(auth('updateOnBoarding'), userStrategyController.onBoardUserStrategy);
 router.route('/userId').get(auth('getUserStrategiesByUserID'), userStrategyController.getUserStrategy);
 router
   .route('/:userStrategyId')
@@ -102,7 +103,25 @@ module.exports = router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
- *
+ *   patch:
+ *     summary: update a userStrategy by token
+ *     description: Logged in userStrategies can fetch only their own userStrategy information. Only admins can fetch other userStrategies.
+ *     tags: [UserStrategies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserStrategy'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   get:
  *     summary: Get all userStrategies
  *     description: Only admins can retrieve all userStrategies.

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 const httpStatus = require('http-status');
 const { toDataURL } = require('qrcode');
@@ -160,7 +159,6 @@ const verify2faSecret = async (req) => {
   const authCode = req.body.secret;
   const user = await User.findById(req.user._id);
   const googleSecret = user.google_2fa_secret;
-  console.log(googleSecret, authCode);
   const isValid = authenticator.verify({ token: authCode, secret: googleSecret });
   if (!isValid) {
     throw new ApiError(httpStatus.BAD_REQUEST);
@@ -170,7 +168,6 @@ const verify2faSecret = async (req) => {
 
 const turnOn2fa = async (req) => {
   const turnOn2Fa = await verify2faSecret(req);
-  console.log(turnOn2Fa);
   if (turnOn2Fa) {
     await User.findByIdAndUpdate(req.user._id, {
       google_2fa_status: true,
@@ -181,7 +178,6 @@ const turnOn2fa = async (req) => {
 };
 const regenerate2faSecret = async (req) => {
   const isValid = await verify2faSecret(req);
-  console.log(isValid);
   if (isValid) {
     const secret = authenticator.generateSecret();
     return {
@@ -192,12 +188,15 @@ const regenerate2faSecret = async (req) => {
 };
 const activateNew2faSecret = async (req) => {
   const googleSecret = req.body.google_2fa_secret;
-  console.log(googleSecret);
   const userData = await User.findByIdAndUpdate(req.user._id, {
     google_2fa_secret: googleSecret,
   });
-
   return userData;
+};
+
+const getBackUpSecretKey = async (req) => {
+  const user = await User.findById(req.user._id);
+  return user.google_2fa_secret;
 };
 module.exports = {
   createUser,
@@ -214,4 +213,5 @@ module.exports = {
   turnOn2fa,
   regenerate2faSecret,
   activateNew2faSecret,
+  getBackUpSecretKey,
 };

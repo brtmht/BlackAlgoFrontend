@@ -20,7 +20,7 @@ router.route('/generate2fa').get(auth('generate2fa'), userController.get2FactorA
 router.route('/verify2Fa').post(auth('verify2Fa'), userController.get2FactorVerified);
 router.route('/generateNew').post(auth('generateNew'), userController.regenerate2faSecret);
 router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2faSecret);
-
+router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
 router
   .route('/users/:userId')
   .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
@@ -452,6 +452,29 @@ module.exports = router;
  *                 type: string
  *             example:
  *               google_2fa_secret: "563785"
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /getSecretKey:
+ *   get:
+ *     summary: get your backup 2FA secret key
+ *     description: With this user can get their backup 2FA secret key.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       "200":
  *         description: OK

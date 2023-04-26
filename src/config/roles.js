@@ -48,6 +48,12 @@ const allRoles = {
     'turnOff2Fa',
     'activate2Fa',
     'generateNew',
+    'getBackUpSecretKey',
+    'getunreadNotification',
+    'getNotificationById',
+    'patchNotificationById',
+    'deleteNotificationById',
+    'updateOnBoarding',
   ],
   admin: ['getUsers', 'manageUsers'],
 };

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 const httpStatus = require('http-status');
 const { Support, SupportChat } = require('../models');

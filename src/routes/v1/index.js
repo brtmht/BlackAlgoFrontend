@@ -57,7 +57,7 @@ const defaultRoutes = [
     route: mtRoute,
   },
   {
-    path: '/notification',
+    path: '',
     route: notificationRoute,
   },
 ];

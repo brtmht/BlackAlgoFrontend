@@ -47,6 +47,10 @@ const turnOn2fa = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const getBackUpSecretKey = catchAsync(async (req, res) => {
+  const result = await userService.getBackUpSecretKey(req);
+  res.send(result);
+});
 const regenerate2faSecret = catchAsync(async (req, res) => {
   const result = await userService.regenerate2faSecret(req);
   res.send(result);
@@ -84,4 +88,5 @@ module.exports = {
   turnOn2fa,
   regenerate2faSecret,
   activate2faSecret,
+  getBackUpSecretKey,
 };
