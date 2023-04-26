@@ -147,10 +147,14 @@ const updateUserStrategyById = async (strategyId, updateBody) => {
  * @param {ObjectId} userStrategyId
  * @returns {Promise<UserStrategy>}
  */
-const updateOnBoardStrategy = async (userStrategyId) => {
-  const userStrategy = await UserStrategy.findOne({ userId: userStrategyId });
+const updateOnBoardStrategy = async (userId) => {
+  const userStrategy = await UserStrategy.findOne({ userId });
   if (!userStrategy) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
+    const userStrategydata = await UserStrategy.create({
+      userId,
+      onBoardProcess: true,
+    });
+    return userStrategydata;
   }
   const userStrategyUpdated = await UserStrategy.updateOne(
     { _id: userStrategy._id },
@@ -160,7 +164,6 @@ const updateOnBoardStrategy = async (userStrategyId) => {
       },
     }
   );
-  console.log(userStrategyUpdated);
   return userStrategyUpdated;
 };
 
