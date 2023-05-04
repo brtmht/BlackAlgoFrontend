@@ -25,7 +25,7 @@ const getToken = async (notificationData, id) => {
  * @returns {Promise<Notification>}
  */
 const getAllNotificationByUserID = async (userId) => {
-  const notificatinos = await Notification.find({ userId });
+  const notificatinos = await Notification.find({ userId }).sort({ createdAt: -1 });
   return notificatinos;
 };
 
@@ -35,7 +35,7 @@ const getAllNotificationByUserID = async (userId) => {
  * @returns {Promise<Notification>}
  */
 const getNotificationById = async (id) => {
-  return Notification.findById(id);
+  return Notification.findById(id).sort({ createdAt: -1 });
 };
 
 /**
@@ -71,10 +71,37 @@ const deleteNotification = async (notificationId) => {
   return notificationDeleted;
 };
 
+/**
+ * unread notification
+ * @param {object}id
+ * @return {promise<Notification/>}
+ */
+const unreadNotificationCount = async (id) => {
+  try {
+    const count = await Notification.find({
+      $and: [{ userId: id }, { isRead: false }],
+    });
+    return count.length;
+  } catch (error) {
+    throw new ApiError(httpStatus.NOT_ACCEPTABLE);
+  }
+};
+
+// Admin Api
+/**
+ * Get All Notifications
+ * @returns {Promise<Notification>}
+ */
+const getAllNotification = async () => {
+  const notificatinos = await Notification.find().sort({ createdAt: -1 });
+  return notificatinos;
+};
 module.exports = {
   getToken,
   getNotificationById,
   updateNotificationStatus,
   deleteNotification,
   getAllNotificationByUserID,
+  unreadNotificationCount,
+  getAllNotification,
 };

@@ -14,6 +14,7 @@ const createPayment = {
 const postPaymentDetails = {
   body: Joi.object().keys({
     userId: Joi.string().custom(objectId),
+    amount: Joi.number(),
     cryptoId: Joi.string().custom(objectId),
     stripeAccountId: Joi.string().custom(objectId),
     paymentDetailId: Joi.string().custom(objectId),
@@ -23,6 +24,7 @@ const postPaymentDetails = {
     paymentType: Joi.boolean(),
     paymentStatus: Joi.string(),
     paymentToken: Joi.string().required(),
+    paymentMethod: Joi.string().required(),
   }),
 };
 const createSubscription = {

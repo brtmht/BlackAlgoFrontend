@@ -8,6 +8,10 @@ const paymentDetailSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
     },
+    amount: {
+      type: Number,
+      default: null,
+    },
     cryptoId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'CryptoAccount',

@@ -63,7 +63,6 @@ module.exports = router;
  *               currency: inr
  *               country: india
  *               paymentType: card
- *               subscriptionplanId: sub_1MvaMLEy4gM8gXFtBuRGHpna
  *     responses:
  *       "201":
  *         description: Created
@@ -168,12 +167,15 @@ module.exports = router;
  *                 enum: [incomplete,pending,refunded,failed,completed,cancelled]
  *               customerCardId:
  *                 type: string
+ *               paymentMethod:
+ *                 type: string
  *             example:
  *               paymentToken: "642c5224d1ad6a54f0407072"
  *               stripeTransactionId: "ipi_ue73f_4yei"
  *               customerCardId: card_1Mvy6nLbnBoaTE81lvCbY1lM
  *               paymentStatus: pending
  *               subscriptionPlanId: sub_ewcjvwecvbweh
+ *               paymentMethod: pm_wetreryuyiou
  *     responses:
  *       "201":
  *         description: Created
@@ -216,7 +218,7 @@ module.exports = router;
  */
 /**
  * @swagger
- * /binance:
+ * /payment/binance:
  *   post:
  *     summary: Create a payment using card and crypto
  *     description: User can create the plan payment using card and crypto .
