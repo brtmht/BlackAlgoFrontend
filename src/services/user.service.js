@@ -123,20 +123,8 @@ const updateUserPasword = async (userId, updateBody) => {
   }
   throw new ApiError(httpStatus.BAD_REQUEST, 'Password doesnot match');
 };
-/**
- * Delete user by id
- * @param {ObjectId} userId
- * @returns {Promise<User>}
- */
-const deleteUserById = async (userId) => {
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
-  const userDeleted = await User.findByIdAndUpdate(userId, { isDeleted: true });
-  return userDeleted;
-};
 
+// Generate Two factor authentication secret
 const generate2faSecret = async (user) => {
   const secret = authenticator.generateSecret();
   await User.findByIdAndUpdate(user._id, {
@@ -198,6 +186,34 @@ const getBackUpSecretKey = async (req) => {
   const user = await User.findById(req.user._id);
   return user.google_2fa_secret;
 };
+
+// admin Api
+/**
+ * Blocked user by id
+ * @param {ObjectId} userId
+ * @returns {Promise<User>}
+ */
+const blockedUserById = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const userBlocked = await User.findByIdAndUpdate(userId, { isBlocked: true });
+  return userBlocked;
+};
+/**
+ * Delete user by id
+ * @param {ObjectId} userId
+ * @returns {Promise<User>}
+ */
+const deleteUserById = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const userDeleted = await User.findByIdAndUpdate(userId, { isDeleted: true });
+  return userDeleted;
+};
 module.exports = {
   createUser,
   queryUsers,
@@ -214,4 +230,5 @@ module.exports = {
   regenerate2faSecret,
   activateNew2faSecret,
   getBackUpSecretKey,
+  blockedUserById,
 };

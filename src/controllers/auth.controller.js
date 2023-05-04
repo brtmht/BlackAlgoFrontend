@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { authService, userService, tokenService, emailService } = require('../services');
+const { authService, userService, tokenService, emailService, userStrategyService } = require('../services');
 const constants = require('../config/constants');
 
 const register = catchAsync(async (req, res) => {
@@ -11,6 +11,7 @@ const register = catchAsync(async (req, res) => {
     token: verifyEmailToken,
     url: process.env.BASE_URL,
   };
+  await userStrategyService.createUserStrategy(req.body, user.id);
   await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
   res.send({ user, tokens });
 });

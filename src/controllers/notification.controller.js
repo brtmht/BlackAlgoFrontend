@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { notificationService, notificationCountService } = require('../services');
+const { notificationService } = require('../services');
 
 const createNotificationToken = catchAsync(async (req, res) => {
   const userId = req.user._id;
@@ -42,14 +42,23 @@ const deleteNotification = catchAsync(async (req, res) => {
   res.sendStatus(httpStatus.NO_CONTENT);
 });
 
-// Notification count services
+// Unread Notification count
 const getUnreadNotification = catchAsync(async (req, res) => {
   const user = req.user._id;
-  const count = await notificationCountService.unreadNotificationCount(user);
+  const count = await notificationService.unreadNotificationCount(user);
   if (!count) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
   res.send(`${count}`);
+});
+
+// admin Api
+const getAllNotification = catchAsync(async (req, res) => {
+  const notification = await notificationService.getAllNotification();
+  if (!notification) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+  res.send(notification);
 });
 module.exports = {
   createNotificationToken,
@@ -58,4 +67,5 @@ module.exports = {
   updateNotification,
   deleteNotification,
   getUnreadNotification,
+  getAllNotification,
 };

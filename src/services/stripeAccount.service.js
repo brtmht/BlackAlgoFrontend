@@ -141,6 +141,7 @@ const createPaymentIntent = async (stripeAccountBody, id) => {
   const paymentIntent = await Stripe.paymentIntents.create({
     amount: stripeAccountBody.amount * 100,
     currency: 'usd',
+    setup_future_usage: 'off_session',
     payment_method_types: ['card'],
     customer: id,
   });
