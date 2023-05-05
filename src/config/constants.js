@@ -19,4 +19,12 @@ module.exports = {
     subject: 'Reset your Blackalgo password',
     template_name: 'resetPassword.ejs',
   },
+  TRADING_ORDER_TYPE: {
+    BINANCE: 'binance',
+    MT4: 'mt4',
+  },
+  CMD_TYPE: {
+    BUY: 'buy',
+    SELL: 'sell',
+  },
 };
