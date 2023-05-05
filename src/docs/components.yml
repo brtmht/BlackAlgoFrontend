@@ -223,13 +223,10 @@ components:
           type: boolean
         isDeleted:
           type: boolean
-        customerCardId:
-          type: string
       example:
         id: 5ebac534954b54139806c112
         userId: 5ebac534954b54139806c112
         customerId: cus_ycj_eff45
-        customerCardId: card_1Mvy6nLbnBoaTE81lvCbY1lM
         email: example@example.com
         phoneNo: 7384728935
         countryCode: India

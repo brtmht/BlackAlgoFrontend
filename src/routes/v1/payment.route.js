@@ -166,14 +166,11 @@ module.exports = router;
  *               paymentStatus:
  *                 type: string
  *                 enum: [incomplete,pending,refunded,failed,completed,cancelled]
- *               customerCardId:
- *                 type: string
  *               paymentMethod:
  *                 type: string
  *             example:
  *               paymentToken: "642c5224d1ad6a54f0407072"
  *               stripeTransactionId: "ipi_ue73f_4yei"
- *               customerCardId: card_1Mvy6nLbnBoaTE81lvCbY1lM
  *               paymentStatus: pending
  *               subscriptionPlanId: sub_ewcjvwecvbweh
  *               paymentMethod: pm_wetreryuyiou
