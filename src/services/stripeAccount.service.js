@@ -18,7 +18,7 @@ const saveStripeAccount = async (StripeData, customerID, user) => {
     customerId: customerID,
     email: StripeData.email,
     phoneNo: StripeData.phone,
-    country: StripeData.address,
+    country: StripeData.country,
   });
   return data;
 };

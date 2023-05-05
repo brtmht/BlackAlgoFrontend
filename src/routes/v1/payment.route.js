@@ -63,6 +63,7 @@ module.exports = router;
  *               currency: inr
  *               country: india
  *               paymentType: card
+ *               subscriptionplanId: 642c5224d1ad6a54f0407072
  *     responses:
  *       "201":
  *         description: Created
