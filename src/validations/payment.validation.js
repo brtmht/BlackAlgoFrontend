@@ -20,7 +20,6 @@ const postPaymentDetails = {
     paymentDetailId: Joi.string().custom(objectId),
     subscriptionPlanId: Joi.string(),
     stripeTransactionId: Joi.string(),
-    customerCardId: Joi.string(),
     paymentType: Joi.boolean(),
     paymentStatus: Joi.string(),
     paymentToken: Joi.string().required(),

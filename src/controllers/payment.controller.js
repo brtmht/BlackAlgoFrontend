@@ -14,12 +14,13 @@ const { binance, loginBinanceManually } = require('../services/binance.service')
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
-  const binanceData = await binanceService.binanceAutoConnect();
+  const binanceData = await binanceService.getAllOrders();
   res.send(binanceData);
 });
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
-  res.status(httpStatus.NO_CONTENT).send();
+  const binanceData = await binanceService.placeMarketOrder();
+  res.send(binanceData);
 });
 // log in binance
 const loginBinance = catchAsync(async (req, res) => {
@@ -39,7 +40,6 @@ const stripeWebhook = catchAsync(async (req) => {
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
   let paymentData;
-  // eslint-disable-next-line prefer-const
   const user = req.user._id;
 
   if (req.body.paymentType === 'card') {
@@ -62,7 +62,7 @@ const savePaymentDetails = catchAsync(async (req, res) => {
   const PaymentDetails = await PaymentDetail.findOne({ paymentToken: req.body.paymentToken });
   if (PaymentDetails) {
     await transactionHistoryService.saveTransactionHistory(PaymentDetails, req);
-    await stripeAccountService.updateStripeAccount(PaymentDetails.stripeAccountId, req.body.customerCardId);
+    // await stripeAccountService.updateStripeAccount(PaymentDetails.stripeAccountId, req.body.customerCardId);
   }
   res.send(PaymentDetails);
 });
