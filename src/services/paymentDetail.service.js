@@ -30,13 +30,14 @@ const savePaymentDetails = async (paymentData, stripeData, reqData) => {
 
 // To update payment details after a transaction is processed
 const updatePaymentDetails = async (reqData) => {
+  let subscription;
   if (reqData.subscriptionPlanId) {
     const paymentDetails = await PaymentDetail.findOne({ paymentToken: reqData.paymentToken });
     const customerData = await StripeAccount.findById(paymentDetails.stripeAccountId);
     const planId = await SubscriptionPlan.findOne({ _id: reqData.subscriptionPlanId });
     if (planId.name === 'Monthly') {
       // create subscription
-      await Stripe.subscriptions.create({
+      subscription = await Stripe.subscriptions.create({
         customer: customerData.customerId,
         items: [{ price: planId.subscriptionPlanId }],
         default_payment_method: reqData.paymentMethod,
@@ -51,7 +52,7 @@ const updatePaymentDetails = async (reqData) => {
         product: product.id,
       });
 
-      await Stripe.subscriptions.create({
+      subscription = await Stripe.subscriptions.create({
         customer: customerData.customerId,
         items: [{ price: price.id }],
         default_payment_method: reqData.paymentMethod,
@@ -63,6 +64,7 @@ const updatePaymentDetails = async (reqData) => {
     {
       $set: {
         ...reqData,
+        subscriptionPlanId: subscription.id,
       },
     }
   );
