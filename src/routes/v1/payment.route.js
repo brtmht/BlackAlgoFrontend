@@ -168,12 +168,15 @@ module.exports = router;
  *                 enum: [incomplete,pending,refunded,failed,completed,cancelled]
  *               paymentMethod:
  *                 type: string
+ *               portfolioAmount:
+ *                 type: number
  *             example:
  *               paymentToken: "642c5224d1ad6a54f0407072"
  *               stripeTransactionId: "ipi_ue73f_4yei"
  *               paymentStatus: pending
  *               subscriptionPlanId: sub_ewcjvwecvbweh
  *               paymentMethod: pm_wetreryuyiou
+ *               portfolioAmount: 10000
  *     responses:
  *       "201":
  *         description: Created

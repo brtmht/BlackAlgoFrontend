@@ -16,6 +16,7 @@ const savePaymentDetails = async (paymentData, stripeData, reqData) => {
   const trasactionData = await PaymentDetail.create({
     userId: stripeData.userId,
     amount: reqData.amount,
+    portfolioAmount: reqData.portfolioAmount,
     paymentToken: paymentData.paymentIntent.client_secret,
     stripeAccountId: stripeData.id,
     subscriptionPlanId: reqData.subscriptionplanId,
