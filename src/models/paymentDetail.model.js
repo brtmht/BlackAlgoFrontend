@@ -34,6 +34,10 @@ const paymentDetailSchema = mongoose.Schema(
       type: String,
       unique: true,
     },
+    portfolioAmount: {
+      type: Number,
+      default: null,
+    },
     paymentStatus: {
       type: String,
       enum: [

@@ -24,6 +24,7 @@ const postPaymentDetails = {
     paymentStatus: Joi.string(),
     paymentToken: Joi.string().required(),
     paymentMethod: Joi.string().required(),
+    portfolioAmount: Joi.number(),
   }),
 };
 const createSubscription = {
