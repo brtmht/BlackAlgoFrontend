@@ -35,6 +35,10 @@ const userSchema = mongoose.Schema(
       },
       private: true, // used by the toJSON plugin
     },
+    notificationToken: {
+      type: String,
+      default: null,
+    },
     image: {
       type: String,
       default: '',
