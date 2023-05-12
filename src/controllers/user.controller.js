@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
+const sendNotification = require('../middlewares/firebaseNotification');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -11,6 +12,11 @@ const createUser = catchAsync(async (req, res) => {
 const getUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const user = await userService.getUserById(userId);
+  const notification = {
+    title: 'Successful',
+    message: 'You are loggedin succesfully',
+  };
+  sendNotification(notification, user.notificationToken);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -71,14 +77,23 @@ const getUsers = catchAsync(async (req, res) => {
   res.send(result);
 });
 
-const blockedUser = catchAsync(async (req, res) => {
-  await userService.blockedUserById(req.params.userId);
+const blockUser = catchAsync(async (req, res) => {
+  await userService.blockUserById(req.params.userId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const unblockUser = catchAsync(async (req, res) => {
+  await userService.unBlockUserById(req.params.userId);
+  res.status(httpStatus.NO_CONTENT).send();
+});
 const deleteUser = catchAsync(async (req, res) => {
   await userService.deleteUserById(req.params.userId);
   res.status(httpStatus.NO_CONTENT).send();
+});
+const getUserWalletAmount = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const amount = await userService.getUserWalletAmount(userId);
+  res.send(amount);
 });
 
 module.exports = {
@@ -95,5 +110,7 @@ module.exports = {
   regenerate2faSecret,
   activate2faSecret,
   getBackUpSecretKey,
-  blockedUser,
+  blockUser,
+  unblockUser,
+  getUserWalletAmount,
 };
