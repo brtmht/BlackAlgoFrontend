@@ -12,11 +12,13 @@ const createUser = catchAsync(async (req, res) => {
 const getUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const user = await userService.getUserById(userId);
-  const notification = {
-    title: 'Successful',
-    message: 'You are loggedin succesfully',
-  };
-  sendNotification(notification, user.notificationToken);
+  if (user.notificationToken !== null) {
+    const notification = {
+      title: 'Successful',
+      message: 'You getting user succesfully',
+    };
+    sendNotification(notification, user.notificationToken);
+  }
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -90,6 +92,11 @@ const deleteUser = catchAsync(async (req, res) => {
   await userService.deleteUserById(req.params.userId);
   res.status(httpStatus.NO_CONTENT).send();
 });
+const clearUserToken = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  await userService.clearUserTokenById(userId);
+  res.status(httpStatus.NO_CONTENT).send();
+});
 const getUserWalletAmount = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const amount = await userService.getUserWalletAmount(userId);
@@ -102,6 +109,7 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  clearUserToken,
   changePassword,
   get2FactorAuthentication,
   get2FactorVerified,
