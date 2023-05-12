@@ -3,9 +3,17 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { notificationService } = require('../services');
 
-const createNotificationToken = catchAsync(async (req, res) => {
+const addNotificationToken = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const notification = await notificationService.getToken(req.body, userId);
+  const notificationToken = await notificationService.saveToken(req.body, userId);
+  if (!notificationToken) {
+    throw new ApiError(httpStatus.SEE_OTHER);
+  }
+  res.status(httpStatus.OK).send(notificationToken);
+});
+const createNotification = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const notification = await notificationService.createNotification(req.body, userId);
   if (!notification) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
@@ -61,7 +69,8 @@ const getAllNotification = catchAsync(async (req, res) => {
   res.send(notification);
 });
 module.exports = {
-  createNotificationToken,
+  addNotificationToken,
+  createNotification,
   getUserNotifications,
   getNotificationWithId,
   updateNotification,
