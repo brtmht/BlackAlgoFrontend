@@ -7,13 +7,13 @@ admin.initializeApp({
   credential: admin.credential.cert(firebaseAccount),
 });
 
-const sendNotification = (notificationData) => {
+const sendNotification = (notificationData, token) => {
   const message = {
     notification: {
       title: notificationData.title,
       body: notificationData.message,
     },
-    token: notificationData.token,
+    token,
   };
   admin
     .messaging()

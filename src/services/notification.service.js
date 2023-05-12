@@ -1,20 +1,42 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const httpStatus = require('http-status');
-const { Notification } = require('../models');
+const { Notification, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const sendNotification = require('../middlewares/firebaseNotification');
+
 /**
  * Post notifications
  * @param {Object} notificationData
  * @param {id} id
  * @returns {Promise<Notification>}
  */
-const getToken = async (notificationData, id) => {
-  await sendNotification(notificationData);
+const saveToken = async (notificationData, id) => {
+  const msgResponse = await User.findOneAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        notificationToken: notificationData.token,
+      },
+    }
+  );
+  return msgResponse;
+};
+
+/**
+ * Post notifications
+ * @param {Object} notificationData
+ * @param {id} id
+ * @returns {Promise<Notification>}
+ */
+const createNotification = async (notificationData, _id) => {
+  const user = await User.findById({ _id });
+
+  await sendNotification(notificationData, user.notificationToken);
   const msgResponse = await Notification.create({
-    userId: id,
+    userId: _id,
     title: notificationData.title,
     message: notificationData.message,
+    type: notificationData.type,
   });
   return msgResponse;
 };
@@ -97,11 +119,12 @@ const getAllNotification = async () => {
   return notificatinos;
 };
 module.exports = {
-  getToken,
+  createNotification,
   getNotificationById,
   updateNotificationStatus,
   deleteNotification,
   getAllNotificationByUserID,
   unreadNotificationCount,
   getAllNotification,
+  saveToken,
 };
