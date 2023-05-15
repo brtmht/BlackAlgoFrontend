@@ -12,6 +12,9 @@ const mtRoute = require('./mt.route');
 const config = require('../../config/config');
 const notificationRoute = require('./notification.route');
 const supportRoute = require('./support.route');
+const adminRoute = require('./admin.route');
+const tradinOrderRoute = require('./tradingOrder.route');
+const historyRoute = require('./transactionHistory.route');
 
 const router = express.Router();
 
@@ -19,6 +22,10 @@ const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/admin',
+    route: adminRoute,
   },
   {
     path: '',
@@ -58,7 +65,15 @@ const defaultRoutes = [
   },
   {
     path: '',
+    route: tradinOrderRoute,
+  },
+  {
+    path: '',
     route: notificationRoute,
+  },
+  {
+    path: '',
+    route: historyRoute,
   },
 ];
 

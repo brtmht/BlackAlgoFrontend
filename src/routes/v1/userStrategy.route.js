@@ -20,6 +20,7 @@ router
   )
   .patch(auth('updateOnBoarding'), userStrategyController.onBoardUserStrategy);
 router.route('/userId').get(auth('getUserStrategiesByUserID'), userStrategyController.getUserStrategy);
+router.route('/getAll').get(auth('getAllUserStrategies'), userStrategyController.getAllUserStrategy);
 router
   .route('/:userStrategyId')
   .get(
@@ -37,7 +38,6 @@ router
     validate(userStrategyValidation.deleteUserStrategy),
     userStrategyController.deleteUserStrategy
   );
-
 module.exports = router;
 
 /**
@@ -294,4 +294,43 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /userStrategies/getAll:
+ *   get:
+ *     summary: Get all Users's userStrategies
+ *     description: Only admins can retrieve all userStrategies.
+ *     tags: [UserStrategies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UserStrategy'
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 totalResults:
+ *                   type: integer
+ *                   example: 1
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */

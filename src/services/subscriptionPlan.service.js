@@ -53,8 +53,8 @@ const createSubscription = async (subscriptionData) => {
 
 // Stripe services
 // It will retrieve subscription plan
-const retrieveStripeSubsPlan = async (subsPlanData) => {
-  const subscriptionPlan = await Stripe.subscriptions.retrieve(subsPlanData.subscriptionId);
+const retrieveStripeSubsPlan = async (subscriptionPlanId) => {
+  const subscriptionPlan = await Stripe.subscriptions.retrieve(subscriptionPlanId);
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
@@ -62,8 +62,8 @@ const retrieveStripeSubsPlan = async (subsPlanData) => {
 };
 
 // It will need subscription plan id to cancel subscription plan
-const deactivateStripeSubscription = async (subsPlanData) => {
-  const subscription = await Stripe.subscriptions.del(subsPlanData.subscriptionId);
+const deleteStripeSubscription = async (subscriptionId) => {
+  const subscription = await Stripe.subscriptions.del(subscriptionId);
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
@@ -71,8 +71,20 @@ const deactivateStripeSubscription = async (subsPlanData) => {
 };
 
 // It will resume the subscription plan with subscription id
-const resumeStripeSubscription = async (subsPlanData) => {
-  const subscription = await Stripe.subscriptions.retrieve(subsPlanData.subsPlanId, { billing_cycle_anchor: 'now' });
+const resumeStripeSubscription = async (subsPlanId) => {
+  const subscription = await Stripe.subscriptions.update(subsPlanId, {
+    cancel_at_period_end: false,
+  });
+  if (!subscription) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  return subscription;
+};
+
+const deactivateStripeSubscription = async (subsPlanId) => {
+  const subscription = await Stripe.subscriptions.update(subsPlanId, {
+    cancel_at_period_end: true,
+  });
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
@@ -164,4 +176,5 @@ module.exports = {
   getAllSubscriptionPlans,
   updateSubscriptionPlanById,
   deleteSubscriptionPlanById,
+  deleteStripeSubscription,
 };

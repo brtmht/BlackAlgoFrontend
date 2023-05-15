@@ -20,21 +20,37 @@ const getSubscriptionPlans = catchAsync(async (req, res) => {
 
 // you can retrieve a subscription plan by using subscription id from stripe
 const retrieveSubscriptionPlan = catchAsync(async (req, res) => {
-  const retrieval = await subscriptionPlanService.retrieveStripeSubsPlan(req.body);
+  const retrieval = await subscriptionPlanService.retrieveStripeSubsPlan(req.params.subscriptionPlanId);
   if (!retrieval) {
     throw new ApiError(httpStatus.BAD_REQUEST);
   }
   res.send(retrieval);
 });
-
+// resume a subscription plan
+const resumeStripeSubscription = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const activatedSuscription = await subscriptionPlanService.resumeStripeSubscription(req.params.subscriptionPlanId, userId);
+  if (!activatedSuscription) {
+    throw new ApiError(httpStatus.NOT_IMPLEMENTED);
+  }
+  res.status(httpStatus.ACCEPTED).send(activatedSuscription);
+});
+// cancel a subscription
 const deactivateSubscriptionPlan = catchAsync(async (req, res) => {
-  const deactivatedSuscription = await subscriptionPlanService.deactivateStripeSubscription(req.body);
+  const deactivatedSuscription = await subscriptionPlanService.deactivateStripeSubscription(req.params.subscriptionPlanId);
   if (!deactivatedSuscription) {
     throw new ApiError(httpStatus.NOT_IMPLEMENTED);
   }
-  res.status(httpStatus.ACCEPTED);
+  res.status(httpStatus.ACCEPTED).send(deactivatedSuscription);
 });
 
+const deleteStripeSubscriptionPlan = catchAsync(async (req, res) => {
+  const deactivatedSuscription = await subscriptionPlanService.deleteStripeSubscription(req.params.subscriptionPlanId);
+  if (!deactivatedSuscription) {
+    throw new ApiError(httpStatus.NOT_IMPLEMENTED);
+  }
+  res.status(httpStatus.NO_CONTENT);
+});
 // db apis
 const getAllSubscriptionPlans = catchAsync(async (req, res) => {
   const subscriptionPlan = await subscriptionPlanService.getAllSubscriptionPlans();
@@ -63,7 +79,9 @@ module.exports = {
   createSubscriptionPlan,
   getSubscriptionPlans,
   retrieveSubscriptionPlan,
+  resumeStripeSubscription,
   updateSubscriptionPlan,
+  deleteStripeSubscriptionPlan,
   deleteSubscriptionPlan,
   deactivateSubscriptionPlan,
   getSubscriptionPlan,

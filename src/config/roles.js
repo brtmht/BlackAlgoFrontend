@@ -1,7 +1,5 @@
 const allRoles = {
   user: [
-    'manageUsers',
-    'getUsers',
     'updateUser',
     'getUser',
     'changePassword',
@@ -10,6 +8,7 @@ const allRoles = {
     'turnOn2Fa',
     'turnOff2Fa',
     'generateNew',
+    'getTransactionHistory',
     'activate2Fa',
     'getUserStrategies',
     'manageUserStrategies',
@@ -22,7 +21,8 @@ const allRoles = {
     'getPayments',
     'manageStrategies',
     'getStrategies',
-    'manageSubscriptionPlans',
+    'deleteSubscriptionPlans',
+    'updateSubscriptionPlans',
     'getSubscriptionPlans',
     'postSubscriptionPlans',
     'getStripeSubscriptions',
@@ -53,8 +53,14 @@ const allRoles = {
     'getNotificationById',
     'patchNotificationById',
     'deleteNotificationById',
+    'getUserWallet',
+    'createTradingOrder',
+    'getTradingOrder',
+    'updateTradingOrder',
+    'deleteTradingOrder',
   ],
-  admin: ['getUsers', 'manageUsers'],
+
+  admin: ['getUsers', 'manageUsers', 'getAllUserStrategies', 'createUsers', 'getUsers', 'allNotification', 'blockUser'],
 };
 
 const roles = Object.keys(allRoles);

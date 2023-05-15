@@ -20,27 +20,32 @@ router
 router
   .route('/:subscriptionPlanId')
   .get(
-    auth('manageSubscriptionPlans'),
+    auth('getSubscriptionPlans'),
     validate(subscriptionPlanValidation.getSubscriptionPlan),
     subscriptionPlanController.getSubscriptionPlan
   )
   .patch(
-    auth('manageSubscriptionPlans'),
+    auth('updateSubscriptionPlans'),
     validate(subscriptionPlanValidation.updateSubscriptionPlan),
     subscriptionPlanController.updateSubscriptionPlan
   )
   .delete(
-    auth('manageSubscriptionPlans'),
+    auth('deleteSubscriptionPlans'),
     validate(subscriptionPlanValidation.deleteSubscriptionPlan),
     subscriptionPlanController.deleteSubscriptionPlan
   );
 router
-  .route('/stripe/:stripePlansId')
+  .route('/stripe/:subscriptionPlanId')
   .get(auth(), validate(subscriptionPlanValidation.getSubscriptionPlan), subscriptionPlanController.retrieveSubscriptionPlan)
   .delete(
     auth(),
-    validate(subscriptionPlanValidation.deleteSubscriptionPlan),
+    validate(subscriptionPlanValidation.getSubscriptionPlan),
     subscriptionPlanController.deactivateSubscriptionPlan
+  )
+  .patch(
+    auth(),
+    validate(subscriptionPlanValidation.getSubscriptionPlan),
+    subscriptionPlanController.resumeStripeSubscription
   );
 module.exports = router;
 
@@ -231,24 +236,19 @@ module.exports = router;
 
 /**
  * @swagger
- * /stripe/{stripePlansId}:
+ * /subscriptionPlans/stripe/{id}:
  *   get:
  *     summary: Retrieve a subscriptionPlan from  stripe
  *     description: Logged in user can only retrieve their own subscription plan. Only admins can retrieve other subscriptionPlans.
  *     tags: [SubscriptionPlans]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               subscriptionId:
- *                 type: string
- *             example:
- *               subscriptionId: sub_1Mu7v7Ey4gM8gXFtLa0gDb3n
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: SubscriptionPlan id
  *     responses:
  *       "200":
  *         description: OK
@@ -267,6 +267,27 @@ module.exports = router;
  *   delete:
  *     summary: Delete a stripe subscriptionPlan
  *     description: Logged in subscriptionPlans can delete only themselves. Only admins can delete other subscriptionPlans.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: SubscriptionPlan id
+ *     responses:
+ *       "200":
+ *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   patch:
+ *     summary: resume a stripe subscriptionPlan
+ *     description: Logged in user can only resume their cancelled subscriptionPlans.
  *     tags: [SubscriptionPlans]
  *     security:
  *       - bearerAuth: []

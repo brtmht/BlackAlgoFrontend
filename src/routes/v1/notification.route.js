@@ -33,45 +33,6 @@ module.exports = router;
 /**
  * @swagger
  * /notification:
- *   post:
- *     summary: Create a notification
- *     description: Only events can create notification.
- *     tags: [Notification]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - title
- *               - message
- *             properties:
- *               title:
- *                 type: string
- *               message:
- *                 type: string
- *               type:
- *                 type: string
- *             example:
- *               title: test
- *               message: you got a notification from blackalgo
- *               type: alert
- *     responses:
- *       "201":
- *         description: Created
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/Notification'
- *       "400":
- *         $ref: '#/components/responses/DuplicateName'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
  *   get:
  *     summary: get a user's notification
  *     description: Only logged in user can get notification.

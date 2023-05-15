@@ -53,6 +53,10 @@ const deleteUserStrategy = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getAllUserStrategy = catchAsync(async (req, res) => {
+  const allStrategies = await userStrategyService.getUserData();
+  res.status(httpStatus.OK).send(allStrategies);
+});
 module.exports = {
   createUserStrategy,
   getUserStrategies,
@@ -61,4 +65,5 @@ module.exports = {
   deleteUserStrategy,
   getUserStrategyById,
   onBoardUserStrategy,
+  getAllUserStrategy,
 };

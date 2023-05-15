@@ -11,7 +11,7 @@ const userStrategySchema = mongoose.Schema(
     },
     paymentDetailId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: 'paymentDetail',
+      ref: 'PaymentDetail',
     },
     strategyId: {
       type: mongoose.SchemaTypes.ObjectId,

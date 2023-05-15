@@ -10,14 +10,13 @@ const createUser = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(user);
 });
 const getUser = catchAsync(async (req, res) => {
-  const userId = req.user._id;
-  const user = await userService.getUserById(userId);
+  const { user } = req;
   if (user.notificationToken !== null) {
     const notification = {
       title: 'Successful',
       message: 'You getting user succesfully',
     };
-    sendNotification(notification, user.notificationToken);
+    sendNotification(notification, user);
   }
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');

@@ -10,16 +10,19 @@ const sendNotification = require('../middlewares/firebaseNotification');
  * @param {id} id
  * @returns {Promise<Notification>}
  */
-const saveToken = async (notificationData, id) => {
-  const msgResponse = await User.findOneAndUpdate(
-    { _id: id },
-    {
-      $set: {
-        notificationToken: notificationData.token,
-      },
-    }
-  );
-  return msgResponse;
+const saveToken = async (notificationData, user) => {
+  const found = user.notificationToken.find((notificationToken) => notificationToken === notificationData.token);
+  if (!found) {
+    const msgResponse = await User.findOneAndUpdate(
+      { _id: user._id },
+      {
+        $push: {
+          notificationToken: notificationData.token,
+        },
+      }
+    );
+    return msgResponse;
+  }
 };
 
 /**
@@ -28,12 +31,11 @@ const saveToken = async (notificationData, id) => {
  * @param {id} id
  * @returns {Promise<Notification>}
  */
-const createNotification = async (notificationData, _id) => {
-  const user = await User.findById({ _id });
-
-  await sendNotification(notificationData, user.notificationToken);
+const createNotification = async (notificationData, user) => {
+  // Calling firebase notification
+  await sendNotification(notificationData, user);
   const msgResponse = await Notification.create({
-    userId: _id,
+    userId: user._id,
     title: notificationData.title,
     message: notificationData.message,
     type: notificationData.type,

@@ -233,6 +233,108 @@ components:
         isDeleted: false
         status: true 
 
+    TradingOrder:
+      type: object
+      properties:
+        id: 
+          type: string
+        userId:
+          type: string
+        copiedTo: 
+          type: string
+          enum: [binance,mt4]
+        symbol:
+          type: string
+        digits: 
+          type: string
+        operation:
+          type: string
+          enum: [buy, sell]
+        volume:
+          type: number
+        openTime:
+          type: date
+        state: 
+          type: number
+        openPrice:
+          type: number
+        sl:
+          type: number
+        tp:
+          type: number
+        closeTime:
+          type: date
+        expiration:
+          type: date
+        reason:
+          type: number
+        commission:
+          type: number
+        storage:
+          type: number
+        closePrice:
+          type: number
+        profit:
+          type: number
+        taxes:
+          type: number
+        magic:
+          type: number
+        comment:
+          type: string
+        activation:
+          type: number
+        marginRate:
+          type: number 
+      example:
+        id: 5ebac534954b54139806c112
+        userId: 5ebac534954b54139806c112
+        copiedTo: binance
+        symbol: ETH
+        digits: 0
+        operation: buy
+        volume: 0
+        openTime: 19/12/1997 ETC 21:56 
+        state: 0
+        openPrice: 0
+        sl: 0
+        tp: 0
+        closeTime: 19/12/1997 ETC 21:56
+        expiration: 19/12/1997 ETC 21:56
+        reason: 0
+        storage: 0
+        closePrice: 0
+        profit: 0
+        taxes: 0
+        magic: 0
+        comment: ''
+        activation: 0
+        marginRate: 0
+    UserWallet:
+      type: object
+      properties:
+        id: 
+          type: string
+        userId:
+          type: string
+        name: 
+          type: string
+        currency:
+          type: string
+        amount:
+          type: string
+        status: 
+          type: boolean
+        isDeleted:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        userId: 5ebac534954b54139806c112
+        name: balckalgo
+        currency: usd
+        amount: 100
+        isDeleted: false
+        status: false 
     TransactionHistory: 
       type: object
       properties:
