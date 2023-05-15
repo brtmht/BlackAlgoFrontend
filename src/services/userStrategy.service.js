@@ -5,6 +5,19 @@ const ApiError = require('../utils/ApiError');
 const { TransactionHistory } = require('../models');
 
 /**
+ * Get all userStrategy data
+ * @param {null}
+ * @returns {Promise<UserStrategy>}
+ */
+const getUserData = async () => {
+  const data = await UserStrategy.find()
+    .populate({ path: 'userId', select: 'name' })
+    .populate({ path: 'exchangeId', select: 'name' })
+    .populate({ path: 'subscriptionPlanId', select: 'name' })
+    .populate({ path: 'paymentDetailId', select: 'amount' });
+  return data;
+};
+/**
  * Create a userStrategy
  * @param {Object} userStrategyBody
  * @returns {Promise<UserStrategy>}
@@ -183,6 +196,7 @@ const deleteUserStrategyById = async (userStrategyId) => {
 };
 
 module.exports = {
+  getUserData,
   createUserStrategy,
   queryUserStrategies,
   getUserStrategyById,

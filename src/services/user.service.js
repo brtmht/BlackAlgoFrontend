@@ -2,7 +2,7 @@
 const httpStatus = require('http-status');
 const { toDataURL } = require('qrcode');
 const { authenticator } = require('otplib');
-const { User } = require('../models');
+const { User, UserWallet } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -193,12 +193,39 @@ const getBackUpSecretKey = async (req) => {
  * @param {ObjectId} userId
  * @returns {Promise<User>}
  */
-const blockedUserById = async (userId) => {
+const blockUserById = async (userId) => {
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   const userBlocked = await User.findByIdAndUpdate(userId, { isBlocked: true });
+  return userBlocked;
+};
+
+/**
+ * Blocked user by id
+ * @param {ObjectId} userId
+ * @returns {Promise<User>}
+ */
+const clearUserTokenById = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const userCleared = await User.findByIdAndUpdate(userId, { notificationToken: null });
+  return userCleared;
+};
+/**
+ * Blocked user by id
+ * @param {ObjectId} userId
+ * @returns {Promise<User>}
+ */
+const unBlockUserById = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const userBlocked = await User.findByIdAndUpdate(userId, { isBlocked: false });
   return userBlocked;
 };
 /**
@@ -214,6 +241,12 @@ const deleteUserById = async (userId) => {
   const userDeleted = await User.findByIdAndUpdate(userId, { isDeleted: true });
   return userDeleted;
 };
+
+const getUserWalletAmount = async (userId) => {
+  const userWallet = await UserWallet.findOne({ userId });
+  return userWallet;
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -230,5 +263,8 @@ module.exports = {
   regenerate2faSecret,
   activateNew2faSecret,
   getBackUpSecretKey,
-  blockedUserById,
+  blockUserById,
+  unBlockUserById,
+  getUserWalletAmount,
+  clearUserTokenById,
 };

@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { TransactionHistory } = require('../models');
+const { TransactionHistory, PaymentDetail } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -7,7 +7,6 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} transaction
  * @returns {Object}
  */
-// eslint-disable-next-line camelcase
 const saveTransactionHistory = async (paymentData, reqData) => {
   const PaymentDetails = await TransactionHistory.findOne({ paymentDetailId: paymentData._id });
   if (!PaymentDetails) {
@@ -39,7 +38,47 @@ const getPaymentsById = async (id) => {
   }
   return paymentHistory;
 };
+const getStripeTransactionHistory = async () => {
+  const stripeHistory = await PaymentDetail.find({ TransactionHistory: null });
+  if (!stripeHistory) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
+  }
+  return stripeHistory;
+};
+const getCryptoTransactionHistory = async (req, res) => {
+  const cryptoHistory = await PaymentDetail.find({ stripeHistory: null });
+  if (!cryptoHistory) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+  res.send(cryptoHistory);
+};
+const getLast24HrTransactionHistory = async (id) => {
+  const history24Hr = TransactionHistory.find({
+    userId: id,
+    createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+  }).exec();
+  return history24Hr;
+};
+const getLast1WeekTransactionHistory = async (id) => {
+  const history24Hr = TransactionHistory.find({
+    userId: id,
+    createdAt: { $gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+  }).exec();
+  return history24Hr;
+};
+const getLast30DaysTransactionHistory = async (id) => {
+  const history24Hr = TransactionHistory.find({
+    userId: id,
+    createdAt: { $gt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+  }).exec();
+  return history24Hr;
+};
 module.exports = {
   saveTransactionHistory,
   getPaymentsById,
+  getStripeTransactionHistory,
+  getCryptoTransactionHistory,
+  getLast24HrTransactionHistory,
+  getLast1WeekTransactionHistory,
+  getLast30DaysTransactionHistory,
 };

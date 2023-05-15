@@ -169,7 +169,7 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   delete:
- *     summary: Delete a exchange
+ *     summary: Delete a support
  *     description: Logged in support can delete only themselves. Only admins can delete other support.
  *     tags: [Support]
  *     security:

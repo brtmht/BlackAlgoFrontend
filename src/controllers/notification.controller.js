@@ -4,16 +4,17 @@ const catchAsync = require('../utils/catchAsync');
 const { notificationService } = require('../services');
 
 const addNotificationToken = catchAsync(async (req, res) => {
-  const userId = req.user._id;
-  const notificationToken = await notificationService.saveToken(req.body, userId);
+  const { user } = req;
+  const notificationToken = await notificationService.saveToken(req.body, user);
   if (!notificationToken) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
   res.status(httpStatus.OK).send(notificationToken);
 });
+// Create Notification for testing
 const createNotification = catchAsync(async (req, res) => {
-  const userId = req.user._id;
-  const notification = await notificationService.createNotification(req.body, userId);
+  const { user } = req;
+  const notification = await notificationService.createNotification(req.body, user);
   if (!notification) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }

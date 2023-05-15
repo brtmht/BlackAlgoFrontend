@@ -8,7 +8,6 @@ const tradingOrderSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
       required: true,
-      unique: true,
     },
     copiedTo: {
       type: String,
@@ -22,7 +21,7 @@ const tradingOrderSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    cmd: {
+    operation: {
       type: String,
       enum: [constants.CMD_TYPE.BUY, constants.CMD_TYPE.SELL],
     },
@@ -97,6 +96,10 @@ const tradingOrderSchema = mongoose.Schema(
     marginRate: {
       type: Number,
       default: 0,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

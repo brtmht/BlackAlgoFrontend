@@ -9,3 +9,4 @@ module.exports.paymentValidation = require('./payment.validation');
 module.exports.mtValidation = require('./mt.validation');
 module.exports.notificationValidation = require('./notification.validation');
 module.exports.supportValidation = require('./support.validation');
+module.exports.tradingOrderValidation = require('./tradingOrder.validation');

@@ -14,3 +14,5 @@ module.exports.MtBroker = require('./mtBroker.model');
 module.exports.Notification = require('./notification.model');
 module.exports.Support = require('./support.model');
 module.exports.SupportChat = require('./supportChat.model');
+module.exports.TradingOrder = require('./tradingOrder.model');
+module.exports.UserWallet = require('./userWallet.model');

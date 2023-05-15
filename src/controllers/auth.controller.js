@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService, userStrategyService } = require('../services');
 const constants = require('../config/constants');
+const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -19,6 +20,9 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
+  if (user.role === 'admin') {
+    throw new ApiError(httpStatus.FORBIDDEN, 'admin cannot loggin as user');
+  }
   if (user.isEmailVerified === false) {
     const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
     const contentData = {

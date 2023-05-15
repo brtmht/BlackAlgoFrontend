@@ -9,7 +9,7 @@ const router = express.Router();
 
 router
   .route('/users')
-  .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
+  .post(auth('createUsers'), validate(userValidation.createUser), userController.createUser)
   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers)
   .patch(auth('updateUser'), imageUploadMiddleware, userController.updateUser);
 
@@ -21,10 +21,16 @@ router.route('/verify2Fa').post(auth('verify2Fa'), userController.get2FactorVeri
 router.route('/generateNew').post(auth('generateNew'), userController.regenerate2faSecret);
 router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2faSecret);
 router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
+router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUserWalletAmount);
+router.route('/clearUserToken').patch(auth('clearToken'), userController.clearUserToken);
 router
   .route('/users/:userId')
   .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
   .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
+router.route('/blockUser/:userId').patch(auth('blockUser'), validate(userValidation.updateUser), userController.blockUser);
+router
+  .route('/unBlockUser/:userId')
+  .patch(auth('blockUser'), validate(userValidation.updateUser), userController.unblockUser);
 module.exports = router;
 
 /**
@@ -269,7 +275,7 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/Exchange'
+ *                $ref: '#/components/schemas/User'
  *       "400":
  *         $ref: '#/components/responses/DuplicateName'
  *       "401":
@@ -280,6 +286,92 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  */
 
+/**
+ * @swagger
+ * /clearUserToken:
+ *   patch:
+ *     summary: clear user notification token
+ *     description: Logged in users can clear user notification token.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /blockUser/{id}:
+ *   patch:
+ *     summary: block a user with their id
+ *     description: Logged in user can bloack a user with id.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: user id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /unBlockUser/{id}:
+ *   patch:
+ *     summary: unblock a user with their id
+ *     description: Logged in user can unbloack a user with id.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: User id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
 /**
  * @swagger
  * /generate2fa:
@@ -371,6 +463,31 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /getUserWallet:
+ *   get:
+ *     summary: get user's wallet ammount
+ *     description: Logged in users can get their wallet ammount.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserWallet'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
  */
 /**
  * @swagger
