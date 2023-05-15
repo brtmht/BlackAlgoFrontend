@@ -21,7 +21,7 @@ const paginate = (schema) => {
    */
   schema.statics.paginate = async function (filter, options) {
     let sort = '';
-    if (options.sortBy !== 'undefined' || options.sortBy) {
+    if (options.sortBy) {
       const sortingCriteria = [];
       options.sortBy.split(',').forEach((sortOption) => {
         const [key, order] = sortOption.split(':');
