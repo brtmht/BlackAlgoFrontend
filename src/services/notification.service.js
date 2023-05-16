@@ -50,11 +50,17 @@ const createNotification = async (notificationData, user) => {
  */
 const getAllNotificationByUserID = async (userId, options) => {
   const skipCount = (options.page - 1) * options.limit;
+  const notificationsCount = await Notification.find({ userId }).countDocuments();
   const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (notifications.length === 0) {
     throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
   }
-  return { notifications, page: options.page, pageLimit: options.limit };
+  return {
+    notifications,
+    page: options.page,
+    pageLimit: options.limit,
+    hasNextData: notificationsCount > skipCount + options.limit,
+  };
 };
 
 /**
@@ -106,10 +112,10 @@ const deleteNotification = async (notificationId) => {
  */
 const unreadNotificationCount = async (id) => {
   try {
-    const count = await Notification.find({
+    const notifcations = await Notification.find({
       $and: [{ userId: id }, { isRead: false }],
-    });
-    return count.length;
+    }).sort({ createdAt: -1 });
+    return notifcations;
   } catch (error) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
