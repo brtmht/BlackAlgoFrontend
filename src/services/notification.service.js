@@ -3,7 +3,6 @@ const httpStatus = require('http-status');
 const { Notification, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const sendNotification = require('../middlewares/firebaseNotification');
-
 /**
  * Post notifications
  * @param {Object} notificationData
@@ -48,9 +47,13 @@ const createNotification = async (notificationData, user) => {
  * @param {ObjectId} userId
  * @returns {Promise<Notification>}
  */
-const getAllNotificationByUserID = async (userId) => {
-  const notificatinos = await Notification.find({ userId }).sort({ createdAt: -1 });
-  return notificatinos;
+const getAllNotificationByUserID = async (userId, options) => {
+  const skipCount = (options.page - 1) * options.limit;
+  const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
+  if (notifications.length === 0) {
+    throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+  }
+  return notifications;
 };
 
 /**
