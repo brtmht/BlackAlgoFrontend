@@ -39,21 +39,45 @@ module.exports = router;
  *     tags: [Notification]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *             example:
- *               title: test
- *               message: you got a notification from blackalgo
- *               type: alert
- *               token: fw3c14GLiI_0M1d2CXVwkE:APA91bGmSmpZA7B-3b_YaEOZKlpaOTd-2zGelM60XZWaP2rkzoFC_1QjLW0KAaFLj2pJr07I0T8AIn4qyfwFkgFJ9oDbU36F-3A6BoqSzHktAne2_xjTWOoawGsiGN43rNj6i0_OFR6h
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         default: 10
+ *         description: Maximum number of notifcations
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
  *     responses:
- *       "201":
- *         description: Created
+ *       "200":
+ *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/Notification'
- *       "400":
- *         $ref: '#/components/responses/DuplicateName'
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Notification'
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 totalResults:
+ *                   type: integer
+ *                   example: 1
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":

@@ -13,8 +13,8 @@ const getUser = catchAsync(async (req, res) => {
   const { user } = req;
   if (user.notificationToken !== null) {
     const notification = {
-      title: 'Successful',
-      message: 'You getting user succesfully',
+      title: `User Found`,
+      message: `You got to ${user.name} logged in as ${user.email}`,
     };
     sendNotification(notification, user);
   }

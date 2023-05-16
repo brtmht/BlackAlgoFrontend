@@ -39,35 +39,38 @@ const getPaymentsById = async (id) => {
   return paymentHistory;
 };
 const getStripeTransactionHistory = async () => {
-  const stripeHistory = await PaymentDetail.find({ TransactionHistory: null });
+  const stripeHistory = await PaymentDetail.find({ cryptoId: null });
   if (!stripeHistory) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
   }
   return stripeHistory;
 };
-const getCryptoTransactionHistory = async (req, res) => {
-  const cryptoHistory = await PaymentDetail.find({ stripeHistory: null });
+const getCryptoTransactionHistory = async () => {
+  const cryptoHistory = await PaymentDetail.find({ stripeAccountId: null });
   if (!cryptoHistory) {
     throw new ApiError(httpStatus.NOT_FOUND);
   }
-  res.send(cryptoHistory);
+  return cryptoHistory;
 };
 const getLast24HrTransactionHistory = async (id) => {
-  const history24Hr = TransactionHistory.find({
+  const history24Hr = await PaymentDetail.find({
     userId: id,
     createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
   }).exec();
+  if (history24Hr.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
   return history24Hr;
 };
 const getLast1WeekTransactionHistory = async (id) => {
-  const history24Hr = TransactionHistory.find({
+  const history24Hr = await PaymentDetail.find({
     userId: id,
     createdAt: { $gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
   }).exec();
   return history24Hr;
 };
 const getLast30DaysTransactionHistory = async (id) => {
-  const history24Hr = TransactionHistory.find({
+  const history24Hr = await PaymentDetail.find({
     userId: id,
     createdAt: { $gt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
   }).exec();

@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { notificationService } = require('../services');
@@ -23,7 +24,8 @@ const createNotification = catchAsync(async (req, res) => {
 
 const getUserNotifications = catchAsync(async (req, res) => {
   const user = req.user._id;
-  const notifications = await notificationService.getAllNotificationByUserID(user);
+  const options = pick(req.query, ['limit', 'page']);
+  const notifications = await notificationService.getAllNotificationByUserID(user, options);
   if (!notifications) {
     throw new ApiError(httpStatus.NOT_FOUND);
   }

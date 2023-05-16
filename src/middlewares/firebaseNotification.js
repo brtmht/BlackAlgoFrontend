@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const admin = require('firebase-admin');
 const { Notification } = require('../models');
 const firebaseAccount = require('../../firebaseAccount.json');

@@ -58,9 +58,10 @@ const allRoles = {
     'getTradingOrder',
     'updateTradingOrder',
     'deleteTradingOrder',
+    'clearToken',
   ],
 
-  admin: ['getUsers', 'manageUsers', 'getAllUserStrategies', 'createUsers', 'getUsers', 'allNotification', 'blockUser'],
+  admin: ['getUsers', 'getAllUserStrategies', 'createUsers', 'allNotification', 'blockUser'],
 };
 
 const roles = Object.keys(allRoles);

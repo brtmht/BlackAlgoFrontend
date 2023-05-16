@@ -22,7 +22,7 @@ router.route('/generateNew').post(auth('generateNew'), userController.regenerate
 router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2faSecret);
 router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
 router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUserWalletAmount);
-router.route('/clearUserToken').patch(auth('clearToken'), userController.clearUserToken);
+router.route('/clearFirebaseToken').patch(auth('clearToken'), userController.clearUserToken);
 router
   .route('/users/:userId')
   .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
@@ -288,9 +288,9 @@ module.exports = router;
 
 /**
  * @swagger
- * /clearUserToken:
+ * /clearFirebaseToken:
  *   patch:
- *     summary: clear user notification token
+ *     summary: Clear user notification token
  *     description: Logged in users can clear user notification token.
  *     tags: [Users]
  *     security:
