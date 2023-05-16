@@ -140,7 +140,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /mtAccount/mtAccount/?mtAccountId:
+ * /mtAccount/{id}:
  *   patch:
  *     summary: Update a MT Account
  *     description: Logged in users can only update their own information. Only admins can update other MT Account.
@@ -148,10 +148,12 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: mtAccountId
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
+ *         description: MTAccount id
  *     requestBody:
  *       required: true
  *       content:
@@ -192,10 +194,12 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: mtAccountId
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
+ *         description: MTAccount id
  *     responses:
  *       "200":
  *         description: OK
@@ -219,10 +223,12 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: mtAccountId
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
+ *         description: MTAccount id
  *     responses:
  *       "200":
  *         description: No content
@@ -341,7 +347,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /mtBroker/mtbroker/?mtBrokerId:
+ * /mtBroker/{id}:
  *   get:
  *     summary: get a MT Broker
  *     description: Logged in Broker can get only themselves.
@@ -349,10 +355,12 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: mtBrokerId
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
+ *         description: MTBroker id
  *     responses:
  *       "200":
  *         description: No content
@@ -369,10 +377,12 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: mtBrokerId
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
+ *         description: MTBroker id
  *     requestBody:
  *       required: true
  *       content:
@@ -412,10 +422,12 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: mtBrokerId
+ *       - in: path
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
+ *         description: MTBroker id
  *     responses:
  *       "200":
  *         description: No content
