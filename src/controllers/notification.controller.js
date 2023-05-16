@@ -10,7 +10,7 @@ const addNotificationToken = catchAsync(async (req, res) => {
   if (!notificationToken) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
-  res.status(httpStatus.OK).send(notificationToken);
+  res.sendStatus(httpStatus.NO_CONTENT);
 });
 // Create Notification for testing
 const createNotification = catchAsync(async (req, res) => {
