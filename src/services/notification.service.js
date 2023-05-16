@@ -22,6 +22,7 @@ const saveToken = async (notificationData, user) => {
     );
     return msgResponse;
   }
+  return found;
 };
 
 /**
