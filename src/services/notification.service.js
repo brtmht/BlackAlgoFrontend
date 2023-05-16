@@ -50,7 +50,7 @@ const createNotification = async (notificationData, user) => {
  */
 const getAllNotificationByUserID = async (userId, options) => {
   const skipCount = (options.page - 1) * options.limit;
-  const notificationsCount = await Notification.find({ userId }).countDocuments();
+  const notificationsCount = await Notification.find({ userId });
   const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (notifications.length === 0) {
     throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
@@ -59,7 +59,7 @@ const getAllNotificationByUserID = async (userId, options) => {
     notifications,
     page: options.page,
     pageLimit: options.limit,
-    hasNextData: notificationsCount > skipCount + options.limit,
+    hasNextData: notificationsCount.length > options.page * options.limit,
   };
 };
 
