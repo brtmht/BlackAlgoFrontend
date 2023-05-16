@@ -56,11 +56,12 @@ const deleteNotification = catchAsync(async (req, res) => {
 // Unread Notification count
 const getUnreadNotification = catchAsync(async (req, res) => {
   const user = req.user._id;
-  const count = await notificationService.unreadNotificationCount(user);
-  if (!count) {
+  const notifcations = await notificationService.unreadNotificationCount(user);
+  const count = notifcations.length;
+  if (!notifcations) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
-  res.send(`${count}`);
+  res.send({ notifcations, count });
 });
 
 // admin Api
