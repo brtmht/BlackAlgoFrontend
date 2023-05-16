@@ -22,12 +22,12 @@ const getMtAccount = catchAsync(async (req, res) => {
   res.send(result);
 });
 const getMtAccountById = catchAsync(async (req, res) => {
-  const mtAccount = await mtAccountService.getMtAccountById(req.query.mtAccountId);
+  const mtAccount = await mtAccountService.getMtAccountById(req.params.mtAccountId);
   res.send(mtAccount);
 });
 
 const updateMtAccount = catchAsync(async (req, res) => {
-  const mtAccount = await mtAccountService.updateMtAccountById(req.query.mtAccountId, req.body);
+  const mtAccount = await mtAccountService.updateMtAccountById(req.params.mtAccountId, req.body);
   if (!mtAccount) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
@@ -35,7 +35,7 @@ const updateMtAccount = catchAsync(async (req, res) => {
 });
 
 const deleteMtAccount = catchAsync(async (req, res) => {
-  await mtAccountService.deleteMtAccountById(req.query.mtAccountId);
+  await mtAccountService.deleteMtAccountById(req.params.mtAccountId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
@@ -58,19 +58,19 @@ const getMtBroker = catchAsync(async (req, res) => {
   res.send(result);
 });
 const getMtBrokerById = catchAsync(async (req, res) => {
-  const mtBroker = await mtBrokerService.getMtBrokerById(req.query.mtBrokerId);
+  const mtBroker = await mtBrokerService.getMtBrokerById(req.params.mtBrokerId);
   res.send(mtBroker);
 });
 const updateMtBroker = catchAsync(async (req, res) => {
-  const mtBrokert = await mtBrokerService.updateMtBrokerById(req.query.mtBrokerId, req.body);
+  const mtBrokert = await mtBrokerService.updateMtBrokerById(req.params.mtBrokerId, req.body);
   if (!mtBrokert) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
-  res.status(httpStatus.CREATED);
+  res.status(httpStatus.CREATED).send(mtBrokert);
 });
 
 const deleteMtBroker = catchAsync(async (req, res) => {
-  await mtBrokerService.deleteMtBrokerById(req.query.mtBrokerId);
+  await mtBrokerService.deleteMtBrokerById(req.params.mtBrokerId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 

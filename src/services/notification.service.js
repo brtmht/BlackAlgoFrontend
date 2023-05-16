@@ -53,7 +53,7 @@ const getAllNotificationByUserID = async (userId, options) => {
   if (notifications.length === 0) {
     throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
   }
-  return notifications;
+  return { notifications, page: options.page, pageLimit: options.limit };
 };
 
 /**
