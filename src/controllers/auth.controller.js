@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService, userStrategyService } = require('../services');
 const constants = require('../config/constants');
 const ApiError = require('../utils/ApiError');
+const sendNotification = require('../middlewares/firebaseNotification');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -32,6 +33,13 @@ const login = catchAsync(async (req, res) => {
     await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
     res.status(httpStatus.FORBIDDEN).send();
   } else {
+    if (user.notificationToken !== null) {
+      const notification = {
+        title: `Logged in succesfully`,
+        message: `You got to ${user.name} logged in as ${user.email}`,
+      };
+      sendNotification(notification, user);
+    }
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({ user, tokens });
   }
@@ -75,6 +83,13 @@ const verifyEmail = catchAsync(async (req, res) => {
   }
   if (userData != null || !userData) {
     if (userData.isEmailVerified === true) {
+      if (userData.notificationToken !== null) {
+        const notification = {
+          title: `Email Verify successfully`,
+          message: `Your ${user.email}  verify successfully`,
+        };
+        sendNotification(notification, user);
+      }
       res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
     } else {
       res.redirect(`${process.env.APP_URL}/?confirm=error`);

@@ -29,7 +29,7 @@ const createUserStrategy = async (userStrategyBody, id) => {
   if (!userExist) {
     const userStrategydata = await UserStrategy.create({
       userId: id,
-      use_futures: false,
+      use_futures: true,
     });
     strategyId = userStrategydata.id;
   } else {

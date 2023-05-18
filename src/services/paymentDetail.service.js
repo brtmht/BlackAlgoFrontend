@@ -43,21 +43,21 @@ const updatePaymentDetails = async (reqData) => {
         default_payment_method: reqData.paymentMethod,
       });
     }
-    if (planId.name === 'Yearly') {
-      const product = await Stripe.products.create({ name: 'Yearly' });
-      const price = await Stripe.prices.create({
-        unit_amount: paymentDetails.amount * 100,
-        currency: 'usd',
-        recurring: { interval: 'year' },
-        product: product.id,
-      });
+    // if (planId.name === 'Yearly') {
+    //   const product = await Stripe.products.create({ name: 'Yearly' });
+    //   const price = await Stripe.prices.create({
+    //     unit_amount: paymentDetails.amount * 100,
+    //     currency: 'usd',
+    //     recurring: { interval: 'year' },
+    //     product: product.id,
+    //   });
 
-      subscription = await Stripe.subscriptions.create({
-        customer: customerData.customerId,
-        items: [{ price: price.id }],
-        default_payment_method: reqData.paymentMethod,
-      });
-    }
+    //   subscription = await Stripe.subscriptions.create({
+    //     customer: customerData.customerId,
+    //     items: [{ price: price.id }],
+    //     default_payment_method: reqData.paymentMethod,
+    //   });
+    // }
   }
   const udatedPaymentDetail = await PaymentDetail.updateOne(
     { paymentToken: reqData.paymentToken },
