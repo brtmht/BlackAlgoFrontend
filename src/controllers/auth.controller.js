@@ -86,9 +86,9 @@ const verifyEmail = catchAsync(async (req, res) => {
       if (userData.notificationToken !== null) {
         const notification = {
           title: `Email Verify successfully`,
-          message: `Your ${user.email}  verify successfully`,
+          message: `Your ${userData.email}  verify successfully`,
         };
-        sendNotification(notification, user);
+        sendNotification(notification, userData);
       }
       res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
     } else {
