@@ -13,7 +13,7 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
 
 const io = new Server(server,{
   cors: {
-    origin: "*", // Replace with your React app's URL
+    origin: process.env.APP_URL, // Replace with your React app's URL
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
   },
 });
