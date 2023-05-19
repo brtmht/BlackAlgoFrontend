@@ -9,7 +9,10 @@ const router = express.Router();
 router
   .route('/notification')
   .post(auth(), validate(notificationValidation.createNotification), notificationController.createNotification)
-  .get(auth('firebaseToken'), notificationController.getUserNotifications);
+  .get(auth('firebaseToken'), notificationController.getUserNotifications)
+  router
+  .route('/ReadAllNotification')
+  .patch(auth(), notificationController.updateReadAllNotification);
 router
   .route('/saveNotificationToken')
   .post(auth(), validate(notificationValidation.createNotification), notificationController.addNotificationToken);
@@ -252,6 +255,29 @@ module.exports = router;
  *           application/json:
  *             schema:
  *                $ref: '#/components/schemas/Notification'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /ReadAllNotification:
+ *   patch:
+ *     summary: Read all notification by user id
+ *     description: Only logged in user can perform this action.
+ *     tags: [Notification]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/ReadAllNotification'
  *       "400":
  *         $ref: '#/components/responses/DuplicateName'
  *       "401":
