@@ -97,8 +97,6 @@ const createUserStrategy = async (userStrategyBody, id) => {
       response = '';
       break;
   }
-  // eslint-disable-next-line no-console
-  console.log(response, 'test userstrategy');
 };
 
 /**
