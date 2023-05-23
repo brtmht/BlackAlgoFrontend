@@ -503,7 +503,37 @@ components:
         id: 5ebac534954b54139806c112
         isDeleted: false
         status: true
-
+    UserExchangeConfig:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        exchangeId:
+          type: string
+        config:
+          type: object
+        connected:
+         type: boolean
+        serverToken:
+          type: string
+        tokenExpiry:
+          type: string
+        strategyId:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112        
+        userId: 6454bd1ae37c24cf7e25a852
+        exchangeId: 646c543f6086f579abe86b58
+        config:
+         login: 260050728
+         password: wqertyui
+         server: ICMarketsSC-Live26
+        connected: true 
+        serverToken: qwertyuiopsadfghjkl;vxbnm
+        tokenExpiry: 2023-03-16T16:18:04.793Z
+        strategyId: 6434fd92e457b33f15d398f7   
     Token:
       type: object
       properties:

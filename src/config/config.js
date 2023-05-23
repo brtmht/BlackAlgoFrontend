@@ -56,4 +56,7 @@ module.exports = {
     },
     from: envVars.EMAIL_FROM,
   },
+  mt4Server:{
+    ApiUrl: envVars.MT4_URL,
+  }
 };

@@ -15,6 +15,7 @@ const supportRoute = require('./support.route');
 const adminRoute = require('./admin.route');
 const tradinOrderRoute = require('./tradingOrder.route');
 const historyRoute = require('./transactionHistory.route');
+const userExchangeConfig = require('./userExchangeConfig.route');
 
 const router = express.Router();
 
@@ -74,6 +75,10 @@ const defaultRoutes = [
   {
     path: '',
     route: historyRoute,
+  },
+  {
+    path: '',
+    route: userExchangeConfig,
   },
 ];
 
