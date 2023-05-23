@@ -72,12 +72,15 @@ const changePassword = catchAsync(async (req, res) => {
 
 // admin Get all user
 const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['isDeleted', 'role']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await userService.queryUsers(filter, options);
   res.send(result);
 });
-
+const getUserById = catchAsync(async (req, res) => {
+  const result = await userService.getUserById(req.params.userId);
+  res.send(result);
+});
 const blockUser = catchAsync(async (req, res) => {
   await userService.blockUserById(req.params.userId);
   res.status(httpStatus.NO_CONTENT).send();
@@ -106,6 +109,7 @@ module.exports = {
   createUser,
   getUsers,
   getUser,
+  getUserById,
   updateUser,
   deleteUser,
   clearUserToken,

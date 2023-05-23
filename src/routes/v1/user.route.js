@@ -25,6 +25,7 @@ router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUser
 router.route('/clearFirebaseToken').patch(auth('clearToken'), userController.clearUserToken);
 router
   .route('/users/:userId')
+  .get(auth('getUserById'), userController.getUserById)
   .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
   .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
 router.route('/blockUser/:userId').patch(auth('blockUser'), validate(userValidation.updateUser), userController.blockUser);
@@ -102,10 +103,10 @@ module.exports = router;
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: name
+ *         name: isDeleted
  *         schema:
  *           type: string
- *         description: User name
+ *         description: Deleted user will not show
  *       - in: query
  *         name: role
  *         schema:
@@ -227,6 +228,25 @@ module.exports = router;
 /**
  * @swagger
  * /users/{id}:
+ *   get:
+ *     summary: Get User By Id
+ *     description: Admin can get users data
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   delete:
  *     summary: Delete a user
  *     description: Logged in users can delete only themselves. Only admins can delete other users.
