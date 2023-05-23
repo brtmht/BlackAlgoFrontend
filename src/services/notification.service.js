@@ -92,6 +92,20 @@ const updateNotificationStatus = async (notificationId, notificationData) => {
 };
 
 /**
+ * Read All notification by id
+ * @returns {Promise<Notification>}
+ */
+const ReadAllNotification = async (id) => {
+  const notification = await Notification.updateMany({
+    $and: [{ userId: id }, { isRead: false }],
+  },{ $set: { "isRead" : true } });
+  if (!notification) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Notification not found');
+  }
+  return notification;
+};
+
+/**
  * Delete notification by id
  * @param {ObjectId} notificationId
  * @returns {Promise<Notification>}
@@ -101,6 +115,7 @@ const deleteNotification = async (notificationId) => {
   if (!notification) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Notification not found');
   }
+
   const notificationDeleted = await Notification.findByIdAndUpdate(notificationId, { isDeleted: true });
   return notificationDeleted;
 };
@@ -139,4 +154,5 @@ module.exports = {
   unreadNotificationCount,
   getAllNotification,
   saveToken,
+  ReadAllNotification,
 };

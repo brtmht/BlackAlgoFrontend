@@ -53,6 +53,7 @@ const allRoles = {
     'getNotificationById',
     'patchNotificationById',
     'deleteNotificationById',
+    'ReadAllNotification',
     'getUserWallet',
     'createTradingOrder',
     'getTradingOrder',

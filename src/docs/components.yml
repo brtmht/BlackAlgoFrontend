@@ -447,6 +447,26 @@ components:
         isDeleted: false
         status: true
     
+    ReadAllNotification:
+      type: object
+      properties:
+        acknowledged:
+          type: boolean
+        modifiedCount:
+          type: number
+        upsertedId:
+          type: number
+        upsertedCount:
+          type: number
+        matchedCount:
+          type: number
+      example:
+        acknowledged: true,
+        modifiedCount: 1,
+        upsertedId: null,
+        upsertedCount: 0,
+        matchedCount: 1
+        
     SupportChat:
       type: object
       properties:

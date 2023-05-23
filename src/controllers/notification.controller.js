@@ -45,6 +45,15 @@ const updateNotification = catchAsync(async (req, res) => {
   }
   res.send(notification);
 });
+
+const updateReadAllNotification = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const notification = await notificationService.ReadAllNotification(userId);
+  if (!notification) {
+    throw new ApiError(httpStatus.NOT_Found);
+  }
+  res.send(notification);
+});
 const deleteNotification = catchAsync(async (req, res) => {
   const deleted = await notificationService.deleteNotification(req.params.notificationId);
   if (!deleted) {
@@ -81,4 +90,5 @@ module.exports = {
   deleteNotification,
   getUnreadNotification,
   getAllNotification,
+  updateReadAllNotification
 };
