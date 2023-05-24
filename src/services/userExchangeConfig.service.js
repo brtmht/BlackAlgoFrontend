@@ -53,7 +53,7 @@ const updateServerTokenById = async (UserExchangeConfigId, updateData) => {
   if (!UserExchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
   }
-  const updatedData = await User.findOneAndUpdate(
+  const updatedData = await UserExchangeConfig.findOneAndUpdate(
     { _id: UserExchangeConfigId },
     {
       $set: {
