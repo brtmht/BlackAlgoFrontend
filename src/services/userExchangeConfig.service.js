@@ -48,7 +48,7 @@ const updateUserExchangeConfigById = async (UserExchangeConfigId, updateBody) =>
  * @param {Object} updateData
  * @returns {Promise<UserExchangeConfig>}
  */
-const updateServerTokenById = async (UserExchangeConfigId, updateData) => {
+const updateServerTokenById = async (UserExchangeConfigId, serverToken) => {
   const UserExchangeData = await getUserExchangeConfigById(UserExchangeConfigId);
   if (!UserExchangeData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
@@ -57,7 +57,7 @@ const updateServerTokenById = async (UserExchangeConfigId, updateData) => {
     { _id: UserExchangeConfigId },
     {
       $set: {
-        serverToken: updateData.serverToken,
+        serverToken: serverToken,
       },
     }
   );
