@@ -20,7 +20,9 @@ fs.access('./private_srv/MTServersConfig/' + req.body.config.server + '.srv', fs
     }else{
 
     const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body,req.user);
-    res.status(httpStatus.CREATED).send(exchangeConfig);
+    await userExchangeConfig.updateServerTokenById(exchangeConfig.id,mt4Response);
+
+    res.status(httpStatus.CREATED).send(mt4Response);
     }
     
   }

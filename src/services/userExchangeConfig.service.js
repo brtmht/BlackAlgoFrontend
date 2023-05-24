@@ -30,12 +30,6 @@ const getUserExchangeConfigById = async (id) => {
   return UserExchangeConfig.findById(id);
 };
 
-/**
- * Update UserExchangeConfig by id
- * @param {ObjectId} UserExchangeConfigId
- * @param {Object} updateBody
- * @returns {Promise<UserExchangeConfig>}
- */
 const updateUserExchangeConfigById = async (UserExchangeConfigId, updateBody) => {
   const UserExchangeConfig = await getUserExchangeConfigById(UserExchangeConfigId);
   if (!UserExchangeConfig) {
@@ -48,8 +42,32 @@ const updateUserExchangeConfigById = async (UserExchangeConfigId, updateBody) =>
   return updateUserExchangeConfig;
 };
 
+/**
+ * Update UserExchangeConfig  server token by id
+ * @param {ObjectId} UserExchangeConfigId
+ * @param {Object} updateData
+ * @returns {Promise<UserExchangeConfig>}
+ */
+const updateServerTokenById = async (UserExchangeConfigId, updateData) => {
+  const UserExchangeConfig = await getUserExchangeConfigById(UserExchangeConfigId);
+  if (!UserExchangeConfig) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
+  }
+  const updatedData = await User.findOneAndUpdate(
+    { _id: UserExchangeConfigId },
+    {
+      $set: {
+        serverToken: updateData.serverToken,
+      },
+    }
+  );
+
+  return updatedData;
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
   updateUserExchangeConfigById,
+  updateServerTokenById,
 };
