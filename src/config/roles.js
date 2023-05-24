@@ -65,7 +65,7 @@ const allRoles = {
 
   ],
 
-  admin: ['getUsers', 'getAllUserStrategies', 'createUsers', 'allNotification', 'blockUser'],
+  admin: ['getUsers', 'getAllUserStrategies', 'createUsers', 'allNotification', 'blockUser', 'getUserById', 'deleteUsers'],
 };
 
 const roles = Object.keys(allRoles);
