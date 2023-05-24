@@ -527,9 +527,9 @@ components:
         userId: 6454bd1ae37c24cf7e25a852
         exchangeId: 646c543f6086f579abe86b58
         config:
-         login: 260050728
-         password: wqertyui
-         server: ICMarketsSC-Live26
+          login: 260050728
+          password: wqertyui
+          server: ICMarketsSC-Live26
         connected: true 
         serverToken: qwertyuiopsadfghjkl;vxbnm
         tokenExpiry: 2023-03-16T16:18:04.793Z

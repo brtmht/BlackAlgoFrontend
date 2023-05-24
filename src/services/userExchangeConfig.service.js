@@ -13,9 +13,9 @@ const createUserExchangeConfig = async (reqData, userId) => {
     userId: userId._id,
     exchangeId: reqData.exchangeId,
     config: {
-      login: reqData.login,
-      password: reqData.password,
-      server: reqData.server,
+      login: reqData.config.login,
+      password: reqData.config.password,
+      server: reqData.config.server,
     },
     connected: false,
   });
