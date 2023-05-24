@@ -55,7 +55,7 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/userExchangeConfig'
+ *                $ref: '#/components/schemas/UserExchangeConfig'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
