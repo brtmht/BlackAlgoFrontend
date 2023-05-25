@@ -1,12 +1,14 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
+const validate = require('../../middlewares/validate');
+const { userExchangeConfigValidation } = require('../../validations');
 const { userExchangeConfigController } = require('../../controllers');
 
 const router = express.Router();
 
 router
   .route('/UserExchangeConfig')
-  .post(auth('createUserExchangeConfig'), userExchangeConfigController.createUserExchangeConfig)
+  .post(auth('createUserExchangeConfig'), validate(userExchangeConfigValidation.createUserExchangeConfig), userExchangeConfigController.createUserExchangeConfig)
   .get(auth('getUserExchangeConfig'), userExchangeConfigController.getUserExchangeConfig);
 router
   .route('/:userExchangeConfigId')
