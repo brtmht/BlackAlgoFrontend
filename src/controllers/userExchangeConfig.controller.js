@@ -7,27 +7,22 @@ const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
 
 const createUserExchangeConfig = catchAsync(async (req, res) => {
+  // Check if the file exists
+  fs.access('./private_srv/MTServersConfig/' + req.body.config.server + '.srv', fs.constants.F_OK, async (err) => {
+    if (err) {
+      res.status(httpStatus.NOT_FOUND).send('Server file not found');
+    } else {
+      const mt4Response = await mt4Server.connectSrv(req.body);
+      if (mt4Response.message) {
+        res.status(httpStatus.BAD_REQUEST).send('Cannot connect to any server: Invalid account');
+      } else {
+        const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body,req.user);
+        await userExchangeConfig.updateServerTokenById(exchangeConfig.id,mt4Response);
 
-// Check if the file exists
-fs.access('./private_srv/MTServersConfig/' + req.body.config.server + '.srv', fs.constants.F_OK, async (err) => {
-  if (err) {
-   res.status(httpStatus.NOT_FOUND).send('Server file not found');
-  } else {
-
-    const mt4Response = await mt4Server.connectSrv(req.body);
-    if(mt4Response.message){
-      res.status(httpStatus.BAD_REQUEST).send("Cannot connect to any server: Invalid account");
-    }else{
-
-    const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body,req.user);
-    await userExchangeConfig.updateServerTokenById(exchangeConfig.id,mt4Response);
-
-    res.status(httpStatus.CREATED).send(exchangeConfig);
+        res.status(httpStatus.CREATED).send(mt4Response);
+      }
     }
-    
-  }
-});
- 
+  });
 });
 
 const getUserExchangeConfig = catchAsync(async (req, res) => {
@@ -42,7 +37,6 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
   const userExchangeConfig = await userExchangeConfig.updateUserExchangeConfigById(req.params.exchangeConfigId, req.body);
   res.send(userExchangeConfig);
 });
-
 
 module.exports = {
   createUserExchangeConfig,
