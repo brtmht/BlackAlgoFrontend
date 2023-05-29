@@ -11,3 +11,4 @@ module.exports.notificationValidation = require('./notification.validation');
 module.exports.supportValidation = require('./support.validation');
 module.exports.tradingOrderValidation = require('./tradingOrder.validation');
 module.exports.adminValidation = require('./admin.validation');
+module.exports.userExchangeConfigValidation = require('./userExchangeConfig.validation');

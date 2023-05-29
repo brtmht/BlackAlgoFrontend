@@ -60,6 +60,9 @@ const allRoles = {
     'updateTradingOrder',
     'deleteTradingOrder',
     'clearToken',
+    'createUserExchangeConfig',
+    'getUserExchangeConfig',
+
   ],
   manager: [
     'getUsers',

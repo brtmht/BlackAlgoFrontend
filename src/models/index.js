@@ -16,3 +16,4 @@ module.exports.Support = require('./support.model');
 module.exports.SupportChat = require('./supportChat.model');
 module.exports.TradingOrder = require('./tradingOrder.model');
 module.exports.UserWallet = require('./userWallet.model');
+module.exports.UserExchangeConfig = require('./userExchangeConfig.model')

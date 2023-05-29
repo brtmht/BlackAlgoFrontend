@@ -23,11 +23,11 @@ router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2f
 router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
 router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUserWalletAmount);
 router.route('/clearFirebaseToken').patch(auth('clearToken'), userController.clearUserToken);
+router.route('/changePassword').patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
 router
   .route('/users/:userId')
   .get(auth('getUserById'), userController.getUserById)
   .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
-  .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
 router.route('/blockUser/:userId').patch(auth('blockUser'), validate(userValidation.updateUser), userController.blockUser);
 router
   .route('/unBlockUser/:userId')
@@ -281,41 +281,6 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *   patch:
- *     summary: Change user password
- *     description: Logged in user can only update their password with current password.
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               password:
- *                 type: string
- *               newPassword:
- *                 type: string
- *             example:
- *               password: password1
- *               newPassword: password@123
- *     responses:
- *       "200":
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/User'
- *       "400":
- *         $ref: '#/components/responses/DuplicateName'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *       "404":
- *         $ref: '#/components/responses/NotFound'
  */
 
 /**
@@ -462,6 +427,45 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
+/**
+* @swagger
+* /changePassword:
+*   patch:
+*     summary: Change user password
+*     description: Logged in user can only update their password with current password.
+*     tags: [Users]
+*     security:
+*       - bearerAuth: []
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               password:
+*                 type: string
+*               newPassword:
+*                 type: string
+*             example:
+*               password: password1
+*               newPassword: password@123
+*     responses:
+*       "200":
+*         description: OK
+*         content:
+*           application/json:
+*             schema:
+*                $ref: '#/components/schemas/User'
+*       "400":
+*         $ref: '#/components/responses/DuplicateName'
+*       "401":
+*         $ref: '#/components/responses/Unauthorized'
+*       "403":
+*         $ref: '#/components/responses/Forbidden'
+*       "404":
+*         $ref: '#/components/responses/NotFound'
+*/
 /**
  * @swagger
  * /verify2Fa:
