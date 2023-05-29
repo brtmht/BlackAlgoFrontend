@@ -17,3 +17,4 @@ module.exports.mtBrokerService = require('./mtBroker.service');
 module.exports.notificationService = require('./notification.service');
 module.exports.supportService = require('./support.service');
 module.exports.tradingOrderService = require('./tradingOrder.service');
+module.exports.adminService = require('./admin.service');

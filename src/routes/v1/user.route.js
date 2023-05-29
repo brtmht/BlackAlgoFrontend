@@ -103,15 +103,20 @@ module.exports = router;
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: isDeleted
- *         schema:
- *           type: string
- *         description: Deleted user will not show
- *       - in: query
  *         name: role
  *         schema:
  *           type: string
- *         description: User role
+ *         description: User's role
+ *       - in: query
+ *         name: isDeleted
+ *         schema:
+ *           type: boolean
+ *         description: Deleted user will not show
+ *       - in: query
+ *         name: isBlocked
+ *         schema:
+ *           type: boolean
+ *         description: Blocked User
  *       - in: query
  *         name: sortBy
  *         schema:
@@ -234,6 +239,13 @@ module.exports = router;
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User id
  *     responses:
  *       "200":
  *         description: OK
@@ -335,7 +347,7 @@ module.exports = router;
  * /blockUser/{id}:
  *   patch:
  *     summary: block a user with their id
- *     description: Logged in user can bloack a user with id.
+ *     description: Logged in admin can bloack a user with id.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []

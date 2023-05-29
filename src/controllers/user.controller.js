@@ -72,7 +72,7 @@ const changePassword = catchAsync(async (req, res) => {
 
 // admin Get all user
 const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['isDeleted', 'role']);
+  const filter = pick(req.query, ['isDeleted', 'isBlocked', 'role']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await userService.queryUsers(filter, options);
   res.send(result);
