@@ -1,12 +1,18 @@
 const express = require('express');
+const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
-const { authValidation } = require('../../validations');
+const { authValidation, adminValidation } = require('../../validations');
 const { adminController } = require('../../controllers');
 
 const router = express.Router();
 
 router.post('/login', validate(authValidation.login), adminController.adminlogin);
-
+router.patch(
+  '/updateUser/:userId',
+  auth('updateUserEmail'),
+  validate(adminValidation.updateUser),
+  adminController.updateUser
+);
 module.exports = router;
 
 /**
@@ -62,4 +68,50 @@ module.exports = router;
  *             example:
  *               code: 401
  *               message: Invalid email or password
+ */
+/**
+ * @swagger
+ * /admin/updateUser/{id}:
+ *   patch:
+ *     summary: Update user name or email
+ *     description: admin can change user's email and name.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: userId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *             example:
+ *               name: test
+ *               email: black@yopmail.com
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
