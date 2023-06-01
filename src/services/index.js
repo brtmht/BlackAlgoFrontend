@@ -20,3 +20,4 @@ module.exports.tradingOrderService = require('./tradingOrder.service');
 module.exports.masterTradingOrder = require('./masterTradingOrder.service');
 module.exports.adminService = require('./admin.service');
 module.exports.userExchangeConfig = require('./userExchangeConfig.service');
+module.exports.globalConfig = require('./globalConfig.service');
