@@ -15,6 +15,7 @@ router
 
 router.route('/getUser').get(auth('getUser'), validate(userValidation.getUser), userController.getUser);
 router.route('/users/turnOff2fa').get(auth('turnOff2Fa'), userController.turnOff2fa);
+router.route('/users/disabled2faBySecret').post(auth('disabled2faBySecret'), userController.disabled2faBySecret);
 router.route('/users/turnOn2fa').post(auth('turnOn2Fa'), userController.turnOn2fa);
 router.route('/generate2fa').get(auth('generate2fa'), userController.get2FactorAuthentication);
 router.route('/verify2Fa').post(auth('verify2Fa'), userController.get2FactorVerified);
@@ -534,6 +535,41 @@ module.exports = router;
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /users/disabled2faBySecret:
+ *   post:
+ *     summary: Disabled two factor authentication using secret
+ *     description: Logged in users can disable their 2FA setting to false.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               backupKey:
+ *                 type: string
+ *             example:
+ *               backupKey: DUCQMF26FMVSIC00
  *     responses:
  *       "200":
  *         description: OK

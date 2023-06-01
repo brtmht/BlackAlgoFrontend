@@ -38,6 +38,11 @@ const turnOff2fa = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const disabled2faBySecret = catchAsync(async (req, res) => {
+  const result = await userService.getUserDataBy2faSecret(req.body.backupKey);
+  res.send("Two factor authentication disabled successfully");
+});
+
 const turnOn2fa = catchAsync(async (req, res) => {
   const result = await userService.turnOn2fa(req);
   if (!result) {
@@ -124,4 +129,5 @@ module.exports = {
   blockUser,
   unblockUser,
   getUserWalletAmount,
+  disabled2faBySecret,
 };

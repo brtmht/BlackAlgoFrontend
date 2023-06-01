@@ -189,6 +189,20 @@ const getBackUpSecretKey = async (req) => {
   return user.google_2fa_secret;
 };
 
+/**
+ * Get user data by secret key
+ * @returns {Promise<User>}
+ */
+const getUserDataBy2faSecret = async (secret) => {
+  const data = await User.findOne({ google_2fa_secret:secret });
+  const userData = await User.findByIdAndUpdate(data._id, {
+      google_2fa_secret: "",
+      google_2fa_status: false,
+    });
+    return userData;
+
+};
+
 // admin Api
 /**
  * Blocked user by id
@@ -269,4 +283,5 @@ module.exports = {
   unBlockUserById,
   getUserWalletAmount,
   clearUserTokenById,
+  getUserDataBy2faSecret,
 };

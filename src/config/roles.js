@@ -7,6 +7,7 @@ const allRoles = {
     'verify2Fa',
     'turnOn2Fa',
     'turnOff2Fa',
+    'disabled2faBySecret',
     'generateNew',
     'getTransactionHistory',
     'activate2Fa',
