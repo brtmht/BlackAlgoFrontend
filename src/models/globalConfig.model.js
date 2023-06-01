@@ -35,7 +35,15 @@ const globalConfigSchema = mongoose.Schema(
     lots_min_amount:{
       type: Number,
       default: null,
-    }
+    },
+    stripePayment:{
+      type: Boolean,
+      default: true,
+    },
+    BinancePayment:{
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
