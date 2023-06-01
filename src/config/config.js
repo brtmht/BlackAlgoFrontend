@@ -58,5 +58,8 @@ module.exports = {
   },
   mt4Server:{
     ApiUrl: envVars.MT4_URL,
+    SocketUrl: envVars.MT4_SOCKET_URL,
+    Mt4MasterToken: envVars.MT4_MASTER_TOKEN 
+
   }
 };

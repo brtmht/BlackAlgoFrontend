@@ -18,6 +18,10 @@ const strategySchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    monthly_return_percentage: {
+      type: Number,
+      default: 0,
+    },
     risk_level: {
       type: String,
       default: '',

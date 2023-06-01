@@ -17,8 +17,8 @@ const connectSrv = async (data) => {
 
     const config = {
       method: 'post',
-      url: Mt4Url +'ConnectSrv',
-      headers: { 
+      url: Mt4Url + 'ConnectSrv',
+      headers: {
         accept: 'text/plain',
         ...formData.getHeaders(),
       },
@@ -32,27 +32,50 @@ const connectSrv = async (data) => {
   }
 };
 
-const webSocketEvents = async(token) =>{
-  var config = {
-    method: 'get',
-    url:  Mt4Url +`/Events?id=${token}`,
-    headers: { 
-      'accept': 'text/json'
-    }
-  };
-
-  console.log(config,"------------------------");
-  
-  axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error,"-------error");
+const orderSend = (data, user, lots) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: 'get',
+      //url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${data?.Lots}`,
+      url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}&expiration=${data?.Expiration}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+    axios(config)
+      .then(function (response) {
+        //console.log(JSON.stringify(response.data));
+        resolve(response.data);
+      })
+      .catch(function (error) {
+        //console.log(error);
+        reject(error);
+      });
   });
-}
+};
+
+const accountSummary = (token) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: 'get',
+      url: `${Mt4Url}AccountSummary?id=${token}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+
+    axios(config)
+      .then(function (response) {
+        resolve(response.data);
+      })
+      .catch(function (error) {
+        reject(error);
+      });
+  });
+};
 
 module.exports = {
   connectSrv,
-  webSocketEvents,
+  orderSend,
+  accountSummary,
 };

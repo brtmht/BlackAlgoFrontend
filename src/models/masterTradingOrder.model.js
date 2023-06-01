@@ -2,22 +2,13 @@ const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 const constants = require('../config/constants');
 
-const tradingOrderSchema = mongoose.Schema(
+const masterTradingOrderSchema = mongoose.Schema(
   {
-    userId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'User',
-      required: true,
-    },
     copiedTo: {
       type: String,
       enum: [constants.TRADING_ORDER_TYPE.BINANCE, constants.TRADING_ORDER_TYPE.MT4],
     },
-    masterTicketId: {
-      type: String,
-      default: '',
-    },
-    ticketId: {
+    ticket: {
       type: String,
       default: '',
     },
@@ -132,12 +123,12 @@ const tradingOrderSchema = mongoose.Schema(
 );
 
 // add plugin that converts mongoose to json
-tradingOrderSchema.plugin(toJSON);
-tradingOrderSchema.plugin(paginate);
+masterTradingOrderSchema.plugin(toJSON);
+masterTradingOrderSchema.plugin(paginate);
 
 /**
- * @typedef TradingOrder
+ * @typedef MasterTradingOrder
  */
-const TradingOrder = mongoose.model('TradingOrder', tradingOrderSchema);
+const MasterTradingOrder = mongoose.model('MasterTradingOrder', masterTradingOrderSchema);
 
-module.exports = TradingOrder;
+module.exports = MasterTradingOrder;

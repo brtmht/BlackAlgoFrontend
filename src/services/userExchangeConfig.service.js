@@ -65,9 +65,18 @@ const updateServerTokenById = async (UserExchangeConfigId, serverToken) => {
   return updatedData;
 };
 
+/**
+ * Get connected user data
+ * @returns {Promise<UserExchangeConfig>}
+ */
+const getConnectedUser = async () => {
+  return UserExchangeConfig.find({connected:true});
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
   updateUserExchangeConfigById,
   updateServerTokenById,
+  getConnectedUser
 };
