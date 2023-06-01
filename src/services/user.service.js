@@ -195,6 +195,9 @@ const getBackUpSecretKey = async (req) => {
  */
 const getUserDataBy2faSecret = async (secret) => {
   const data = await User.findOne({ google_2fa_secret:secret });
+  if(!data){
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Backup key is invalid');
+  }
   const userData = await User.findByIdAndUpdate(data._id, {
       google_2fa_secret: "",
       google_2fa_status: false,
