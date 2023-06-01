@@ -76,6 +76,7 @@ const updateUserDataById = async (userId, updateData) => {
       {
         $set: {
           name: updateData.body.name ? updateData.body.name : user.name,
+          discordId:  updateData.body.discordId ? updateData.body.discordId : user.discordId,
           image: file ? updateData.file.path : user.image,
         },
       }

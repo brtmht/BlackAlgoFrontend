@@ -7,33 +7,39 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} tradingOrderBody
  * @returns {Promise<TradingOrder>}
  */
-const createTradingOrder = async (tradingOrderBody, userId) => {
+const createTradingOrder = async (tradingOrderBody, userId, masterData) => {
   let tradingData;
   if (tradingOrderBody) {
     tradingData = {
       userId,
-      copiedTo: tradingOrderBody.copiedTo,
-      symbol: tradingOrderBody.symbol,
-      digits: tradingOrderBody.digit,
-      operation: tradingOrderBody.type,
-      volume: tradingOrderBody.volume,
+      masterTicketId: masterData.Ticket,
+      ticketId: tradingOrderBody.ticket,
+      copiedTo: "MT4",
       openTime: tradingOrderBody.openTime,
-      state: tradingOrderBody.state,
-      openPrice: tradingOrderBody.openPrice,
-      stoplimit: tradingOrderBody.stoplimit,
-      takeprice: tradingOrderBody.takeprice,
       closeTime: tradingOrderBody.closeTime,
       expiration: tradingOrderBody.expiration,
-      reason: tradingOrderBody.reason,
-      commission: tradingOrderBody.commission,
-      storage: tradingOrderBody.storage,
+      operation: tradingOrderBody.type,
+      lots: tradingOrderBody.lots,
+      symbol: tradingOrderBody.symbol,
+      openPrice: tradingOrderBody.openPrice,
+      stopLoss: tradingOrderBody.stopLoss,
+      takeProfit: tradingOrderBody.takeProfit,
       closePrice: tradingOrderBody.closePrice,
-      profit: tradingOrderBody.profit,
-      taxes: tradingOrderBody.taxes,
-      magic: tradingOrderBody.magic,
+      magic: tradingOrderBody.magicNumber,
+      swap: tradingOrderBody.swap,
+      commission: tradingOrderBody.commission,
       comment: tradingOrderBody.comment,
-      activation: tradingOrderBody.activation,
-      marginRate: tradingOrderBody.marginRate,
+      profit: tradingOrderBody.profit,
+      openRate: tradingOrderBody.rateOpen,
+      closeRate: tradingOrderBody.rateClose,
+      digits: tradingOrderBody.ex.digits,
+      volume: tradingOrderBody.ex.volume,
+      state: tradingOrderBody.ex.state,
+      reason: tradingOrderBody.reason,
+      storage: tradingOrderBody.ex.storage,
+      taxes: tradingOrderBody.ex.taxes,
+      activation: tradingOrderBody.ex.activation,
+      marginRate: tradingOrderBody.rateMargin,
     };
   }
   return TradingOrder.create(tradingData);

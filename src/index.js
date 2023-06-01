@@ -5,20 +5,23 @@ const logger = require('./config/logger');
 const { Server } = require("socket.io");
 const http = require('http');
 const server = http.createServer(app);
+const {mtSocket} = require('./mt4Socket');
 
 mongoose.set('strictQuery', false);
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   logger.info('Connected to MongoDB');
 });
 
-const io = new Server(server,{
+mtSocket();
+
+const blackalgoIo = new Server(server,{
   cors: {
     origin: process.env.APP_URL, // Replace with your React app's URL
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
   },
 });
 
-io.on("connection", (socket) => {
+blackalgoIo.on("connection", (socket) => {
   console.log("Inside connection event");
   console.log(`Connected: ${socket.id}`);
 

@@ -123,6 +123,15 @@ const getUserStrategyByUserId = async (id) => {
 };
 
 /**
+ * Get userStrategy by Userid and name
+ * @param {ObjectId} id
+ * @returns {Promise<UserStrategy>}
+ */
+const getStrategyByUserId = async (id) => {
+  return UserStrategy.findOne({ userId: id }).populate('strategyId');
+};
+
+/**
  * Get userStrategy by id
  * @param {ObjectId} id
  * @returns {Promise<UserStrategy>}
@@ -203,4 +212,5 @@ module.exports = {
   deleteUserStrategyById,
   getUserStrategyByUserId,
   updateOnBoardStrategy,
+  getStrategyByUserId
 };

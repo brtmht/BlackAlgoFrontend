@@ -39,6 +39,10 @@ const userSchema = mongoose.Schema(
       type: Array,
       default: [],
     },
+    discordId: {
+      type: String,
+      default: '',
+    },
     image: {
       type: String,
       default: '',
