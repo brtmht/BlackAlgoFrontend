@@ -96,9 +96,12 @@ const updateNotificationStatus = async (notificationId, notificationData) => {
  * @returns {Promise<Notification>}
  */
 const ReadAllNotification = async (id) => {
-  const notification = await Notification.updateMany({
-    $and: [{ userId: id }, { isRead: false }],
-  },{ $set: { "isRead" : true } });
+  const notification = await Notification.updateMany(
+    {
+      $and: [{ userId: id }, { isRead: false }],
+    },
+    { $set: { isRead: true } }
+  );
   if (!notification) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Notification not found');
   }

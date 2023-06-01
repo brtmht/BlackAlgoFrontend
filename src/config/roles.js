@@ -64,8 +64,27 @@ const allRoles = {
     'getUserExchangeConfig',
 
   ],
+  manager: [
+    'getUsers',
+    'updateUserEmail',
+    'getAllUserStrategies',
+    'createUsers',
+    'allNotification',
+    'blockUser',
+    'getUserById',
+    'deleteUsers',
+  ],
 
-  admin: ['getUsers', 'getAllUserStrategies', 'createUsers', 'allNotification', 'blockUser', 'getUserById', 'deleteUsers'],
+  admin: [
+    'getUsers',
+    'updateUserEmail',
+    'getAllUserStrategies',
+    'createUsers',
+    'allNotification',
+    'blockUser',
+    'getUserById',
+    'deleteUsers',
+  ],
 };
 
 const roles = Object.keys(allRoles);
