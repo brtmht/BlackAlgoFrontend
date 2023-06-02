@@ -73,6 +73,26 @@ const queryTradingOrderHistory = async (filter, options) => {
 };
 
 /**
+ * Get Trading orders with pagination by userId
+ * @param {ObjectId} userId
+ * @returns {Promise<TradingOrder>}
+ */
+const getAllTradingOrderWithPagination = async (userId, options) => {
+  const skipCount = (options.page - 1) * options.limit;
+  const trdingOrderCount = await TradingOrder.find({ userId });
+  const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
+  if (tradingOrders.length === 0) {
+    throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+  }
+  return {
+    tradingOrders,
+    page: options.page,
+    pageLimit: options.limit,
+    hasNextData: trdingOrderCount.length > options.page * options.limit,
+  };
+};
+
+/**
  * Create a TradingOrder
  * @param {Object} tradingOrderBody
  * @returns {Promise<TradingOrder>}
@@ -138,4 +158,5 @@ module.exports = {
   getLast24HrTardingOrders,
   getLast1HrTardingOrders,
   getLast1WeekTardingOrders,
+  getAllTradingOrderWithPagination,
 };

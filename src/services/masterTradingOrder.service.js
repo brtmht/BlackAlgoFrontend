@@ -43,6 +43,18 @@ const createMasterTradingOrder = async (masterTradingOrderBody) => {
   return MasterTradingOrder.create(tradingData);
 };
 
+/**
+ * Check if ticket id is exist
+ * @param {string} ticket - The trading Ticket
+ * @param {string} type - The name of the trading order action type
+ * @returns {Promise<boolean>}
+ */
+const checkTradingId = async (ticket,type) => {
+  const data = await MasterTradingOrder.findOne({ ticket, type: { $ne: type } });
+  return !!data;
+};
+
 module.exports = {
   createMasterTradingOrder,
+  checkTradingId,
 };

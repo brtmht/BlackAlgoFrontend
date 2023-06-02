@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { mtAccountService, mtBrokerService } = require('../services');
+const mt4Server = require('../middlewares/mt4Server')
 // Mt account crud apis
 const createMtAccount = catchAsync(async (req, res) => {
   const mtAccount = await mtAccountService.createMtAccountNew(req.body);
@@ -74,6 +75,13 @@ const deleteMtBroker = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getServerData = catchAsync(async (req, res) => {
+  const serverData = await mt4Server.getServerData(req.body.serverName);
+  res.status(httpStatus.OK).send(serverData);
+});
+
+
+
 module.exports = {
   createMtAccount,
   getMtAccountById,
@@ -85,4 +93,5 @@ module.exports = {
   getMtBrokerById,
   updateMtBroker,
   deleteMtBroker,
+  getServerData,
 };

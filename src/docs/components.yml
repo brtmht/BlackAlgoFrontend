@@ -431,6 +431,13 @@ components:
         brokerTime: 17:23:56
         isDeleted: false
         status: false
+    ServerList:
+      type: object
+      properties:
+        serverName:
+          type: string
+      example:
+        serverName: bybit
     Notification:
       type: object
       properties:
@@ -545,9 +552,9 @@ components:
         type: string
       balanced_check_amount:
         type: number
-      stripePayment:
+      stripe_payment:
         type: boolean
-      BinancePayment:
+      binance_payment:
         type: boolean
       conservative_min_amount:
         type: number
@@ -566,8 +573,8 @@ components:
     example:
       id: 5ebac534954b54139806c112        
       balanced_check_amount: null
-      stripePayment: true
-      BinancePayment: true
+      stripe_payment: true
+      binance_payment: true
       conservative_min_amount: 4000
       balanced_min_amount: 2000
       dynamic_min_amount: 1000
