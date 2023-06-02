@@ -2,6 +2,9 @@ const config = require('../config/config');
 var axios = require('axios');
 var FormData = require('form-data');
 var fs = require('fs');
+const ApiError = require('../utils/ApiError');
+const httpStatus = require('http-status');
+const logger = require('../config/logger');
 
 const Mt4Url = config.mt4Server.ApiUrl;
 const connectSrv = async (data) => {
@@ -74,8 +77,35 @@ const accountSummary = (token) => {
   });
 };
 
+const getServerData = async (serverName) => {
+  try {
+    const config = {
+      method: 'get',
+      url: `${Mt4Url}Search?company=${serverName}`,
+      headers: {
+        'accept': 'text/json'
+      }
+    };
+
+    const response = await axios(config);
+    const data = response.data;
+    if(data?.message){
+      logger.error(data?.message);
+      throw new ApiError(httpStatus.NOT_FOUND, data?.message);
+    }
+    const namesList = data.flatMap(item => item.results.map(result => result.name));
+    logger.info('Found Mt4 broker server data');
+    return namesList; // Resolving the response data
+  } catch (error) {
+    console.log(error);
+    throw error; // Rethrowing the error to be caught by the caller
+  }
+};
+
+
 module.exports = {
   connectSrv,
   orderSend,
   accountSummary,
+  getServerData
 };

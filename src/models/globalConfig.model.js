@@ -36,11 +36,11 @@ const globalConfigSchema = mongoose.Schema(
       type: Number,
       default: null,
     },
-    stripePayment:{
+    stripe_payment:{
       type: Boolean,
       default: true,
     },
-    BinancePayment:{
+    binance_payment:{
       type: Boolean,
       default: true,
     },

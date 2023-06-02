@@ -22,6 +22,17 @@ const getTradingOrder = catchAsync(async (req, res) => {
   }
   res.send(result);
 });
+
+const getTradingOrderWithPagination = catchAsync(async (req, res) => {
+  const user = req.user._id;
+  const options = pick(req.query, ['limit', 'page']);
+  const tradingOrders = await tradingOrderService.getAllTradingOrderWithPagination(user, options);
+  if (!tradingOrders) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+  res.send(tradingOrders);
+});
+
 const getTradingOrderById = catchAsync(async (req, res) => {
   const tradingOrder = await tradingOrderService.getTradingOderByID(req.params.orderId);
   res.send(tradingOrder);
@@ -70,4 +81,5 @@ module.exports = {
   getLast1WeekTardingOrders,
   updateTradingOrder,
   deleteTradingOrder,
+  getTradingOrderWithPagination,
 };
