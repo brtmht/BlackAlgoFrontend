@@ -29,7 +29,37 @@ const connectSrv = async (data) => {
     };
 
     const response = await axios(config);
+    logger.info("Mt4 User Token received");
     return response.data;
+  } catch (error) {
+    return next(new ApiError(httpStatus.BAD_REQUEST, error));
+  }
+};
+
+const connect = async (data,hostName,portNumber) => {
+  try {
+    const user = data.config.login;
+    const password = data.config.password;
+    const host = hostName;
+    const port = portNumber ?? 443;
+
+    const config = {
+      method: 'post',
+      url: `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`,
+      headers: {
+        accept: 'text/plain',
+      },
+    };
+
+    await axios(config)
+    .then(function (response) {
+      logger.info("Mt4 User Token received");
+      return response.data;
+    })
+    .catch(function (error) {
+      logger.error("Mt4 user token not received");
+      return next(new ApiError(httpStatus.BAD_REQUEST, error));
+    });
   } catch (error) {
     return next(new ApiError(httpStatus.BAD_REQUEST, error));
   }
@@ -83,20 +113,59 @@ const getServerData = async (serverName) => {
       method: 'get',
       url: `${Mt4Url}Search?company=${serverName}`,
       headers: {
-        'accept': 'text/json'
-      }
+        accept: 'text/json',
+      },
     };
 
     const response = await axios(config);
     const data = response.data;
-    if(data?.message){
+    if (data?.message) {
       logger.error(data?.message);
       throw new ApiError(httpStatus.NOT_FOUND, data?.message);
     }
-    const namesList = data.flatMap(item => item.results.map(result => result.name));
+    const namesList = data.flatMap((item) => item.results.map((result) => result.name));
     logger.info('Found Mt4 broker server data');
     return namesList; // Resolving the response data
   } catch (error) {
+    console.log(error);
+    throw error; // Rethrowing the error to be caught by the caller
+  }
+};
+
+const getServerDataForIps = async () => {
+  try {
+    const serverName = 'Pepperstone-Demo01';
+    const config = {
+      method: 'get',
+      url: `${Mt4Url}Search?company=${serverName}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+
+    const response = await axios(config);
+    const data = response.data;
+    if (data?.message) {
+      logger.error(data?.message);
+      throw new ApiError(httpStatus.NOT_FOUND, data?.message);
+    }
+
+    // Find the result object that matches the target name
+    const result = data.flatMap((item) => item.results).find((item) => item.name === serverName);
+
+    // Get the access data for the target name
+    const accessData = result.access;
+
+    if (accessData) {
+      logger.info('Found Mt4 company access data ');
+      console.log(accessData);
+      return accessData; // Resolving the response data
+    } else {
+      logger.warning('Cannot found Mt4 company access data ');
+      throw error;
+    }
+  } catch (error) {
+    logger.error('mt4 getServerDataForIps service is not working ');
     console.log(error);
     throw error; // Rethrowing the error to be caught by the caller
   }
@@ -107,5 +176,6 @@ module.exports = {
   connectSrv,
   orderSend,
   accountSummary,
-  getServerData
+  getServerData,
+  getServerDataForIps,
 };

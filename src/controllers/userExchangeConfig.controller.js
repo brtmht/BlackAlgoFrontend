@@ -5,24 +5,38 @@ const catchAsync = require('../utils/catchAsync');
 const { userExchangeConfig } = require('../services');
 const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
+const logger = require('../config/logger');
 
 const createUserExchangeConfig = catchAsync(async (req, res) => {
-  // Check if the file exists
-  fs.access('./private_srv/MTServersConfig/' + req.body.config.server + '.srv', fs.constants.F_OK, async (err) => {
-    if (err) {
-      res.status(httpStatus.NOT_FOUND).send('Server file not found');
-    } else {
-      const mt4Response = await mt4Server.connectSrv(req.body);
-      if (mt4Response.message) {
-        res.status(httpStatus.BAD_REQUEST).send('Cannot connect to any server: Invalid account');
-      } else {
-        const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body,req.user);
-        await userExchangeConfig.updateServerTokenById(exchangeConfig.id,mt4Response);
 
-        res.status(httpStatus.CREATED).send(mt4Response);
+  if(req.body.config.server){
+
+    const maxAttempts = 3;
+    let currentAttempt = 0; 
+
+  const ipList = await mt4Server.getServerDataForIps();
+
+  for (const ip of ipList) {
+    logger.info(`Trying IP: ${ip}`);
+    const response = await mt4Server.connect(req.body);
+      if (response) {
+        const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body,req.user);
+        await userExchangeConfig.updateServerTokenById(exchangeConfig.id,response);
+
+        res.status(httpStatus.CREATED).send(response);
+        
+      } else {
+       logger.warning('API request failed, trying the next IP...');
       }
-    }
-  });
+      currentAttempt++;
+      if (currentAttempt === maxAttempts) {
+        logger.warning('mt4 server connection Reached maximum attempts limit');
+        break; // Exit the loop if maximum attempts reached
+      }
+  }
+  logger.error('All IPs tried, none of them returned a successful response.');
+  res.status(httpStatus.BAD_REQUEST).send('Cannot connect to any server: Invalid account');
+  }
 });
 
 const getUserExchangeConfig = catchAsync(async (req, res) => {

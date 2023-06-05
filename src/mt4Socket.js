@@ -32,8 +32,13 @@ const mtSocket = () => {
         const order = ordersData?.Data?.Update?.Order;
         const masterBalance = ordersData?.Data?.Balance;
         if (order) {
-          //const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket,);
-          await masterTradingOrder.createMasterTradingOrder(order);
+          const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
+          if(masterAccount){
+            await masterTradingOrder.updateTradeOrder(order);
+          }else{
+            await masterTradingOrder.createMasterTradingOrder(order);
+          }
+          
           const connectedUsers = await userExchangeConfig.getConnectedUser();
           // Create an array of promises for sending order data to each user
           const sendOrderPromises = connectedUsers.map((user) => {
@@ -42,8 +47,8 @@ const mtSocket = () => {
                 
                 const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
                 if(userLots.lots){
-                  const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
-                  await tradingOrder.createTradingOrder(tradeData, user.userId, order);
+                  //const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
+                  //await tradingOrder.createTradingOrder(tradeData, user.userId, order);
                   //console.log(`Order sent to user: ${user}`);
                   // Additional logic to send the order data to the user
                   resolve();
