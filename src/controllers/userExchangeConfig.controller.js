@@ -44,10 +44,10 @@ const createUserExchangeConfig = catchAsync(async (req, res) => {
       }
 
       logger.error('All IPs tried, none of them returned a successful response.');
-      res.send({"success":false, "error_code":404, message:"Cannot connect to any server: Invalid account"});
+      res.send({"success":false, "error_code":404, "message":"Cannot connect to any server: Invalid account"});
     } catch (error) {
       logger.error(`Error retrieving IP list: ${error.message}`);
-      res.send({"success":false, "error_code":502, "data":{"message":"Internal server error"}});
+      res.send({"success":false, "error_code":502, "message":"Internal server error"});
     }
   }
 });
