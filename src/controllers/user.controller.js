@@ -16,7 +16,7 @@ const getUser = catchAsync(async (req, res) => {
       title: `User Found`,
       message: `You got to ${user.name} logged in as ${user.email}`,
     };
-    sendNotification(notification, user);
+   // sendNotification(notification, user);
   }
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');

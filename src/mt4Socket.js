@@ -44,7 +44,12 @@ const mtSocket = () => {
           const sendOrderPromises = connectedUsers.map((user) => {
             return new Promise(async (resolve, reject) => {
               try {
-                
+
+                const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket,user.userId);
+                if (tradingData) {
+                  await mt4Server.orderClose(user.serverToken,tradingData.ticketId,closeLots);
+                  await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,);
+                }
                 const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
                 if(userLots.lots){
                   //const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
