@@ -38,7 +38,7 @@ const login = catchAsync(async (req, res) => {
         title: `Logged in succesfully`,
         message: `You got to ${user.name} logged in as ${user.email}`,
       };
-      sendNotification(notification, user);
+      //sendNotification(notification, user);
     }
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({ user, tokens });
@@ -88,7 +88,7 @@ const verifyEmail = catchAsync(async (req, res) => {
           title: `Email Verify successfully`,
           message: `Your ${userData.email}  verify successfully`,
         };
-        sendNotification(notification, userData);
+       // sendNotification(notification, userData);
       }
       res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
     } else {

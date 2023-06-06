@@ -40,6 +40,7 @@ const createTradingOrder = async (tradingOrderBody, userId, masterData) => {
       taxes: tradingOrderBody.ex.taxes,
       activation: tradingOrderBody.ex.activation,
       marginRate: tradingOrderBody.rateMargin,
+      balance: "",
     };
   }
   return TradingOrder.create(tradingData);
@@ -76,8 +77,8 @@ const queryTradingOrderHistory = async (filter, options) => {
  * Check if MasterTicket id is exist
  * @param {string} masterTicketId - The trading Master Ticket id
  */
-const checkMasterTradingId = async (masterTicketId) => {
-  const data = await TradingOrder.find({ masterTicketId});
+const checkMasterTradingId = async (masterTicketId,user_id) => {
+  const data = await TradingOrder.find({ masterTicketId, userId:user_id});
   return data;
 };
 
@@ -140,6 +141,7 @@ const updateTradeOrderByMasterTicket = async(ticketId,data) =>{
         taxes: data.ex.taxes,
         activation: data.ex.activation,
         marginRate: data.rateMargin,
+        balance: "",
       },
     }
   );

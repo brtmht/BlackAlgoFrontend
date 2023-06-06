@@ -82,6 +82,28 @@ const orderSend = (data, user, lots) => {
   });
 };
 
+const orderClose = (token, ticket, lots) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: 'get',
+      url: `${Mt4Url}OrderClose?id=${token}&ticket=${ticket}&lots=${lots}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+    axios(config)
+      .then(function (response) {
+        logger.info("Mt4 order closed successfully")
+        resolve(response.data);
+      })
+      .catch(function (error) {
+        logger.error("An error occurred during the ordering process.");
+        reject(error);
+      });
+  });
+};
+
+
 const accountSummary = (token) => {
   return new Promise((resolve, reject) => {
     const config = {
@@ -171,4 +193,5 @@ module.exports = {
   accountSummary,
   getServerData,
   getServerDataForIps,
+  orderClose,
 };
