@@ -73,6 +73,15 @@ const queryTradingOrderHistory = async (filter, options) => {
 };
 
 /**
+ * Check if MasterTicket id is exist
+ * @param {string} masterTicketId - The trading Master Ticket id
+ */
+const checkMasterTradingId = async (masterTicketId) => {
+  const data = await TradingOrder.find({ masterTicketId});
+  return data;
+};
+
+/**
  * Get Trading orders with pagination by userId
  * @param {ObjectId} userId
  * @returns {Promise<TradingOrder>}
@@ -91,6 +100,56 @@ const getAllTradingOrderWithPagination = async (userId, options) => {
     hasNextData: trdingOrderCount.length > options.page * options.limit,
   };
 };
+
+
+/**
+ * Update trade oder data on the bases of ticket id
+ * @param {string} masterTicketId - The trading masterTicketId
+ */
+const updateTradeOrderByMasterTicket = async(ticketId,data) =>{
+
+  const updateOrder = await TradingOrder.findOneAndUpdate(
+    { masterTicketId: ticketId },
+    {
+      $set: {
+        masterTicketId: ticketId,
+        ticketId: data.ticket,
+        copiedTo: "MT4",
+        openTime: data.openTime,
+        closeTime: data.closeTime,
+        expiration: data.expiration,
+        operation: data.type,
+        lots: data.lots,
+        symbol: data.symbol,
+        openPrice: data.openPrice,
+        stopLoss: data.stopLoss,
+        takeProfit: data.takeProfit,
+        closePrice: data.closePrice,
+        magic: data.magicNumber,
+        swap: data.swap,
+        commission: data.commission,
+        comment: data.comment,
+        profit: data.profit,
+        openRate: data.rateOpen,
+        closeRate: data.rateClose,
+        digits: data.ex.digits,
+        volume: data.ex.volume,
+        state: data.ex.state,
+        reason: data.reason,
+        storage: data.ex.storage,
+        taxes: data.ex.taxes,
+        activation: data.ex.activation,
+        marginRate: data.rateMargin,
+      },
+    }
+  );
+  if (!updateOrder) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  return updateOrder;
+
+}
 
 /**
  * Create a TradingOrder
@@ -159,4 +218,6 @@ module.exports = {
   getLast1HrTardingOrders,
   getLast1WeekTardingOrders,
   getAllTradingOrderWithPagination,
+  checkMasterTradingId,
+  updateTradeOrderByMasterTicket,
 };

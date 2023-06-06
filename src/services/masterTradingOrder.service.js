@@ -46,15 +46,63 @@ const createMasterTradingOrder = async (masterTradingOrderBody) => {
 /**
  * Check if ticket id is exist
  * @param {string} ticket - The trading Ticket
- * @param {string} type - The name of the trading order action type
- * @returns {Promise<boolean>}
  */
-const checkTradingId = async (ticket,type) => {
-  const data = await MasterTradingOrder.findOne({ ticket, type: { $ne: type } });
-  return !!data;
+const checkTradingId = async (ticket) => {
+  const data = await MasterTradingOrder.findOne({ ticket});
+  return data;
 };
+
+
+/**
+ * Update trade oder data on the bases of ticket id
+ * @param {string} ticket - The trading Ticket
+ */
+const updateTradeOrder = async(data) =>{
+
+  const updateOrder = await MasterTradingOrder.findOneAndUpdate(
+    { ticket: data.Ticket },
+    {
+      $set: {
+        ticket: data.Ticket,
+      copiedTo: "MT4",
+      openTime: data.OpenTime,
+      closeTime: data.CloseTime,
+      expiration: data.Expiration,
+      operation: data.Type,
+      lots: data.Lots,
+      symbol: data.Symbol,
+      openPrice: data.OpenPrice,
+      stopLoss: data.StopLoss,
+      takeProfit: data.TakeProfit,
+      closePrice: data.ClosePrice,
+      magic: data.MagicNumber,
+      swap: data.Swap,
+      commission: data.Commission,
+      comment: data.Comment,
+      profit: data.Profit,
+      openRate: data.RateOpen,
+      closeRate: data.RateClose,
+      digits: data.Ex.digits,
+      volume: data.Ex.volume,
+      state: data.Ex.state,
+      reason: data.reason,
+      storage: data.Ex.storage,
+      taxes: data.Ex.taxes,
+      activation: data.Ex.activation,
+      marginRate: data.RateMargin,
+      },
+    }
+  );
+  if (!updateOrder) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  return updateOrder;
+
+}
 
 module.exports = {
   createMasterTradingOrder,
   checkTradingId,
+  updateTradeOrder,
 };

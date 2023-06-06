@@ -44,6 +44,9 @@ const globalConfigSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    term_policies:{
+      type:String,
+    }
   },
   {
     timestamps: true,
