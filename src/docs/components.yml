@@ -500,7 +500,21 @@ components:
         to: 5ebac534954b54139806c112
         isDeleted: false
         status: true
-
+    SucessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+      example:
+        success: true
+        message: Message related to api action
+        data: {
+          "content" :"response"
+        }
     Support:
       type: object
       properties:
