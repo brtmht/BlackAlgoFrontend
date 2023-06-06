@@ -10,6 +10,12 @@ const getConfigData = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const getTermAndPolicyData = catchAsync(async (req, res) => {
+  const result = await globalConfig.getGlobalConfig();
+  res.send({"code":200, "message":"success", "data":result});
+});
+
 module.exports = {
   getConfigData,
+  getTermAndPolicyData,
 };

@@ -13,10 +13,8 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
-const mt4Server = require('./middlewares/mt4Server');
 
 
-mt4Server.getServerDataForIps();
 const app = express();
 
 // set the view engine to ejs
@@ -36,16 +34,18 @@ app.use(express.json());
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
+// enable cors
+app.use(cors());
+app.options('*', cors());
+
+// public folder file access 
+app.use(express.static('public'));
 // sanitize request data
 app.use(xss());
 app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());
-
-// enable cors
-app.use(cors());
-app.options('*', cors());
 
 // jwt authentication
 app.use(passport.initialize());

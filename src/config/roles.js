@@ -65,7 +65,8 @@ const allRoles = {
     'clearToken',
     'createUserExchangeConfig',
     'getUserExchangeConfig',
-    'getConfigData'
+    'getConfigData',
+    'getTermAndPolicyData',
 
   ],
   manager: [

@@ -41,30 +41,25 @@ const connect = async (data,hostName,portNumber) => {
     const user = data.config.login;
     const password = data.config.password;
     const host = hostName;
-    const port = portNumber ?? 443;
+    const port = portNumber;
 
-    const config = {
-      method: 'post',
+    console.log( `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`);
+    var config = {
+      method: 'get',
       url: `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`,
-      headers: {
-        accept: 'text/plain',
-      },
+      headers: { 
+        'accept': 'text/plain'
+      }
     };
-
-    await axios(config)
-    .then(function (response) {
-      logger.info("Mt4 User Token received");
-      return response.data;
-    })
-    .catch(function (error) {
-      logger.error("Mt4 user token not received");
-      return next(new ApiError(httpStatus.BAD_REQUEST, error));
-    });
+    
+    const response = await axios(config);
+    logger.info("Mt4 User Token received");
+    return response.data;
   } catch (error) {
     return next(new ApiError(httpStatus.BAD_REQUEST, error));
   }
+    
 };
-
 const orderSend = (data, user, lots) => {
   return new Promise((resolve, reject) => {
     const config = {
@@ -132,9 +127,8 @@ const getServerData = async (serverName) => {
   }
 };
 
-const getServerDataForIps = async () => {
+const getServerDataForIps = async (serverName) => {
   try {
-    const serverName = 'Pepperstone-Demo01';
     const config = {
       method: 'get',
       url: `${Mt4Url}Search?company=${serverName}`,
@@ -158,7 +152,6 @@ const getServerDataForIps = async () => {
 
     if (accessData) {
       logger.info('Found Mt4 company access data ');
-      console.log(accessData);
       return accessData; // Resolving the response data
     } else {
       logger.warning('Cannot found Mt4 company access data ');
@@ -166,7 +159,6 @@ const getServerDataForIps = async () => {
     }
   } catch (error) {
     logger.error('mt4 getServerDataForIps service is not working ');
-    console.log(error);
     throw error; // Rethrowing the error to be caught by the caller
   }
 };
@@ -174,6 +166,7 @@ const getServerDataForIps = async () => {
 
 module.exports = {
   connectSrv,
+  connect,
   orderSend,
   accountSummary,
   getServerData,
