@@ -32,7 +32,7 @@ const createTradingOrder = {
     taxes: Joi.number(),
     activation: Joi.number(),
     marginRate: Joi.number(),
-    balance: Joi.number(),
+    orderType: Joi.string(),
     isDeleted: Joi.boolean(),
   }),
 };
@@ -79,6 +79,7 @@ const updateTradingOrder = {
       comment: Joi.string(),
       activation: Joi.number(),
       marginRate: Joi.number(),
+      orderType: Joi.string(),
       isDeleted: Joi.boolean(),
     })
     .min(1),

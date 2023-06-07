@@ -290,6 +290,8 @@ components:
           type: number
         marginRate:
           type: number 
+        orderType:
+          type: string
       example:
         id: 5ebac534954b54139806c112
         userId: 5ebac534954b54139806c112
@@ -314,6 +316,7 @@ components:
         comment: ''
         activation: 0
         marginRate: 0
+        orderType: ''
     UserWallet:
       type: object
       properties:

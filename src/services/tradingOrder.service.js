@@ -7,7 +7,7 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} tradingOrderBody
  * @returns {Promise<TradingOrder>}
  */
-const createTradingOrder = async (tradingOrderBody, userId, masterData) => {
+const createTradingOrder = async (tradingOrderBody, userId, masterData, orderType) => {
   let tradingData;
   if (tradingOrderBody) {
     tradingData = {
@@ -40,7 +40,7 @@ const createTradingOrder = async (tradingOrderBody, userId, masterData) => {
       taxes: tradingOrderBody.ex.taxes,
       activation: tradingOrderBody.ex.activation,
       marginRate: tradingOrderBody.rateMargin,
-      balance: "",
+      orderType: orderType,
     };
   }
   return TradingOrder.create(tradingData);
@@ -78,18 +78,17 @@ const queryTradingOrderHistory = async (filter, options) => {
  * @param {string} masterTicketId - The trading Master Ticket id
  */
 const checkMasterTradingId = async (masterTicketId,user_id) => {
-  const data = await TradingOrder.find({ masterTicketId, userId:user_id});
+  const data = await TradingOrder.findOne({ masterTicketId, userId:user_id});
+  console.log(data,"----------------------datawertyuiop");
   return data;
 };
 
 /**
  * Get Trading orders with pagination by userId
- * @param {ObjectId} userId
- * @returns {Promise<TradingOrder>}
- */
+*/
 const getAllTradingOrderWithPagination = async (userId, options) => {
   const skipCount = (options.page - 1) * options.limit;
-  const trdingOrderCount = await TradingOrder.find({ userId });
+  const tradingOrderCount = await TradingOrder.find({ userId });
   const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (tradingOrders.length === 0) {
     throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
@@ -98,7 +97,7 @@ const getAllTradingOrderWithPagination = async (userId, options) => {
     tradingOrders,
     page: options.page,
     pageLimit: options.limit,
-    hasNextData: trdingOrderCount.length > options.page * options.limit,
+    hasNextData: tradingOrderCount.length > options.page * options.limit,
   };
 };
 
@@ -107,10 +106,10 @@ const getAllTradingOrderWithPagination = async (userId, options) => {
  * Update trade oder data on the bases of ticket id
  * @param {string} masterTicketId - The trading masterTicketId
  */
-const updateTradeOrderByMasterTicket = async(ticketId,data) =>{
+const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
 
   const updateOrder = await TradingOrder.findOneAndUpdate(
-    { masterTicketId: ticketId },
+    { ticketId: data.ticket },
     {
       $set: {
         masterTicketId: ticketId,
@@ -133,15 +132,37 @@ const updateTradeOrderByMasterTicket = async(ticketId,data) =>{
         profit: data.profit,
         openRate: data.rateOpen,
         closeRate: data.rateClose,
-        digits: data.ex.digits,
-        volume: data.ex.volume,
-        state: data.ex.state,
+        digits: data.digits,
+        volume: data.volume,
+        state: data.state,
         reason: data.reason,
-        storage: data.ex.storage,
-        taxes: data.ex.taxes,
-        activation: data.ex.activation,
+        storage: data.storage,
+        taxes: data.taxes,
+        activation: data.activation,
         marginRate: data.rateMargin,
-        balance: "",
+        orderType:orderType,
+      },
+    }
+  );
+  if (!updateOrder) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  return updateOrder;
+
+}
+
+/**
+ * Update trade order lots data on the bases of ticket id
+ * @param {string} masterTicketId - The trading masterTicketId
+ */
+const updateTradeOrderLots = async(ticketId,lots) =>{
+
+  const updateOrder = await TradingOrder.findOneAndUpdate(
+    { ticketId: ticketId },
+    {
+      $set: {
+        lots: lots,
       },
     }
   );
@@ -213,6 +234,7 @@ const getLast1WeekTardingOrders = async (id) => {
 module.exports = {
   createTradingOrder,
   getTradingOderByID,
+  updateTradeOrderLots,
   queryTradingOrderHistory,
   updateTradingOrder,
   deleteTradingOrderById,

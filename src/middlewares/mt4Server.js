@@ -94,6 +94,8 @@ const orderClose = (token, ticket, lots) => {
     axios(config)
       .then(function (response) {
         logger.info("Mt4 order closed successfully")
+        console.log(response.data,"-----------------------------responseresponseresponse");
+        console.log(response,"-----------------------------response",);
         resolve(response.data);
       })
       .catch(function (error) {

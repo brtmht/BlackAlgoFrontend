@@ -31,41 +31,45 @@ const mtSocket = () => {
       if (config.mt4Server.Mt4MasterToken === ordersData.Id) {
         const order = ordersData?.Data?.Update?.Order;
         const masterBalance = ordersData?.Data?.Balance;
-        if (order) {
-          const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
-          if(masterAccount){
-            await masterTradingOrder.updateTradeOrder(order);
-          }else{
-            await masterTradingOrder.createMasterTradingOrder(order);
-          }
-          
-          const connectedUsers = await userExchangeConfig.getConnectedUser();
-          // Create an array of promises for sending order data to each user
-          const sendOrderPromises = connectedUsers.map((user) => {
-            return new Promise(async (resolve, reject) => {
-              try {
-
-                const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket,user.userId);
-                if (tradingData) {
-                  await mt4Server.orderClose(user.serverToken,tradingData.ticketId,closeLots);
-                  await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,);
-                }
-                const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
-                if(userLots.lots){
-                  //const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
-                  //await tradingOrder.createTradingOrder(tradeData, user.userId, order);
-                  //console.log(`Order sent to user: ${user}`);
-                  // Additional logic to send the order data to the user
-                  resolve();
-                }  
-              } catch (error) {
-                reject(error);
-              }
-            });
-          });
-          // Wait for all promises to resolve
-          await Promise.all(sendOrderPromises);
-        }
+        // if (order) {
+        //   const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
+        //   if (masterAccount) {
+        //     await masterTradingOrder.updateTradeOrder(order,"closeOrder");
+        //   } else {
+        //     await masterTradingOrder.createMasterTradingOrder(order,"orderSend");
+        //   }
+        //   const connectedUsers = await userExchangeConfig.getConnectedUser();
+        //   // Create an array of promises for sending order data to each user
+        //   const sendOrderPromises = connectedUsers.map((user) => {
+        //     return new Promise(async (resolve, reject) => {
+        //       try {
+        //         const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
+        //         if (tradingData) {
+        //           const closeData = await mt4Server.orderClose(
+        //             user.serverToken,
+        //             tradingData.ticketId,
+        //             tradingData.lots
+        //           );
+        //            await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,closeData,"closeOrder");
+                  
+        //         } else {
+        //           const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
+        //           if (userLots.lots) {
+        //             const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
+        //             await tradingOrder.createTradingOrder(tradeData, user.userId, order, "orderSend");
+        //             //console.log(`Order sent to user: ${user}`);
+        //             // Additional logic to send the order data to the user
+        //             resolve();
+        //           }
+        //         }
+        //       } catch (error) {
+        //         reject(error);
+        //       }
+        //     });
+        //   });
+        //   // Wait for all promises to resolve
+        //   await Promise.all(sendOrderPromises);
+        // }
       }
     });
   });
@@ -80,19 +84,19 @@ const handleSlaveStrategies = async (user, masterBalance, lots) => {
     let finalLots;
     const priceRatio = masterBalance / userBalance.balance;
     if (strategyName === 'conservative' && userBalance.balance > configData.conservative_min_amount) {
-      const volume = (lots / priceRatio / configData.conservative_check_amount);
-      finalLots = (volume > configData.lots_min_amount ? volume : configData.lots_min_amount);
+      const volume = lots / priceRatio / configData.conservative_check_amount;
+      finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
     }
     if (strategyName === 'balanced' && userBalance.balance > configData.balanced_min_amount) {
       finalLots = lots;
     }
     if (strategyName === 'dynamic' && userBalance.balance > configData.dynamic_min_amount) {
-      const volume = (lots / priceRatio/ configData.dynamic_check_amount);
-      finalLots = (volume > configData.lots_min_amount ? volume : configData.lots_min_amount);
+      const volume = lots / priceRatio / configData.dynamic_check_amount;
+      finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
     }
-    return ({lots:finalLots});
-  }else{
-    return ({error:"Data not found"})
+    return { lots: finalLots };
+  } else {
+    return { error: 'Data not found' };
   }
 };
 

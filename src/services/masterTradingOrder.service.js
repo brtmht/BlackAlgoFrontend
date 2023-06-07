@@ -7,7 +7,7 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} masterTradingOrderBody
  * @returns {Promise<MasterTradingOrder>}
  */
-const createMasterTradingOrder = async (masterTradingOrderBody) => {
+const createMasterTradingOrder = async (masterTradingOrderBody, orderType) => {
   let tradingData;
   if (masterTradingOrderBody) {
     tradingData = {
@@ -38,6 +38,7 @@ const createMasterTradingOrder = async (masterTradingOrderBody) => {
       taxes: masterTradingOrderBody.Ex.taxes,
       activation: masterTradingOrderBody.Ex.activation,
       marginRate: masterTradingOrderBody.RateMargin,
+      orderType:orderType,
     };
   }
   return MasterTradingOrder.create(tradingData);
@@ -47,8 +48,8 @@ const createMasterTradingOrder = async (masterTradingOrderBody) => {
  * Check if ticket id is exist
  * @param {string} ticket - The trading Ticket
  */
-const checkTradingId = async (ticket) => {
-  const data = await MasterTradingOrder.findOne({ ticket});
+const checkTradingId = async (ticketId) => {
+  const data = await MasterTradingOrder.findOne({ticket: ticketId});
   return data;
 };
 
@@ -57,13 +58,13 @@ const checkTradingId = async (ticket) => {
  * Update trade oder data on the bases of ticket id
  * @param {string} ticket - The trading Ticket
  */
-const updateTradeOrder = async(data) =>{
+const updateTradeOrder = async(data,orderType) =>{
 
   const updateOrder = await MasterTradingOrder.findOneAndUpdate(
-    { ticket: data.Ticket },
+    { ticket:data.Ticket},
     {
       $set: {
-        ticket: data.Ticket,
+      ticket: data.Ticket,
       copiedTo: "MT4",
       openTime: data.OpenTime,
       closeTime: data.CloseTime,
@@ -82,14 +83,15 @@ const updateTradeOrder = async(data) =>{
       profit: data.Profit,
       openRate: data.RateOpen,
       closeRate: data.RateClose,
-      digits: data.Ex.digits,
-      volume: data.Ex.volume,
-      state: data.Ex.state,
+      digits: data.digits,
+      volume: data.volume,
+      state: data.state,
       reason: data.reason,
-      storage: data.Ex.storage,
-      taxes: data.Ex.taxes,
-      activation: data.Ex.activation,
+      storage: data.storage,
+      taxes: data.taxes,
+      activation: data.activation,
       marginRate: data.RateMargin,
+      orderType:orderType,
       },
     }
   );
