@@ -23,7 +23,7 @@ router.route('/generateNew').post(auth('generateNew'), userController.regenerate
 router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2faSecret);
 router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
 router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUserWalletAmount);
-router.route('/clearFirebaseToken').patch(auth('clearToken'), userController.clearUserToken);
+router.route('/clearFirebaseToken').patch(auth('clearUserToken'), userController.clearUserToken);
 router.route('/changePassword').patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
 router
   .route('/users/:userId')

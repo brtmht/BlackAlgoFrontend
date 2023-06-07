@@ -13,8 +13,8 @@ router
     validate(tradingOrderValidation.createTradingOrder),
     tradingController.createTradingOrder
   )
-  .get(auth(), validate(tradingOrderValidation.getTradingOrder), tradingController.getTradingOrder);
-router.route('/getOrdersWithPagination').get(auth(), tradingController.getTradingOrderWithPagination);
+  .get(auth('tradingOrderWithPagination'), tradingController.tradingOrderWithPagination);
+  // .get(auth(), validate(tradingOrderValidation.getTradingOrder), tradingController.getTradingOrder);
 router.route('/getOrderLast24Hr').get(auth(), tradingController.getLast24HrTardingOrders);
 router.route('/getOrderLast1Hr').get(auth(), tradingController.getLast1HrTardingOrders);
 router.route('/getOrderLast1Week').get(auth(), tradingController.getLast1WeekTardingOrders);
@@ -140,59 +140,6 @@ module.exports = router;
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/TradingOrder'
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   example: 10
- *                 totalPages:
- *                   type: integer
- *                   example: 1
- *                 totalResults:
- *                   type: integer
- *                   example: 1
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- */
-/**
- * @swagger
- * /getOrdersWithPagination:
- *   get:
- *     summary: get a user's trading orders wit pagination
- *     description: Only logged in user can get trading orders.
- *     tags: [Notification]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of trading orders
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
- *     responses:
- *       "200":
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 results:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Notification'
  *                 page:
  *                   type: integer
  *                   example: 1

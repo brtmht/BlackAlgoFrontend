@@ -31,58 +31,45 @@ const mtSocket = () => {
       if (config.mt4Server.Mt4MasterToken === ordersData.Id) {
         const order = ordersData?.Data?.Update?.Order;
         const masterBalance = ordersData?.Data?.Balance;
-        if (order) {
-          const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
-          if (masterAccount) {
-            if(masterAccount.lots > order.Lots){
-              await tradingOrder.createTradingOrder(order,"closeOrder");
-            }else{
-              const totalLots = masterAccount.lots - order.Lots;
-              await masterTradingOrder.updateTradeOrder(masterAccount.ticketId, totalLots);
-            }
-          } else {
-            await masterTradingOrder.createMasterTradingOrder(order,"orderSend");
-          }
-
-          // const connectedUsers = await userExchangeConfig.getConnectedUser();
-          // // Create an array of promises for sending order data to each user
-          // const sendOrderPromises = connectedUsers.map((user) => {
-          //   return new Promise(async (resolve, reject) => {
-          //     try {
-          //       const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
-          //       if (tradingData) {
-          //         const slaveSellLots = (tradingData.lots / masterAccount.Lots) * order.Lots;
-          //         const closeData = await mt4Server.orderClose(
-          //           user.serverToken,
-          //           tradingData.ticketId,
-          //           slaveSellLots.toFixed(2)
-          //         );
-          //         if(tradingData.lots > slaveSellLots){
-
-          //           await tradingOrder.createTradingOrder(order,user.userId, closeData, "closeOrder");
-          //         }else{
-          //           const totalLots = tradingData.lots - slaveSellLots;
-          //           await tradingOrder.updateTradeOrderLots(tradingData.ticketId, totalLots);
-          //         }
+        // if (order) {
+        //   const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
+        //   if (masterAccount) {
+        //     await masterTradingOrder.updateTradeOrder(order,"closeOrder");
+        //   } else {
+        //     await masterTradingOrder.createMasterTradingOrder(order,"orderSend");
+        //   }
+        //   const connectedUsers = await userExchangeConfig.getConnectedUser();
+        //   // Create an array of promises for sending order data to each user
+        //   const sendOrderPromises = connectedUsers.map((user) => {
+        //     return new Promise(async (resolve, reject) => {
+        //       try {
+        //         const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
+        //         if (tradingData) {
+        //           const closeData = await mt4Server.orderClose(
+        //             user.serverToken,
+        //             tradingData.ticketId,
+        //             tradingData.lots
+        //           );
+        //            await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,closeData,"closeOrder");
                   
-          //       } else {
-          //         const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
-          //         if (userLots.lots) {
-          //           const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
-          //           await tradingOrder.createTradingOrder(tradeData, user.userId, order, "orderSend");
-          //           //console.log(`Order sent to user: ${user}`);
-          //           // Additional logic to send the order data to the user
-          //           resolve();
-          //         }
-          //       }
-          //     } catch (error) {
-          //       reject(error);
-          //     }
-          //   });
-          // });
-          // // Wait for all promises to resolve
-          // await Promise.all(sendOrderPromises);
-        }
+        //         } else {
+        //           const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
+        //           if (userLots.lots) {
+        //             const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
+        //             await tradingOrder.createTradingOrder(tradeData, user.userId, order, "orderSend");
+        //             //console.log(`Order sent to user: ${user}`);
+        //             // Additional logic to send the order data to the user
+        //             resolve();
+        //           }
+        //         }
+        //       } catch (error) {
+        //         reject(error);
+        //       }
+        //     });
+        //   });
+        //   // Wait for all promises to resolve
+        //   await Promise.all(sendOrderPromises);
+        // }
       }
     });
   });

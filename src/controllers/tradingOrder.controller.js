@@ -23,14 +23,15 @@ const getTradingOrder = catchAsync(async (req, res) => {
   res.send(result);
 });
 
-const getTradingOrderWithPagination = catchAsync(async (req, res) => {
+const tradingOrderWithPagination = catchAsync(async (req, res) => {
   const user = req.user._id;
   const options = pick(req.query, ['limit', 'page']);
   const tradingOrders = await tradingOrderService.getAllTradingOrderWithPagination(user, options);
   if (!tradingOrders) {
-    throw new ApiError(httpStatus.NOT_FOUND);
+    throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
   }
-  res.send(tradingOrders);
+  res.send({"success":true, code:201 , "message":"Transaction history data listed", "data":tradingOrders});
+  // res.send(tradingOrders);
 });
 
 const getTradingOrderById = catchAsync(async (req, res) => {
@@ -81,5 +82,5 @@ module.exports = {
   getLast1WeekTardingOrders,
   updateTradingOrder,
   deleteTradingOrder,
-  getTradingOrderWithPagination,
+  tradingOrderWithPagination,
 };

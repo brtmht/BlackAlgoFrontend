@@ -121,9 +121,9 @@ const tradingOrderSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    balance:{
-      type:Number,
-      default:0
+    orderType: {
+      type: String,
+      default: '',
     },
     isDeleted: {
       type: Boolean,

@@ -48,8 +48,8 @@ const createMasterTradingOrder = async (masterTradingOrderBody, orderType) => {
  * Check if ticket id is exist
  * @param {string} ticket - The trading Ticket
  */
-const checkTradingId = async (ticket) => {
-  const data = await MasterTradingOrder.findOne({ ticket});
+const checkTradingId = async (ticketId) => {
+  const data = await MasterTradingOrder.findOne({ticket: ticketId});
   return data;
 };
 
@@ -58,13 +58,40 @@ const checkTradingId = async (ticket) => {
  * Update trade oder data on the bases of ticket id
  * @param {string} ticket - The trading Ticket
  */
-const updateTradeOrder = async(ticketId,lots) =>{
+const updateTradeOrder = async(data,orderType) =>{
 
   const updateOrder = await MasterTradingOrder.findOneAndUpdate(
-    { ticket: ticketId },
+    { ticket:data.Ticket},
     {
       $set: {
-        lots: lots,
+      ticket: data.Ticket,
+      copiedTo: "MT4",
+      openTime: data.OpenTime,
+      closeTime: data.CloseTime,
+      expiration: data.Expiration,
+      operation: data.Type,
+      lots: data.Lots,
+      symbol: data.Symbol,
+      openPrice: data.OpenPrice,
+      stopLoss: data.StopLoss,
+      takeProfit: data.TakeProfit,
+      closePrice: data.ClosePrice,
+      magic: data.MagicNumber,
+      swap: data.Swap,
+      commission: data.Commission,
+      comment: data.Comment,
+      profit: data.Profit,
+      openRate: data.RateOpen,
+      closeRate: data.RateClose,
+      digits: data.digits,
+      volume: data.volume,
+      state: data.state,
+      reason: data.reason,
+      storage: data.storage,
+      taxes: data.taxes,
+      activation: data.activation,
+      marginRate: data.RateMargin,
+      orderType:orderType,
       },
     }
   );

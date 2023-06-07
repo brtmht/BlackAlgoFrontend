@@ -112,6 +112,10 @@ const masterTradingOrderSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    orderType: {
+      type: String,
+      default: '',
+    },
     isDeleted: {
       type: Boolean,
       default: false,
