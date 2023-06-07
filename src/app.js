@@ -26,7 +26,7 @@ if (config.env !== 'test') {
 }
 
 // set security HTTP headers
-app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 // parse json request body
 app.use(express.json());
@@ -40,6 +40,8 @@ app.options('*', cors());
 
 // public folder file access 
 app.use(express.static('public'));
+
+
 // sanitize request data
 app.use(xss());
 app.use(mongoSanitize());
