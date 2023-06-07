@@ -11,7 +11,7 @@ router
   .get(auth('getConfigData'), globalConfigController.getConfigData);
   router
   .route('/term&Policy')
-  .get(auth('getTermAndPolicyData'), globalConfigController.getTermAndPolicyData);
+  .get(globalConfigController.getTermAndPolicyData);
   
 module.exports = router;
 
