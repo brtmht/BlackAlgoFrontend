@@ -7,7 +7,7 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} masterTradingOrderBody
  * @returns {Promise<MasterTradingOrder>}
  */
-const createMasterTradingOrder = async (masterTradingOrderBody) => {
+const createMasterTradingOrder = async (masterTradingOrderBody, orderType) => {
   let tradingData;
   if (masterTradingOrderBody) {
     tradingData = {
@@ -38,6 +38,7 @@ const createMasterTradingOrder = async (masterTradingOrderBody) => {
       taxes: masterTradingOrderBody.Ex.taxes,
       activation: masterTradingOrderBody.Ex.activation,
       marginRate: masterTradingOrderBody.RateMargin,
+      orderType:orderType,
     };
   }
   return MasterTradingOrder.create(tradingData);
@@ -57,39 +58,13 @@ const checkTradingId = async (ticket) => {
  * Update trade oder data on the bases of ticket id
  * @param {string} ticket - The trading Ticket
  */
-const updateTradeOrder = async(data) =>{
+const updateTradeOrder = async(ticketId,lots) =>{
 
   const updateOrder = await MasterTradingOrder.findOneAndUpdate(
-    { ticket: data.Ticket },
+    { ticket: ticketId },
     {
       $set: {
-        ticket: data.Ticket,
-      copiedTo: "MT4",
-      openTime: data.OpenTime,
-      closeTime: data.CloseTime,
-      expiration: data.Expiration,
-      operation: data.Type,
-      lots: data.Lots,
-      symbol: data.Symbol,
-      openPrice: data.OpenPrice,
-      stopLoss: data.StopLoss,
-      takeProfit: data.TakeProfit,
-      closePrice: data.ClosePrice,
-      magic: data.MagicNumber,
-      swap: data.Swap,
-      commission: data.Commission,
-      comment: data.Comment,
-      profit: data.Profit,
-      openRate: data.RateOpen,
-      closeRate: data.RateClose,
-      digits: data.Ex.digits,
-      volume: data.Ex.volume,
-      state: data.Ex.state,
-      reason: data.reason,
-      storage: data.Ex.storage,
-      taxes: data.Ex.taxes,
-      activation: data.Ex.activation,
-      marginRate: data.RateMargin,
+        lots: lots,
       },
     }
   );

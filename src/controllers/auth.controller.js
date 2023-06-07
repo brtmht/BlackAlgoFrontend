@@ -14,7 +14,7 @@ const register = catchAsync(async (req, res) => {
   };
   await userStrategyService.createUserStrategy(req.body, user.id);
   await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
-  res.send({"success":true, "message":"A verification link has been sent to your email address", "data":{user, tokens}});
+  res.send({"success":true, code:201 ,"message":"A verification link has been sent to your email address", "data":{user, tokens}});
 });
 
 const login = catchAsync(async (req, res) => {
@@ -37,7 +37,7 @@ const login = catchAsync(async (req, res) => {
     //   sendNotification(notification, user);
     // }
     const tokens = await tokenService.generateAuthTokens(user);
-    res.send({"success":true, "message":"Logged in Successfully", "data":{user, tokens}});
+    res.send({"success":true, code:201 , "message":"Logged in Successfully", "data":{user, tokens}});
   }
 });
 
@@ -59,12 +59,12 @@ const forgotPassword = catchAsync(async (req, res) => {
   };
   await emailService.sendEmail(req.body, contentData, constants.RESETPASSWORD_EMAIL_OPTIONS);
 
-  res.send({"success":true, "message":"Reset password link sent to your email account"});
+  res.send({"success":true, code:200 ,"message":"Reset password link sent to your email account"});
 });
 
 const resetPassword = catchAsync(async (req, res) => {
   await authService.resetPassword(req.query.token, req.body.password);
-  res.send({"success":true, "message":"Your password reset successfully"});
+  res.send({"success":true, code:200 , "message":"Your password reset successfully"});
 });
 
 const sendVerificationEmail = catchAsync(async (req, res) => {
