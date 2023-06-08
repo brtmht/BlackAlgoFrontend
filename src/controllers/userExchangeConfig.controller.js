@@ -5,25 +5,53 @@ const catchAsync = require('../utils/catchAsync');
 const { userExchangeConfig } = require('../services');
 const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
+const logger = require('../config/logger');
+
 
 const createUserExchangeConfig = catchAsync(async (req, res) => {
-  // Check if the file exists
-  fs.access('./private_srv/MTServersConfig/' + req.body.config.server + '.srv', fs.constants.F_OK, async (err) => {
-    if (err) {
-      res.status(httpStatus.NOT_FOUND).send('Server file not found');
-    } else {
-      const mt4Response = await mt4Server.connectSrv(req.body);
-      if (mt4Response.message) {
-        res.status(httpStatus.BAD_REQUEST).send('Cannot connect to any server: Invalid account');
-      } else {
-        const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body,req.user);
-        await userExchangeConfig.updateServerTokenById(exchangeConfig.id,mt4Response);
+  if (req.body.config.server) {
+    const maxAttempts = 3;
+    let currentAttempt = 0;
 
-        res.status(httpStatus.CREATED).send(mt4Response);
+    try {
+      const ipList = await mt4Server.getServerDataForIps(req.body.config.server);
+      for (const ip of ipList) {
+        let IP;
+        let PORT;
+        const [address, port] = ip.split(':');
+        logger.info(`Trying IP: ${ip}`);
+        if (port) {
+          IP = address;
+          PORT = port;
+        } else {
+          IP = ip;
+          PORT = "443";
+        }
+          const response = await mt4Server.connect(req.body, IP, PORT);
+          if (!response.message) {
+            const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user);
+            await userExchangeConfig.updateServerTokenById(exchangeConfig.id, response);
+
+            res.send({"success":true, "message":"Check Mt4 server connection Succesfully", "data":{"token":response}});
+          } else {
+            logger.warn('API request failed, trying the next IP...');
+          }
+        currentAttempt++;
+        if (currentAttempt === maxAttempts) {
+          logger.warn('MT4 server connection reached maximum attempts limit');
+          break; // Exit the loop if maximum attempts reached
+        }
       }
+
+      logger.error('All IPs tried, none of them returned a successful response.');
+      res.send({"success":false, "error_code":404, "message":"Cannot connect to any server: Invalid account"});
+    } catch (error) {
+      logger.error(`Error retrieving IP list: ${error.message}`);
+      res.send({"success":false, "error_code":502, "message":"Internal server error"});
     }
-  });
+  }
 });
+
 
 const getUserExchangeConfig = catchAsync(async (req, res) => {
   const userExchangeConfig = await userExchangeConfig.getUserExchangeConfigById(req.user._id);

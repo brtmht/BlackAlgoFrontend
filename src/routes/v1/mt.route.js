@@ -27,6 +27,9 @@ router
   .get(auth('getMtBrokerById'), validate(mtValidation.getMtBrokerUsingId), mtaccountController.getMtBrokerById)
   .patch(auth('updateBroker'), mtaccountController.updateMtBroker)
   .delete(auth('deleteBroker'), mtaccountController.deleteMtBroker);
+
+  router.route('/ServerList').post(auth('ServerList'), mtaccountController.getServerData);
+  
 module.exports = router;
 
 /**
@@ -437,4 +440,40 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /ServerList:
+ *   post:
+ *     summary: Get server list data according to broker
+ *     description: Get specoific server data list .
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - serverName
+ *             properties:
+ *               serverName:
+ *                 type: string;
+ *             example:
+ *               serverName: bybit
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/ServerList'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */

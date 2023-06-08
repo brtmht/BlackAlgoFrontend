@@ -13,7 +13,8 @@ router
     validate(tradingOrderValidation.createTradingOrder),
     tradingController.createTradingOrder
   )
-  .get(auth(), validate(tradingOrderValidation.getTradingOrder), tradingController.getTradingOrder);
+  .get(auth('tradingOrderWithPagination'), tradingController.tradingOrderWithPagination);
+  // .get(auth(), validate(tradingOrderValidation.getTradingOrder), tradingController.getTradingOrder);
 router.route('/getOrderLast24Hr').get(auth(), tradingController.getLast24HrTardingOrders);
 router.route('/getOrderLast1Hr').get(auth(), tradingController.getLast1HrTardingOrders);
 router.route('/getOrderLast1Week').get(auth(), tradingController.getLast1WeekTardingOrders);

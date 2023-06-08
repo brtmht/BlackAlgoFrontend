@@ -103,13 +103,15 @@ const updateUserDataById = async (userId, updateData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   const { file } = updateData;
+  const updatedFilePath =  updateData.file.path.replace(/\\/g, '/').replace('public/', '');
   if (file || Object.keys(updateData.body).length !== 0) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       {
         $set: {
           name: updateData.body.name ? updateData.body.name : user.name,
-          image: file ? updateData.file.path : user.image,
+          discordId:  updateData.body.discordId ? updateData.body.discordId : user.discordId,
+          image: file ? updatedFilePath : user.image,
         },
       }
     );
@@ -221,6 +223,23 @@ const getBackUpSecretKey = async (req) => {
   return user.google_2fa_secret;
 };
 
+/**
+ * Get user data by secret key
+ * @returns {Promise<User>}
+ */
+const getUserDataBy2faSecret = async (secret) => {
+  const data = await User.findOne({ google_2fa_secret:secret });
+  if(!data){
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Backup key is invalid');
+  }
+  const userData = await User.findByIdAndUpdate(data._id, {
+      google_2fa_secret: "",
+      google_2fa_status: false,
+    });
+    return userData;
+
+};
+
 // admin Api
 /**
  * Blocked user by id
@@ -301,4 +320,5 @@ module.exports = {
   unBlockUserById,
   getUserWalletAmount,
   clearUserTokenById,
+  getUserDataBy2faSecret,
 };

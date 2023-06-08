@@ -45,6 +45,7 @@ module.exports = router;
  *               - name
  *               - description
  *               - annual_return_percentage
+ *               - monthly_return_percentage
  *               - risk_level
  *               - max_drawdown_percentage
  *             properties:
@@ -54,6 +55,8 @@ module.exports = router;
  *                 type: string
  *               annual_return_percentage:
  *                 type: number
+ *               monthly_return_percentage:
+ *                 type: number
  *               risk_level:
  *                 type: string
  *               max_drawdown_percentage:
@@ -62,6 +65,7 @@ module.exports = router;
  *               name: fake name
  *               description: fake description
  *               annual_return_percentage: 0
+ *               monthly_return_percentage: 0
  *               min_portfolio: 2
  *               risk_level: low
  *               max_drawdown_percentage: 10

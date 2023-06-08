@@ -20,11 +20,11 @@ module.exports = {
     template_name: 'resetPassword.ejs',
   },
   TRADING_ORDER_TYPE: {
-    BINANCE: 'binance',
-    MT4: 'mt4',
+    BINANCE: 'Binance',
+    MT4: 'MT4',
   },
   CMD_TYPE: {
-    BUY: 'buy',
-    SELL: 'sell',
+    BUY: 'Buy',
+    SELL: 'Sell',
   },
 };

@@ -7,33 +7,40 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} tradingOrderBody
  * @returns {Promise<TradingOrder>}
  */
-const createTradingOrder = async (tradingOrderBody, userId) => {
+const createTradingOrder = async (tradingOrderBody, userId, masterData, orderType) => {
   let tradingData;
   if (tradingOrderBody) {
     tradingData = {
       userId,
-      copiedTo: tradingOrderBody.copiedTo,
-      symbol: tradingOrderBody.symbol,
-      digits: tradingOrderBody.digit,
-      operation: tradingOrderBody.type,
-      volume: tradingOrderBody.volume,
+      masterTicketId: masterData.Ticket,
+      ticketId: tradingOrderBody.ticket,
+      copiedTo: "MT4",
       openTime: tradingOrderBody.openTime,
-      state: tradingOrderBody.state,
-      openPrice: tradingOrderBody.openPrice,
-      stoplimit: tradingOrderBody.stoplimit,
-      takeprice: tradingOrderBody.takeprice,
       closeTime: tradingOrderBody.closeTime,
       expiration: tradingOrderBody.expiration,
-      reason: tradingOrderBody.reason,
-      commission: tradingOrderBody.commission,
-      storage: tradingOrderBody.storage,
+      operation: tradingOrderBody.type,
+      lots: tradingOrderBody.lots,
+      symbol: tradingOrderBody.symbol,
+      openPrice: tradingOrderBody.openPrice,
+      stopLoss: tradingOrderBody.stopLoss,
+      takeProfit: tradingOrderBody.takeProfit,
       closePrice: tradingOrderBody.closePrice,
-      profit: tradingOrderBody.profit,
-      taxes: tradingOrderBody.taxes,
-      magic: tradingOrderBody.magic,
+      magic: tradingOrderBody.magicNumber,
+      swap: tradingOrderBody.swap,
+      commission: tradingOrderBody.commission,
       comment: tradingOrderBody.comment,
-      activation: tradingOrderBody.activation,
-      marginRate: tradingOrderBody.marginRate,
+      profit: tradingOrderBody.profit,
+      openRate: tradingOrderBody.rateOpen,
+      closeRate: tradingOrderBody.rateClose,
+      digits: tradingOrderBody.ex.digits,
+      volume: tradingOrderBody.ex.volume,
+      state: tradingOrderBody.ex.state,
+      reason: tradingOrderBody.reason,
+      storage: tradingOrderBody.ex.storage,
+      taxes: tradingOrderBody.ex.taxes,
+      activation: tradingOrderBody.ex.activation,
+      marginRate: tradingOrderBody.rateMargin,
+      orderType: orderType,
     };
   }
   return TradingOrder.create(tradingData);
@@ -65,6 +72,107 @@ const queryTradingOrderHistory = async (filter, options) => {
   const tradingOrder = await TradingOrder.paginate(filter, options);
   return tradingOrder;
 };
+
+/**
+ * Check if MasterTicket id is exist
+ * @param {string} masterTicketId - The trading Master Ticket id
+ */
+const checkMasterTradingId = async (masterTicketId,user_id) => {
+  const data = await TradingOrder.findOne({ masterTicketId, userId:user_id});
+  console.log(data,"----------------------datawertyuiop");
+  return data;
+};
+
+/**
+ * Get Trading orders with pagination by userId
+*/
+const getAllTradingOrderWithPagination = async (userId, options) => {
+  const skipCount = (options.page - 1) * options.limit;
+  const tradingOrderCount = await TradingOrder.find({ userId });
+  const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
+  if (tradingOrders.length === 0) {
+    throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+  }
+  return {
+    tradingOrders,
+    page: options.page,
+    pageLimit: options.limit,
+    hasNextData: tradingOrderCount.length > options.page * options.limit,
+  };
+};
+
+
+/**
+ * Update trade oder data on the bases of ticket id
+ * @param {string} masterTicketId - The trading masterTicketId
+ */
+const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
+
+  const updateOrder = await TradingOrder.findOneAndUpdate(
+    { ticketId: data.ticket },
+    {
+      $set: {
+        masterTicketId: ticketId,
+        ticketId: data.ticket,
+        copiedTo: "MT4",
+        openTime: data.openTime,
+        closeTime: data.closeTime,
+        expiration: data.expiration,
+        operation: data.type,
+        lots: data.lots,
+        symbol: data.symbol,
+        openPrice: data.openPrice,
+        stopLoss: data.stopLoss,
+        takeProfit: data.takeProfit,
+        closePrice: data.closePrice,
+        magic: data.magicNumber,
+        swap: data.swap,
+        commission: data.commission,
+        comment: data.comment,
+        profit: data.profit,
+        openRate: data.rateOpen,
+        closeRate: data.rateClose,
+        digits: data.digits,
+        volume: data.volume,
+        state: data.state,
+        reason: data.reason,
+        storage: data.storage,
+        taxes: data.taxes,
+        activation: data.activation,
+        marginRate: data.rateMargin,
+        orderType:orderType,
+      },
+    }
+  );
+  if (!updateOrder) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  return updateOrder;
+
+}
+
+/**
+ * Update trade order lots data on the bases of ticket id
+ * @param {string} masterTicketId - The trading masterTicketId
+ */
+const updateTradeOrderLots = async(ticketId,lots) =>{
+
+  const updateOrder = await TradingOrder.findOneAndUpdate(
+    { ticketId: ticketId },
+    {
+      $set: {
+        lots: lots,
+      },
+    }
+  );
+  if (!updateOrder) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  return updateOrder;
+
+}
 
 /**
  * Create a TradingOrder
@@ -126,10 +234,14 @@ const getLast1WeekTardingOrders = async (id) => {
 module.exports = {
   createTradingOrder,
   getTradingOderByID,
+  updateTradeOrderLots,
   queryTradingOrderHistory,
   updateTradingOrder,
   deleteTradingOrderById,
   getLast24HrTardingOrders,
   getLast1HrTardingOrders,
   getLast1WeekTardingOrders,
+  getAllTradingOrderWithPagination,
+  checkMasterTradingId,
+  updateTradeOrderByMasterTicket,
 };

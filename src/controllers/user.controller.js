@@ -16,7 +16,7 @@ const getUser = catchAsync(async (req, res) => {
       title: `User Found`,
       message: `You got to ${user.name} logged in as ${user.email}`,
     };
-    sendNotification(notification, user);
+   // sendNotification(notification, user);
   }
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -36,6 +36,11 @@ const get2FactorVerified = catchAsync(async (req, res) => {
 const turnOff2fa = catchAsync(async (req, res) => {
   const result = await userService.turnOff2fa(req.user);
   res.send(result);
+});
+
+const disabled2faBySecret = catchAsync(async (req, res) => {
+  const result = await userService.getUserDataBy2faSecret(req.body.backupKey);
+  res.send("Two factor authentication disabled successfully");
 });
 
 const turnOn2fa = catchAsync(async (req, res) => {
@@ -124,4 +129,5 @@ module.exports = {
   blockUser,
   unblockUser,
   getUserWalletAmount,
+  disabled2faBySecret,
 };

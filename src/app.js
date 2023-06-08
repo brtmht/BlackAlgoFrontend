@@ -14,6 +14,7 @@ const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 
+
 const app = express();
 
 // set the view engine to ejs
@@ -25,7 +26,7 @@ if (config.env !== 'test') {
 }
 
 // set security HTTP headers
-app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 // parse json request body
 app.use(express.json());
@@ -33,16 +34,20 @@ app.use(express.json());
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
+// enable cors
+app.use(cors());
+app.options('*', cors());
+
+// public folder file access 
+app.use(express.static('public'));
+
+
 // sanitize request data
 app.use(xss());
 app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());
-
-// enable cors
-app.use(cors());
-app.options('*', cors());
 
 // jwt authentication
 app.use(passport.initialize());

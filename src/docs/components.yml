@@ -45,6 +45,9 @@ components:
         annual_return_percentage:
           type: number
           format: float
+        monthly_return_percentage:
+          type: number
+          format: float 
         min_portfolio:
           type: number
         risk_level:
@@ -61,6 +64,7 @@ components:
         name: fake name
         description: fake description
         annual_return_percentage: 0.1
+        monthly_return_percentage: 0.1
         min_portfolio: 2
         risk_level: low
         max_drawdown_percentage: 10
@@ -286,6 +290,8 @@ components:
           type: number
         marginRate:
           type: number 
+        orderType:
+          type: string
       example:
         id: 5ebac534954b54139806c112
         userId: 5ebac534954b54139806c112
@@ -310,6 +316,7 @@ components:
         comment: ''
         activation: 0
         marginRate: 0
+        orderType: ''
     UserWallet:
       type: object
       properties:
@@ -427,6 +434,13 @@ components:
         brokerTime: 17:23:56
         isDeleted: false
         status: false
+    ServerList:
+      type: object
+      properties:
+        serverName:
+          type: string
+      example:
+        serverName: bybit
     Notification:
       type: object
       properties:
@@ -489,7 +503,21 @@ components:
         to: 5ebac534954b54139806c112
         isDeleted: false
         status: true
-
+    SucessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+      example:
+        success: true
+        message: Message related to api action
+        data: {
+          "content" :"response"
+        }
     Support:
       type: object
       properties:
@@ -533,7 +561,44 @@ components:
         connected: true 
         serverToken: qwertyuiopsadfghjkl;vxbnm
         tokenExpiry: 2023-03-16T16:18:04.793Z
-        strategyId: 6434fd92e457b33f15d398f7   
+        strategyId: 6434fd92e457b33f15d398f7 
+    GlobalConfig:
+    type: object
+    properties:
+      id:
+        type: string
+      balanced_check_amount:
+        type: number
+      stripe_payment:
+        type: boolean
+      binance_payment:
+        type: boolean
+      conservative_min_amount:
+        type: number
+      balanced_min_amount:
+        type: number
+      dynamic_min_amount:
+        type: number
+      binance_min_amount:
+        type: number
+      conservative_check_amount:
+        type: number
+      dynamic_check_amount:
+        type: number
+      lots_min_amount:
+        type: number  
+    example:
+      id: 5ebac534954b54139806c112        
+      balanced_check_amount: null
+      stripe_payment: true
+      binance_payment: true
+      conservative_min_amount: 4000
+      balanced_min_amount: 2000
+      dynamic_min_amount: 1000
+      binance_min_amount": 500
+      conservative_check_amount: 2
+      dynamic_check_amount: 2
+      lots_min_amount: 0.01
     Token:
       type: object
       properties:
