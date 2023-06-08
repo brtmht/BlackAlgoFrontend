@@ -35,6 +35,39 @@ const createUser = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter, options) => {
+  if (filter.role === 'admin') {
+    const result = await User.find({ role: { $in: ['admin', 'manager'] } });
+    return result;
+  }
+  if (filter.monthlyUsers) {
+    const result = await User.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(new Date().getFullYear(), 0, 1),
+            $lt: new Date(new Date().getFullYear() + 1, 0, 1),
+          },
+        },
+      },
+      {
+        $project: {
+          month: { $month: '$createdAt' },
+        },
+      },
+      {
+        $group: {
+          _id: '$month',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+    return result;
+  }
   const users = await User.paginate(filter, options);
   return users;
 };
