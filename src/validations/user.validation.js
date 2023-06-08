@@ -12,6 +12,7 @@ const createUser = {
 
 const getUsers = {
   query: Joi.object().keys({
+    monthlyUsers: Joi.boolean(),
     isDeleted: Joi.boolean(),
     isBlocked: Joi.boolean(),
     role: Joi.string().valid('user', 'admin', 'manager'),

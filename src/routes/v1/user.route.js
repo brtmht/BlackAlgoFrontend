@@ -23,11 +23,13 @@ router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2f
 router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
 router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUserWalletAmount);
 router.route('/clearFirebaseToken').patch(auth('clearToken'), userController.clearUserToken);
-router.route('/changePassword').patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
+router
+  .route('/changePassword')
+  .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
 router
   .route('/users/:userId')
   .get(auth('getUserById'), userController.getUserById)
-  .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser)
+  .delete(auth('deleteUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 router.route('/blockUser/:userId').patch(auth('blockUser'), validate(userValidation.updateUser), userController.blockUser);
 router
   .route('/unBlockUser/:userId')
@@ -75,7 +77,7 @@ module.exports = router;
  *                 description: At least one number and one letter
  *               role:
  *                  type: string
- *                  enum: [user, admin]
+ *                  enum: [user,manager, admin]
  *             example:
  *               name: fake name
  *               email: fake@example.com
@@ -106,6 +108,7 @@ module.exports = router;
  *         name: role
  *         schema:
  *           type: string
+ *           enum: [user,manager, admin]
  *         description: User's role
  *       - in: query
  *         name: isDeleted
@@ -118,9 +121,9 @@ module.exports = router;
  *           type: boolean
  *         description: Blocked User
  *       - in: query
- *         name: sortBy
+ *         name: monthlyUsers
  *         schema:
- *           type: string
+ *           type: boolean
  *         description: sort by query in the form of field:desc/asc (ex. name:asc)
  *       - in: query
  *         name: limit
@@ -428,44 +431,44 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  */
 /**
-* @swagger
-* /changePassword:
-*   patch:
-*     summary: Change user password
-*     description: Logged in user can only update their password with current password.
-*     tags: [Users]
-*     security:
-*       - bearerAuth: []
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             type: object
-*             properties:
-*               password:
-*                 type: string
-*               newPassword:
-*                 type: string
-*             example:
-*               password: password1
-*               newPassword: password@123
-*     responses:
-*       "200":
-*         description: OK
-*         content:
-*           application/json:
-*             schema:
-*                $ref: '#/components/schemas/User'
-*       "400":
-*         $ref: '#/components/responses/DuplicateName'
-*       "401":
-*         $ref: '#/components/responses/Unauthorized'
-*       "403":
-*         $ref: '#/components/responses/Forbidden'
-*       "404":
-*         $ref: '#/components/responses/NotFound'
-*/
+ * @swagger
+ * /changePassword:
+ *   patch:
+ *     summary: Change user password
+ *     description: Logged in user can only update their password with current password.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *             example:
+ *               password: password1
+ *               newPassword: password@123
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
 /**
  * @swagger
  * /verify2Fa:

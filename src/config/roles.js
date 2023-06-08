@@ -62,9 +62,9 @@ const allRoles = {
     'clearToken',
     'createUserExchangeConfig',
     'getUserExchangeConfig',
-
   ],
   manager: [
+    'getUser',
     'getUsers',
     'updateUserEmail',
     'getAllUserStrategies',
@@ -73,9 +73,11 @@ const allRoles = {
     'blockUser',
     'getUserById',
     'deleteUsers',
+    'monthlyUsers',
   ],
 
   admin: [
+    'getUser',
     'getUsers',
     'updateUserEmail',
     'getAllUserStrategies',
@@ -84,6 +86,7 @@ const allRoles = {
     'blockUser',
     'getUserById',
     'deleteUsers',
+    'monthlyUsers',
   ],
 };
 
