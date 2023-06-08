@@ -9,7 +9,7 @@ const adminlogin = catchAsync(async (req, res) => {
   if (user.role === 'user') {
     throw new ApiError(httpStatus.FORBIDDEN, 'user cannot loggin as admin');
   }
-  if (user.role === 'admin') {
+  if (user.role === 'admin' || user.role === 'manager') {
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({ user, tokens });
   } else {
@@ -23,6 +23,7 @@ const updateUser = catchAsync(async (req, res) => {
   }
   res.send(user);
 });
+
 module.exports = {
   adminlogin,
   updateUser,
