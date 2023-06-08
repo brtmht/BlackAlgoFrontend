@@ -7,7 +7,7 @@ const { userStrategyService } = require('../services');
 const createUserStrategy = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const userStrategy = await userStrategyService.createUserStrategy(req.body, userId);
-  res.status(httpStatus.CREATED).send(userStrategy);
+  res.send({"success":true, code:201 , "message":"User strategy created Successfully", "data":userStrategy});
 });
 
 const getUserStrategies = catchAsync(async (req, res) => {

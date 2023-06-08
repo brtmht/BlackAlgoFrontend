@@ -79,7 +79,6 @@ const queryTradingOrderHistory = async (filter, options) => {
  */
 const checkMasterTradingId = async (masterTicketId,user_id) => {
   const data = await TradingOrder.findOne({ masterTicketId, userId:user_id});
-  console.log(data,"----------------------datawertyuiop");
   return data;
 };
 
@@ -98,7 +97,7 @@ const getTradeOrderCount = async (user_id) => {
 const getAllTradingOrderWithPagination = async (userId, options) => {
   const skipCount = (options.page - 1) * options.limit;
   const tradingOrderCount = await TradingOrder.find({ userId });
-  const tradeCount = await getTradeOrderCount(user);
+  const tradeCount = await getTradeOrderCount(userId);
   const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (tradingOrders.length === 0) {
     throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);

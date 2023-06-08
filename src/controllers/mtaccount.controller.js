@@ -77,7 +77,7 @@ const deleteMtBroker = catchAsync(async (req, res) => {
 
 const getServerData = catchAsync(async (req, res) => {
   const serverData = await mt4Server.getServerData(req.body.serverName);
-  res.status(httpStatus.OK).send(serverData);
+  res.send({"success":true, code:201 , "message":"Get broker server list Successfully", "data":serverData});
 });
 
 

@@ -21,7 +21,7 @@ const getUser = catchAsync(async (req, res) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  res.send(user);
+  res.send({"success":true, code:201 , "message":"User data fetch Successfully", "data":user});
 });
 // 2FA API
 const get2FactorAuthentication = catchAsync(async (req, res) => {
@@ -66,13 +66,14 @@ const activate2faSecret = catchAsync(async (req, res) => {
 const updateUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserDataById(userId, req);
-  res.sendStatus(httpStatus.NO_CONTENT);
+  const updatedData =  await userService.getUserById(req.user._id);
+  res.send({"success":true, code:201 , "message":"User data updated successfully", "data":updatedData});
 });
 
 const changePassword = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserPasword(userId, req.body);
-  res.sendStatus(httpStatus.NO_CONTENT);
+  res.send({"success":true, code:200 , "message":"User password updated successfully"});
 });
 
 // admin Get all user

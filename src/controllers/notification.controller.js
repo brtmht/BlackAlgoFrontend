@@ -10,7 +10,7 @@ const addNotificationToken = catchAsync(async (req, res) => {
   if (!notificationToken) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
-  res.sendStatus(httpStatus.NO_CONTENT);
+  res.send({"success":true, code:200 , "message":"Notification token saved successfully"});
 });
 // Create Notification for testing
 const createNotification = catchAsync(async (req, res) => {
@@ -70,16 +70,17 @@ const getUnreadNotification = catchAsync(async (req, res) => {
   if (!notifcations) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
-  res.send({ notifcations, count });
+  res.send({"success":true, code:201 , "message":"Notification listed Successfully", "data":{ notifcations, count }});
+
 });
 
 // admin Api
 const getAllNotification = catchAsync(async (req, res) => {
   const notification = await notificationService.getAllNotification();
   if (!notification) {
-    throw new ApiError(httpStatus.NOT_FOUND);
+    throw new ApiError(httpStatus.NOT_FOUND, "Data not found");
   }
-  res.send(notification);
+  res.send({"success":true, code:201 , "message":"Notification listed Successfully", "data":notification});
 });
 module.exports = {
   addNotificationToken,
