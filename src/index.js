@@ -29,10 +29,11 @@ blackalgoIo.on("connection", (socket) => {
     console.log(`Disconnected: ${socket.id} due to ${reason}`);
   });
 
-  // Handle custom events here
-  socket.on('testEvent', (data) => {
-    console.log('Received custom event:', data);
-    // Perform any necessary actions and emit responses
+  // Handle 'MT4TradeUpdated' event
+  socket.on('MT4TradeUpdated', (data) => {
+    console.log(data,"==================================");
+    // Broadcast the updated record to all connected clients
+    io.emit('MT4TradeUpdated', data);
   });
 });
 

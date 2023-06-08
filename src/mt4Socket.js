@@ -28,49 +28,51 @@ const mtSocket = () => {
 
     connection.on('message', async function (message) {
       const ordersData = JSON.parse(message.utf8Data);
-      if (config.mt4Server.Mt4MasterToken === ordersData.Id) {
-        const order = ordersData?.Data?.Update?.Order;
-        const masterBalance = ordersData?.Data?.Balance;
-        // if (order) {
-        //   const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
-        //   if (masterAccount) {
-        //     await masterTradingOrder.updateTradeOrder(order,"closeOrder");
-        //   } else {
-        //     await masterTradingOrder.createMasterTradingOrder(order,"orderSend");
-        //   }
-        //   const connectedUsers = await userExchangeConfig.getConnectedUser();
-        //   // Create an array of promises for sending order data to each user
-        //   const sendOrderPromises = connectedUsers.map((user) => {
-        //     return new Promise(async (resolve, reject) => {
-        //       try {
-        //         const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
-        //         if (tradingData) {
-        //           const closeData = await mt4Server.orderClose(
-        //             user.serverToken,
-        //             tradingData.ticketId,
-        //             tradingData.lots
-        //           );
-        //            await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,closeData,"closeOrder");
+      // if (config.mt4Server.Mt4MasterToken === ordersData.Id) {
+      //   const order = ordersData?.Data?.Update?.Order;
+      //   const masterBalance = ordersData?.Data?.Balance;
+      //   if (order) {
+      //     const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
+      //     if (masterAccount) {
+      //       await masterTradingOrder.updateTradeOrder(order,"closeOrder");
+      //     } else {
+      //       await masterTradingOrder.createMasterTradingOrder(order,"orderSend");
+      //     }
+      //     const connectedUsers = await userExchangeConfig.getConnectedUser();
+      //     // Create an array of promises for sending order data to each user
+      //     const sendOrderPromises = connectedUsers.map((user) => {
+      //       return new Promise(async (resolve, reject) => {
+      //         try {
+      //           const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
+      //           if (tradingData) {
+      //             const closeData = await mt4Server.orderClose(
+      //               user.serverToken,
+      //               tradingData.ticketId,
+      //               tradingData.lots
+      //             );
+      //            const updatedData =  await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,closeData,"closeOrder");
+      //            console.log(updatedData,"###########################");
+      //              io.emit('MT4TradeUpdated', { updatedData });
                   
-        //         } else {
-        //           const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
-        //           if (userLots.lots) {
-        //             const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
-        //             await tradingOrder.createTradingOrder(tradeData, user.userId, order, "orderSend");
-        //             //console.log(`Order sent to user: ${user}`);
-        //             // Additional logic to send the order data to the user
-        //             resolve();
-        //           }
-        //         }
-        //       } catch (error) {
-        //         reject(error);
-        //       }
-        //     });
-        //   });
-        //   // Wait for all promises to resolve
-        //   await Promise.all(sendOrderPromises);
-        // }
-      }
+      //           } else {
+      //             const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots);
+      //             if (userLots.lots) {
+      //               const tradeData = await mt4Server.orderSend(order, user, userLots.lots);
+      //               await tradingOrder.createTradingOrder(tradeData, user.userId, order, "orderSend");
+      //               //console.log(`Order sent to user: ${user}`);
+      //               // Additional logic to send the order data to the user
+      //               resolve();
+      //             }
+      //           }
+      //         } catch (error) {
+      //           reject(error);
+      //         }
+      //       });
+      //     });
+      //     // Wait for all promises to resolve
+      //     await Promise.all(sendOrderPromises);
+      //   }
+      // }
     });
   });
 };

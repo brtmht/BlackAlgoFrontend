@@ -84,11 +84,21 @@ const checkMasterTradingId = async (masterTicketId,user_id) => {
 };
 
 /**
+ * Get Trading orders count by userId
+ * @param {string} masterTicketId - The trading Master Ticket id
+ */
+const getTradeOrderCount = async (user_id) => {
+  const count = await TradingOrder.countDocuments({userId:user_id});
+  return count;
+};
+
+/**
  * Get Trading orders with pagination by userId
 */
 const getAllTradingOrderWithPagination = async (userId, options) => {
   const skipCount = (options.page - 1) * options.limit;
   const tradingOrderCount = await TradingOrder.find({ userId });
+  const tradeCount = await getTradeOrderCount(user);
   const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (tradingOrders.length === 0) {
     throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
@@ -98,6 +108,7 @@ const getAllTradingOrderWithPagination = async (userId, options) => {
     page: options.page,
     pageLimit: options.limit,
     hasNextData: tradingOrderCount.length > options.page * options.limit,
+    totalCount: tradeCount,
   };
 };
 
@@ -148,7 +159,9 @@ const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
     throw new ApiError(httpStatus.NOT_FOUND);
   }
 
-  return updateOrder;
+  const updatedTradingOrder = await TradingOrder.find({ ticketId: data.ticket });
+
+  return updatedTradingOrder;
 
 }
 
@@ -233,6 +246,7 @@ const getLast1WeekTardingOrders = async (id) => {
 };
 module.exports = {
   createTradingOrder,
+  getTradeOrderCount,
   getTradingOderByID,
   updateTradeOrderLots,
   queryTradingOrderHistory,
