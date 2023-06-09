@@ -4,6 +4,7 @@ const { objectId } = require('./custom.validation');
 const createStrategy = {
   body: Joi.object().keys({
     name: Joi.string().required(),
+    shortDescription: Joi.string(), 
     description: Joi.string(),
     annual_return_percentage: Joi.number(),
     monthly_return_percentage: Joi.number(),
@@ -16,6 +17,7 @@ const createStrategy = {
 const getStrategies = {
   query: Joi.object().keys({
     name: Joi.string(),
+    shortDescription: Joi.string(),
     description: Joi.string(),
     annual_return_percentage: Joi.number(),
     monthly_return_percentage: Joi.number(),

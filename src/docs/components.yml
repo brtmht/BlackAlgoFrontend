@@ -40,6 +40,8 @@ components:
           type: string
         name:
           type: string
+        shortDescription:
+          type: string  
         description:
           type: string
         annual_return_percentage:
@@ -62,6 +64,7 @@ components:
       example:
         id: 5ebac534954b54139806c112
         name: fake name
+        shortDescription: short description
         description: fake description
         annual_return_percentage: 0.1
         monthly_return_percentage: 0.1

@@ -43,6 +43,7 @@ module.exports = router;
  *             type: object
  *             required:
  *               - name
+ *               - shortDescription
  *               - description
  *               - annual_return_percentage
  *               - monthly_return_percentage
@@ -50,6 +51,8 @@ module.exports = router;
  *               - max_drawdown_percentage
  *             properties:
  *               name:
+ *                 type: string
+ *               shortDescription:
  *                 type: string
  *               description:
  *                 type: string
@@ -63,6 +66,7 @@ module.exports = router;
  *                 type: number
  *             example:
  *               name: fake name
+ *               shortDescription: short description
  *               description: fake description
  *               annual_return_percentage: 0
  *               monthly_return_percentage: 0

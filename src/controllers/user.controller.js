@@ -26,21 +26,21 @@ const getUser = catchAsync(async (req, res) => {
 // 2FA API
 const get2FactorAuthentication = catchAsync(async (req, res) => {
   const result = await userService.generate2faSecret(req.user);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Generated 2fa code  Successfully", "data":result});
 });
 const get2FactorVerified = catchAsync(async (req, res) => {
   const result = await userService.verify2faSecret(req);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"2fa verify Successfully", "data":result});
 });
 
 const turnOff2fa = catchAsync(async (req, res) => {
   const result = await userService.turnOff2fa(req.user);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Turn off 2fa Successfully", "data":result});
 });
 
 const disabled2faBySecret = catchAsync(async (req, res) => {
   const result = await userService.getUserDataBy2faSecret(req.body.backupKey);
-  res.send("Two factor authentication disabled successfully");
+  res.send({"success":true, code:200 , "message":"Two factor authentication disabled successfully"});
 });
 
 const turnOn2fa = catchAsync(async (req, res) => {
@@ -48,7 +48,7 @@ const turnOn2fa = catchAsync(async (req, res) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'token not found');
   }
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Turn on 2fa Successfully", "data":result});
 });
 
 const getBackUpSecretKey = catchAsync(async (req, res) => {

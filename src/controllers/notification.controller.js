@@ -27,9 +27,9 @@ const getUserNotifications = catchAsync(async (req, res) => {
   const options = pick(req.query, ['limit', 'page']);
   const notifications = await notificationService.getAllNotificationByUserID(user, options);
   if (!notifications) {
-    throw new ApiError(httpStatus.NOT_FOUND);
+    throw new ApiError(httpStatus.NOT_FOUND,"Data Not Found");
   }
-  res.send(notifications);
+  res.send({"success":true, code:201 , "message":"Notification listed Successfully", "data":notifications});
 });
 const getNotificationWithId = catchAsync(async (req, res) => {
   const notification = await notificationService.getNotificationById(req.params.notificationId);

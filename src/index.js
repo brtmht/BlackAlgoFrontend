@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
-const { Server } = require("socket.io");
 const http = require('http');
 const server = http.createServer(app);
-const {mtSocket} = require('./mt4Socket');
+const initializeSocket = require('./socket');
+const { mtSocket } = require('./mt4Socket');
 
 mongoose.set('strictQuery', false);
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
@@ -14,28 +14,6 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
 
 mtSocket();
 
-const blackalgoIo = new Server(server,{
-  cors: {
-    origin: process.env.APP_URL, // Replace with your React app's URL
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-  },
-});
-
-blackalgoIo.on("connection", (socket) => {
-  console.log("Inside connection event");
-  console.log(`Connected: ${socket.id}`);
-
-  socket.on("disconnect", (reason) => {
-    console.log(`Disconnected: ${socket.id} due to ${reason}`);
-  });
-
-  // Handle 'MT4TradeUpdated' event
-  socket.on('MT4TradeUpdated', (data) => {
-    console.log(data,"==================================");
-    // Broadcast the updated record to all connected clients
-    io.emit('MT4TradeUpdated', data);
-  });
-});
 
 const exitHandler = () => {
   if (server) {
@@ -66,3 +44,5 @@ process.on('SIGTERM', () => {
 server.listen(config.port, () => {
   logger.info(`Listening on port ${config.port}`);
 });
+// Initialize Socket.io server
+initializeSocket(server);
