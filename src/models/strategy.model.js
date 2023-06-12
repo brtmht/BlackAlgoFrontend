@@ -10,6 +10,10 @@ const strategySchema = mongoose.Schema(
       unique: true,
       lowercase: true,
     },
+    shortDescription:  {
+      type: String,
+      default: '',
+    },
     description: {
       type: String,
       default: '',

@@ -60,27 +60,49 @@ const connect = async (data,hostName,portNumber) => {
   }
     
 };
-const orderSend = (data, user, lots) => {
+const orderSend = (data, BrokerToken, lots) => {
   return new Promise((resolve, reject) => {
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${data?.Lots}`,
-      url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}&expiration=${data?.Expiration}`,
+      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}&expiration=${data?.Expiration}`,
       headers: {
         accept: 'text/json',
       },
     };
     axios(config)
       .then(function (response) {
-        //console.log(JSON.stringify(response.data));
+        logger.info("Mt4 Broker order send Successfully");
         resolve(response.data);
       })
       .catch(function (error) {
-        //console.log(error);
+        logger.error("Facing error while sending order");
         reject(error);
       });
   });
 };
+
+const checkConnection = (token) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: 'get',
+      url: `${Mt4Url}CheckConnect?id=${token}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+    axios(config)
+      .then(function (response) {
+        logger.info("check mt4 connection")
+        resolve(response.data);
+      })
+      .catch(function (error) {
+        logger.error("Error in check mt4 connection api")
+        reject(error);
+      });
+  });
+};
+
 
 const orderClose = (token, ticket, lots) => {
   return new Promise((resolve, reject) => {
@@ -94,8 +116,6 @@ const orderClose = (token, ticket, lots) => {
     axios(config)
       .then(function (response) {
         logger.info("Mt4 order closed successfully")
-        console.log(response.data,"-----------------------------responseresponseresponse");
-        console.log(response,"-----------------------------response",);
         resolve(response.data);
       })
       .catch(function (error) {
@@ -196,4 +216,5 @@ module.exports = {
   getServerData,
   getServerDataForIps,
   orderClose,
+  checkConnection,
 };

@@ -7,7 +7,7 @@ const { userStrategyService } = require('../services');
 const createUserStrategy = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const userStrategy = await userStrategyService.createUserStrategy(req.body, userId);
-  res.status(httpStatus.CREATED).send(userStrategy);
+  res.send({"success":true, code:201 , "message":"User strategy created Successfully", "data":userStrategy});
 });
 
 const getUserStrategies = catchAsync(async (req, res) => {
@@ -23,7 +23,7 @@ const getUserStrategy = catchAsync(async (req, res) => {
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  res.send(userStrategy);
+  res.send({"success":true, code:201 , "message":"User strategy data get Successfully", "data":userStrategy});
 });
 
 const onBoardUserStrategy = catchAsync(async (req, res) => {
@@ -32,6 +32,7 @@ const onBoardUserStrategy = catchAsync(async (req, res) => {
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
+  res.send({"success":true, code:200 , "message":"User strategyonboard status updated Successfully"});
   res.status(httpStatus.NO_CONTENT).send();
 });
 

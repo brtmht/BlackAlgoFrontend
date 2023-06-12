@@ -3,7 +3,6 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
-const sendNotification = require('../middlewares/firebaseNotification');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -21,26 +20,26 @@ const getUser = catchAsync(async (req, res) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  res.send(user);
+  res.send({"success":true, code:201 , "message":"User data fetch Successfully", "data":user});
 });
 // 2FA API
 const get2FactorAuthentication = catchAsync(async (req, res) => {
   const result = await userService.generate2faSecret(req.user);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Generated 2fa code  Successfully", "data":result});
 });
 const get2FactorVerified = catchAsync(async (req, res) => {
   const result = await userService.verify2faSecret(req);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"2fa verify Successfully", "data":result});
 });
 
 const turnOff2fa = catchAsync(async (req, res) => {
   const result = await userService.turnOff2fa(req.user);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Turn off 2fa Successfully", "data":result});
 });
 
 const disabled2faBySecret = catchAsync(async (req, res) => {
   const result = await userService.getUserDataBy2faSecret(req.body.backupKey);
-  res.send("Two factor authentication disabled successfully");
+  res.send({"success":true, code:200 , "message":"Two factor authentication disabled successfully"});
 });
 
 const turnOn2fa = catchAsync(async (req, res) => {
@@ -48,7 +47,7 @@ const turnOn2fa = catchAsync(async (req, res) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'token not found');
   }
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Turn on 2fa Successfully", "data":result});
 });
 
 const getBackUpSecretKey = catchAsync(async (req, res) => {
@@ -66,13 +65,14 @@ const activate2faSecret = catchAsync(async (req, res) => {
 const updateUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserDataById(userId, req);
-  res.sendStatus(httpStatus.NO_CONTENT);
+  const updatedData =  await userService.getUserById(req.user._id);
+  res.send({"success":true, code:201 , "message":"User data updated successfully", "data":updatedData});
 });
 
 const changePassword = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserPasword(userId, req.body);
-  res.sendStatus(httpStatus.NO_CONTENT);
+  res.send({"success":true, code:200 , "message":"User password updated successfully"});
 });
 
 // admin Get all user

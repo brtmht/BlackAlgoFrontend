@@ -13,7 +13,7 @@ const getStrategies = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await strategyService.queryStrategies(filter, options);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Strategies get Successfully", "data":result});
 });
 
 const getStrategy = catchAsync(async (req, res) => {
@@ -21,7 +21,7 @@ const getStrategy = catchAsync(async (req, res) => {
   if (!strategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Strategy not found');
   }
-  res.send(strategy);
+  res.send({"success":true, code:201 , "message":"Strategy get Successfully", "data":strategy});
 });
 
 const updateStrategy = catchAsync(async (req, res) => {
