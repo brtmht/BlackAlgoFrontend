@@ -36,7 +36,7 @@ const createUser = async (userBody) => {
  */
 const queryUsers = async (filter, options) => {
   if (filter.role === 'admin') {
-    const result = await User.find({ role: { $in: ['admin', 'manager'] } });
+    const result = await User.paginate({ role: { $in: ['admin', 'manager'] } }, options);
     return result;
   }
   if (filter.monthlyUsers) {
@@ -103,14 +103,14 @@ const updateUserDataById = async (userId, updateData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   const { file } = updateData;
-  const updatedFilePath =  updateData.file.path.replace(/\\/g, '/').replace('public/', '');
+  const updatedFilePath = updateData.file.path.replace(/\\/g, '/').replace('public/', '');
   if (file || Object.keys(updateData.body).length !== 0) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       {
         $set: {
           name: updateData.body.name ? updateData.body.name : user.name,
-          discordId:  updateData.body.discordId ? updateData.body.discordId : user.discordId,
+          discordId: updateData.body.discordId ? updateData.body.discordId : user.discordId,
           image: file ? updatedFilePath : user.image,
         },
       }
@@ -228,16 +228,15 @@ const getBackUpSecretKey = async (req) => {
  * @returns {Promise<User>}
  */
 const getUserDataBy2faSecret = async (secret) => {
-  const data = await User.findOne({ google_2fa_secret:secret });
-  if(!data){
+  const data = await User.findOne({ google_2fa_secret: secret });
+  if (!data) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Backup key is invalid');
   }
   const userData = await User.findByIdAndUpdate(data._id, {
-      google_2fa_secret: "",
-      google_2fa_status: false,
-    });
-    return userData;
-
+    google_2fa_secret: '',
+    google_2fa_status: false,
+  });
+  return userData;
 };
 
 // admin Api
