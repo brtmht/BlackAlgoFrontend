@@ -77,7 +77,6 @@ const mtSocket = () => {
         //           // }
         //         } else {
         //           const BrokerToken = user.serverToken;
-
         //           console.log(`Order sent to user: ${user}`);
         //           const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
         //           if (tradingData) {
@@ -90,7 +89,7 @@ const mtSocket = () => {
         //             await generateNotification({
         //               title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
         //               message: `The order for ${updatedData.lots} lots has been successfully closed.`,
-        //             });
+        //             },updatedData.userId);
         //             console.log(updatedData, '###########################');
         //             emitData('MT4TradeUpdated', updatedData);
         //           } else {
@@ -106,8 +105,8 @@ const mtSocket = () => {
         //               );
         //               await generateNotification({
         //                 title: `Order sent  successfully`,
-        //                 message: `The order for ${userLots.lots} items has been successfully sent.`,
-        //               });
+        //                 message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+        //               },createdTradeOrder.userId);
         //               emitData('MT4TradeUpdated', createdTradeOrder);
         //               //console.log(`Order sent to user: ${user}`);
         //               // Additional logic to send the order data to the user
