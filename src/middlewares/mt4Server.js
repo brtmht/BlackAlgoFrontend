@@ -29,54 +29,53 @@ const connectSrv = async (data) => {
     };
 
     const response = await axios(config);
-    logger.info("Mt4 User Token received");
+    logger.info('Mt4 User Token received');
     return response.data;
   } catch (error) {
     return next(new ApiError(httpStatus.BAD_REQUEST, error));
   }
 };
 
-const connect = async (data,hostName,portNumber) => {
+const connect = async (data, hostName, portNumber) => {
   try {
     const user = data.config.login;
     const password = data.config.password;
     const host = hostName;
     const port = portNumber;
 
-    console.log( `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`);
+    console.log(`${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`);
     var config = {
       method: 'get',
       url: `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`,
-      headers: { 
-        'accept': 'text/plain'
-      }
+      headers: {
+        accept: 'text/plain',
+      },
     };
-    
+
     const response = await axios(config);
-    logger.info("Mt4 User Token received");
+    logger.info('Mt4 User Token received');
     return response.data;
   } catch (error) {
     return next(new ApiError(httpStatus.BAD_REQUEST, error));
   }
-    
 };
 const orderSend = (data, BrokerToken, lots) => {
   return new Promise((resolve, reject) => {
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${data?.Lots}`,
-      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}&expiration=${data?.Expiration}`,
+      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&slippage=3&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}&expiration=${data?.Expiration}`,
       headers: {
         accept: 'text/json',
       },
     };
     axios(config)
       .then(function (response) {
-        logger.info("Mt4 Broker order send Successfully");
+        logger.info('Mt4 Broker order send Successfully');
         resolve(response.data);
       })
       .catch(function (error) {
-        logger.error("Facing error while sending order");
+        logger.error('Facing error while sending order');
         reject(error);
       });
   });
@@ -93,16 +92,15 @@ const checkConnection = (token) => {
     };
     axios(config)
       .then(function (response) {
-        logger.info("check mt4 connection")
+        logger.info('check mt4 connection');
         resolve(response.data);
       })
       .catch(function (error) {
-        logger.error("Error in check mt4 connection api")
+        logger.error('Error in check mt4 connection api');
         reject(error);
       });
   });
 };
-
 
 const orderClose = (token, ticket, lots) => {
   return new Promise((resolve, reject) => {
@@ -115,16 +113,15 @@ const orderClose = (token, ticket, lots) => {
     };
     axios(config)
       .then(function (response) {
-        logger.info("Mt4 order closed successfully")
+        logger.info('Mt4 order closed successfully');
         resolve(response.data);
       })
       .catch(function (error) {
-        logger.error("An error occurred during the ordering process.");
+        logger.error('An error occurred during the ordering process.');
         reject(error);
       });
   });
 };
-
 
 const accountSummary = (token) => {
   return new Promise((resolve, reject) => {
@@ -142,6 +139,24 @@ const accountSummary = (token) => {
       })
       .catch(function (error) {
         reject(error);
+      });
+  });
+};
+
+const fxblueScript = (token) => {
+  return new Promise((resolve, reject) => {
+    var config = {
+      method: 'get',
+      url: 'https://www.fxblue.com/users/blackalgo/overviewscript',
+      headers: {},
+    };
+
+    axios(config)
+      .then(function (response) {
+        resolve(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
       });
   });
 };
@@ -207,7 +222,6 @@ const getServerDataForIps = async (serverName) => {
   }
 };
 
-
 module.exports = {
   connectSrv,
   connect,
@@ -217,4 +231,5 @@ module.exports = {
   getServerDataForIps,
   orderClose,
   checkConnection,
+  fxblueScript,
 };

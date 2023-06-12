@@ -43,6 +43,7 @@ const allRoles = {
     'getMtBrokerById',
     'getMtAccountById',
     'ServerList',
+    'FxblueScript',
     'firebaseToken',
     'history',
     'getUserStrategiesByUserID',

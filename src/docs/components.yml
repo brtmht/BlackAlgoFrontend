@@ -54,6 +54,8 @@ components:
           type: number
         risk_level:
           type: string
+        profit_factor:
+          type: string
         max_drawdown_percentage:
           type: number
           format: float
@@ -69,6 +71,7 @@ components:
         annual_return_percentage: 0.1
         monthly_return_percentage: 0.1
         min_portfolio: 2
+        profit_factor: 2.1
         risk_level: low
         max_drawdown_percentage: 10
         isDeleted: false

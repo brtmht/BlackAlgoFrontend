@@ -80,6 +80,17 @@ const getServerData = catchAsync(async (req, res) => {
   res.send({"success":true, code:201 , "message":"Get broker server list Successfully", "data":serverData});
 });
 
+const FxblueScript = catchAsync(async (req, res) => {
+  const response = await mt4Server.fxblueScript();
+  const jsonStart = response.indexOf("{");
+  const jsonEnd = response.lastIndexOf("}");
+  const jsonContent = response.substring(jsonStart, jsonEnd + 1);
+  const jsonObject = eval('(' + jsonContent + ')');
+  res.send({"success":true, code:201 , "message":"Fxblue Data fetch Successfully", "data":jsonObject});
+});
+
+
+
 
 
 module.exports = {
@@ -94,4 +105,5 @@ module.exports = {
   updateMtBroker,
   deleteMtBroker,
   getServerData,
+  FxblueScript,
 };
