@@ -15,7 +15,7 @@ const addNotificationToken = catchAsync(async (req, res) => {
 // Create Notification for testing
 const createNotification = catchAsync(async (req, res) => {
   const { user } = req;
-  const notification = await notificationService.createNotification(req.body, user);
+  const notification = await notificationService.createNotification(req.body, user._id);
   if (!notification) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }

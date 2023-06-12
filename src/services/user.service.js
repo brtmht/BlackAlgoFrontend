@@ -103,7 +103,7 @@ const updateUserDataById = async (userId, updateData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   const { file } = updateData;
-  const updatedFilePath =  updateData.file.path.replace(/\\/g, '/').replace('public/', '');
+  const updatedFilePath =  updateData?.file?.path?.replace(/\\/g, '/').replace('public/', '');
   if (file || Object.keys(updateData.body).length !== 0) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
@@ -111,7 +111,7 @@ const updateUserDataById = async (userId, updateData) => {
         $set: {
           name: updateData.body.name ? updateData.body.name : user.name,
           discordId:  updateData.body.discordId ? updateData.body.discordId : user.discordId,
-          image: file ? updatedFilePath : user.image,
+          image: pdateData?.file?.path ? updatedFilePath : user.image,
         },
       }
     );

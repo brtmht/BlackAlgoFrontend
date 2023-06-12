@@ -11,6 +11,7 @@ const ApiError = require('./utils/ApiError');
 const logger = require('./config/logger');
 mt4Socket.connect(config.mt4Server.SocketUrl + 'OnOrderUpdate?id=' + config.mt4Server.Mt4MasterToken);
 const { emitData }= require('./socket');
+const {common} = require('./middlewares/common')
 
 const mtSocket = () => {
   mt4Socket.on('connectFailed', function (error) {
@@ -87,6 +88,7 @@ const mtSocket = () => {
         //             tradingData.lots
         //           );
         //          const updatedData =  await tradingOrder.updateTradeOrderByMasterTicket(order.Ticket,closeData,"closeOrder");
+        //          await common.generateNotification({title:`Ticket Id  ${updatedData.ticketId} order closed successfully`})
         //          console.log(updatedData,"###########################");
         //          emitData('MT4TradeUpdated', updatedData);
                   
@@ -96,6 +98,7 @@ const mtSocket = () => {
         //             const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots);
         //             console.log(tradeData,"---------------------------tradeData");
         //             const createdTradeOrder = await tradingOrder.createTradingOrder(tradeData, user.userId, order, "orderSend");
+        //             await common.generateNotification({title:`Ticket Id  ${tradeData.ticketId} order sent  successfully`})
         //             emitData('MT4TradeUpdated', createdTradeOrder);
         //             //console.log(`Order sent to user: ${user}`);
         //             // Additional logic to send the order data to the user

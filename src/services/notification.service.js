@@ -31,11 +31,11 @@ const saveToken = async (notificationData, user) => {
  * @param {id} id
  * @returns {Promise<Notification>}
  */
-const createNotification = async (notificationData, user) => {
+const createNotification = async (notificationData, userId) => {
   // Calling firebase notification
-  await sendNotification(notificationData, user);
+  await sendNotification(notificationData, userId);
   const msgResponse = await Notification.create({
-    userId: user._id,
+    userId: userId,
     title: notificationData.title,
     message: notificationData.message,
     type: notificationData.type,
