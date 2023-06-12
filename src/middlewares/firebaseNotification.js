@@ -5,9 +5,9 @@ const firebaseAccount = require('../../firebaseAccount.json');
 admin.initializeApp({
   credential: admin.credential.cert(firebaseAccount),
 });
-const sendNotification = async (notificationData, user) => {
+const sendNotification = async (notificationData, userId) => {
   await Notification.create({
-    userId: user._id,
+    userId: userId,
     title: notificationData.title,
     message: notificationData.message,
     type: notificationData.type,

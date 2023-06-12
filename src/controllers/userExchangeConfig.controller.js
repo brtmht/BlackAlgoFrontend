@@ -32,7 +32,7 @@ const createUserExchangeConfig = catchAsync(async (req, res) => {
             const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user);
             await userExchangeConfig.updateServerTokenById(exchangeConfig.id, response);
 
-            res.send({"success":true, "message":"Check Mt4 server connection Succesfully", "data":{"token":response}});
+            res.send({"success":true, code:201, "message":"Check Mt4 server connection Succesfully", "data":{"token":response}});
           } else {
             logger.warn('API request failed, trying the next IP...');
           }

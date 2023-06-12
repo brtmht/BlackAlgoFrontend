@@ -55,16 +55,16 @@ const deleteStripeSubscriptionPlan = catchAsync(async (req, res) => {
 const getAllSubscriptionPlans = catchAsync(async (req, res) => {
   const subscriptionPlan = await subscriptionPlanService.getAllSubscriptionPlans();
   if (!subscriptionPlan) {
-    throw new ApiError(httpStatus.BAD_REQUEST);
+    throw new ApiError(httpStatus.BAD_REQUEST,"Empty Data");
   }
-  res.send(subscriptionPlan);
+  res.send({"success":true, code:201 , "message":"Subscription plans listed Successfully", "data":subscriptionPlan});
 });
 const getSubscriptionPlan = catchAsync(async (req, res) => {
   const subscriptionPlan = await subscriptionPlanService.getSubscriptionPlanById(req.params.subscriptionPlanId);
   if (!subscriptionPlan) {
-    throw new ApiError(httpStatus.BAD_REQUEST);
+    throw new ApiError(httpStatus.BAD_REQUEST,"Data not found");
   }
-  res.send(subscriptionPlan);
+  res.send({"success":true, code:201 , "message":"Fetch Subscription plan Successfully", "data":subscriptionPlan});
 });
 const updateSubscriptionPlan = catchAsync(async (req, res) => {
   const subscriptionPlan = await subscriptionPlanService.updateSubscriptionPlanById(req.params.subscriptionPlanId, req.body);

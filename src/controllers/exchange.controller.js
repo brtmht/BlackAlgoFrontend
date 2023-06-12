@@ -13,7 +13,7 @@ const getExchanges = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await exchangeService.queryExchanges(filter, options);
-  res.send(result);
+  res.send({"success":true, code:201 , "message":"Exchanges get Successfully", "data":result});
 });
 
 const getExchange = catchAsync(async (req, res) => {
@@ -21,7 +21,7 @@ const getExchange = catchAsync(async (req, res) => {
   if (!exchange) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Exchange not found');
   }
-  res.send(exchange);
+  res.send({"success":true, code:201 , "message":"Exchange get Successfully", "data":exchange});
 });
 
 const updateExchange = catchAsync(async (req, res) => {

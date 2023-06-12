@@ -44,7 +44,7 @@ const createPayment = catchAsync(async (req, res) => {
 
   if (req.body.paymentType === 'card') {
     paymentData = await stripeAccountService.createStripePayment(req.body, user);
-    res.send({ stripe_token: paymentData.paymentIntent.client_secret });
+    res.send({"success":true, code:201 , "message":"stripe token created Successfully", "data":{ stripe_token: paymentData.paymentIntent.client_secret }});
   }
   if (req.body.paymentType === 'crypto') {
     paymentData = '';
@@ -64,7 +64,7 @@ const savePaymentDetails = catchAsync(async (req, res) => {
     await transactionHistoryService.saveTransactionHistory(PaymentDetails, req);
     // await stripeAccountService.updateStripeAccount(PaymentDetails.stripeAccountId, req.body.customerCardId);
   }
-  res.send(PaymentDetails);
+  res.send({"success":true, code:201 , "message":"payment Successfully", "data":PaymentDetails});
 });
 
 // get user payment detail
