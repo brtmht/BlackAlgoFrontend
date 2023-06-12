@@ -29,6 +29,8 @@ router
   .delete(auth('deleteBroker'), mtaccountController.deleteMtBroker);
 
   router.route('/ServerList').post(auth('ServerList'), mtaccountController.getServerData);
+  router.route('/FxblueScript').get(mtaccountController.FxblueScript);
+  
   
 module.exports = router;
 
@@ -446,7 +448,7 @@ module.exports = router;
  * /ServerList:
  *   post:
  *     summary: Get server list data according to broker
- *     description: Get specoific server data list .
+ *     description: Get specific server data list .
  *     tags: [MtAccount]
  *     security:
  *       - bearerAuth: []
@@ -474,6 +476,25 @@ module.exports = router;
  *         $ref: '#/components/responses/DuplicateName'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /FxblueScript:
+ *   get:
+ *     summary: Get FxBlue script data
+ *     description: Get fxBlue data list .
+ *     tags: [MtAccount]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  */

@@ -10,6 +10,7 @@ const createStrategy = {
     monthly_return_percentage: Joi.number(),
     min_portfolio: Joi.number(),
     risk_level: Joi.string(),
+    profit_factor: Joi.number(),
     max_drawdown_percentage: Joi.number(),
   }),
 };
@@ -22,6 +23,7 @@ const getStrategies = {
     annual_return_percentage: Joi.number(),
     monthly_return_percentage: Joi.number(),
     risk_level: Joi.string(),
+    profit_factor: Joi.number(),
     max_drawdown_percentage: Joi.number(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),

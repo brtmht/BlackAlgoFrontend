@@ -30,6 +30,10 @@ const strategySchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    profit_factor: {
+      type: Number,
+      default: 0,
+    },
     min_portfolio: {
       type: Number,
       default: 0,
