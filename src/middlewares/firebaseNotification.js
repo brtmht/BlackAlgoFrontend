@@ -6,9 +6,9 @@ const { emitData } = require('../socket');
 admin.initializeApp({
   credential: admin.credential.cert(firebaseAccount),
 });
-const sendNotification = async (notificationData, userId) => {
+const sendNotification = async (notificationData, user) => {
  const notificationCreated =  await Notification.create({
-    userId: userId,
+    userId: user._id,
     title: notificationData.title,
     message: notificationData.message,
     type: notificationData.type,
