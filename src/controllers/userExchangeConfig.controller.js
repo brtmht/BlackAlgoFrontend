@@ -29,8 +29,14 @@ const createUserExchangeConfig = catchAsync(async (req, res) => {
         }
           const response = await mt4Server.connect(req.body, IP, PORT);
           if (!response.message) {
+           const existConnection = await userExchangeConfig.getUserExchangeConfigByUserId(req.user);
+           if(existConnection){
+            await userExchangeConfig.updateServerTokenById(existConnection.id, response);
+           }else{
             const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user);
-            await userExchangeConfig.updateServerTokenById(exchangeConfig.id, response);
+           }
+            
+            //await userExchangeConfig.updateServerTokenById(exchangeConfig.id, response);
 
             res.send({"success":true, code:201, "message":"Check Mt4 server connection Succesfully", "data":{"token":response}});
           } else {

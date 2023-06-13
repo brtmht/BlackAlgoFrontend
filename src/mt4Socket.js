@@ -136,17 +136,18 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => 
     console.log(userBalance, '---------------------------userBalance');
     let finalLots;
     const priceRatio = masterBalance / userBalance.balance;
-    if (strategyName === 'conservative' && userBalance.balance > configData.conservative_min_amount) {
+    if (strategyName === 'Conservative' && userBalance.balance > configData.conservative_min_amount) {
       const volume = lots / priceRatio / configData.conservative_check_amount;
       finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
     }
-    if (strategyName === 'balanced' && userBalance.balance > configData.balanced_min_amount) {
+    if (strategyName === 'Balanced' && userBalance.balance > configData.balanced_min_amount) {
       finalLots = lots;
     }
-    if (strategyName === 'dynamic' && userBalance.balance > configData.dynamic_min_amount) {
+    if (strategyName === 'Dynamic' && userBalance.balance > configData.dynamic_min_amount) {
       const volume = lots / priceRatio / configData.dynamic_check_amount;
       finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
     }
+    console.log(finalLots);
     return { lots: finalLots };
   } else {
     return { error: 'Data not found' };
