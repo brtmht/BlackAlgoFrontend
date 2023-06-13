@@ -569,42 +569,42 @@ components:
         tokenExpiry: 2023-03-16T16:18:04.793Z
         strategyId: 6434fd92e457b33f15d398f7 
     GlobalConfig:
-    type: object
-    properties:
-      id:
-        type: string
-      balanced_check_amount:
-        type: number
-      stripe_payment:
-        type: boolean
-      binance_payment:
-        type: boolean
-      conservative_min_amount:
-        type: number
-      balanced_min_amount:
-        type: number
-      dynamic_min_amount:
-        type: number
-      binance_min_amount:
-        type: number
-      conservative_check_amount:
-        type: number
-      dynamic_check_amount:
-        type: number
-      lots_min_amount:
-        type: number  
-    example:
-      id: 5ebac534954b54139806c112        
-      balanced_check_amount: null
-      stripe_payment: true
-      binance_payment: true
-      conservative_min_amount: 4000
-      balanced_min_amount: 2000
-      dynamic_min_amount: 1000
-      binance_min_amount": 500
-      conservative_check_amount: 2
-      dynamic_check_amount: 2
-      lots_min_amount: 0.01
+      type: object
+      properties:
+        id:
+          type: string
+        balanced_check_amount:
+          type: number
+        stripe_payment:
+          type: boolean
+        binance_payment:
+          type: boolean
+        conservative_min_amount:
+          type: number
+        balanced_min_amount:
+          type: number
+        dynamic_min_amount:
+          type: number
+        binance_min_amount:
+          type: number
+        conservative_check_amount:
+          type: number
+        dynamic_check_amount:
+          type: number
+        lots_min_amount:
+          type: number  
+      example:
+        id: 5ebac534954b54139806c112        
+        balanced_check_amount: null
+        stripe_payment: true
+        binance_payment: true
+        conservative_min_amount: 4000
+        balanced_min_amount: 2000
+        dynamic_min_amount: 1000
+        binance_min_amount": 500
+        conservative_check_amount: 2
+        dynamic_check_amount: 2
+        lots_min_amount: 0.01
     Token:
       type: object
       properties:
