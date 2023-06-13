@@ -27,6 +27,10 @@ router.route('/clearFirebaseToken').patch(auth('clearUserToken'), userController
 router
   .route('/changePassword')
   .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
+  router
+  .route('/checkEmail')
+  .post(validate(userValidation.updateUser), userController.checkEmail);
+  
 router
   .route('/users/:userId')
   .get(auth('getUserById'), userController.getUserById)
@@ -676,6 +680,38 @@ module.exports = router;
  *                $ref: '#/components/schemas/User'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /checkEmail:
+ *   post:
+ *     summary: Check Email exist or not
+ *     description: Check email Id
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *             example:
+ *               email: example@yopmail.com
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *       "404":

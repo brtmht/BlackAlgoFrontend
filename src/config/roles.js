@@ -3,6 +3,7 @@ const allRoles = {
     'updateUser',
     'getUser',
     'changePassword',
+    'checkEmail',
     'generate2fa',
     'verify2Fa',
     'turnOn2Fa',

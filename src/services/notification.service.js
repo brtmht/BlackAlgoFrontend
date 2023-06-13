@@ -53,7 +53,7 @@ const getAllNotificationByUserID = async (userId, options) => {
   const notificationsCount = await Notification.find({ userId });
   const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (notifications.length === 0) {
-    throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"Data not found");
+    throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
   }
   return {
     notifications,
