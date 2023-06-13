@@ -86,10 +86,10 @@ const mtSocket = () => {
                       closeData,
                       'closeOrder'
                     );
-                    await generateNotification({
-                      title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
-                      message: `The order for ${updatedData.lots} lots has been successfully closed.`,
-                    },updatedData.userId);
+                    // await generateNotification({
+                    //   title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
+                    //   message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                    // },updatedData.userId);
                     console.log(updatedData, '###########################');
                     emitData('MT4TradeUpdated', updatedData);
                   } else {
@@ -103,10 +103,10 @@ const mtSocket = () => {
                         order,
                         'orderSend'
                       );
-                      await generateNotification({
-                        title: `Order sent  successfully`,
-                        message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
-                      },createdTradeOrder.userId);
+                      // await generateNotification({
+                      //   title: `Order sent  successfully`,
+                      //   message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                      // },createdTradeOrder.userId);
                       emitData('MT4TradeUpdated', createdTradeOrder);
                       //console.log(`Order sent to user: ${user}`);
                       // Additional logic to send the order data to the user
