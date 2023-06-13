@@ -66,6 +66,29 @@ const updateStrategyById = async (strategyId, updateBody) => {
 };
 
 /**
+ * Update strategy by name
+ * @param {string} strategyName
+ * @param {Object} updateBody
+ * @returns {Promise<Strategy>}
+ */
+const updateStrategyByName = async (strategyName, updateData) => {
+  const strategy = await getStrategyByName(strategyName);
+  if (!strategy) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Strategy not found');
+  }
+
+  const updateStrategy = await Strategy.findOneAndUpdate({name:strategyName}, {
+    monthly_return_percentage: updateData.monthly_return_percentage,
+    annual_return_percentage: updateData.annual_return_percentage,
+    max_drawdown_percentage: updateData.max_drawdown_percentage,
+    profit_factor: updateData.profit_factor,
+  });
+
+  return updateStrategy;
+};
+
+
+/**
  * Delete strategy by id
  * @param {ObjectId} strategyId
  * @returns {Promise<Strategy>}
@@ -86,4 +109,5 @@ module.exports = {
   getStrategyByName,
   updateStrategyById,
   deleteStrategyById,
+  updateStrategyByName,
 };
