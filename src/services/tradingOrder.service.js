@@ -100,7 +100,7 @@ const getAllTradingOrderWithPagination = async (userId, options) => {
   const tradeCount = await getTradeOrderCount(userId);
   const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (tradingOrders.length === 0) {
-    throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+    throw new ApiError(httpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"Data not found");
   }
   return {
     tradingOrders,
