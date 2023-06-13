@@ -158,7 +158,7 @@ const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
     throw new ApiError(httpStatus.NOT_FOUND);
   }
 
-  const updatedTradingOrder = await TradingOrder.find({ ticketId: data.ticket });
+  const updatedTradingOrder = await TradingOrder.findOne({ ticketId: data.ticket });
 
   return updatedTradingOrder;
 
