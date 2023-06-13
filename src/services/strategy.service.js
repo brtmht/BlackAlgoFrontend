@@ -67,9 +67,6 @@ const updateStrategyById = async (strategyId, updateBody) => {
 
 /**
  * Update strategy by name
- * @param {string} strategyName
- * @param {Object} updateBody
- * @returns {Promise<Strategy>}
  */
 const updateStrategyByName = async (strategyName, updateData) => {
   const strategy = await Strategy.findOne({ name:strategyName });
