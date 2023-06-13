@@ -30,6 +30,10 @@ const getUserExchangeConfigById = async (id) => {
   return UserExchangeConfig.findById(id);
 };
 
+const getUserExchangeConfigByUserId = async (id) => {
+  return UserExchangeConfig.findOne({userId:id});
+};
+
 const updateUserExchangeConfigById = async (UserExchangeConfigId, updateBody) => {
   const UserExchangeConfig = await getUserExchangeConfigById(UserExchangeConfigId);
   if (!UserExchangeConfig) {
@@ -78,5 +82,6 @@ module.exports = {
   getUserExchangeConfigById,
   updateUserExchangeConfigById,
   updateServerTokenById,
-  getConnectedUser
+  getConnectedUser,
+  getUserExchangeConfigByUserId
 };
