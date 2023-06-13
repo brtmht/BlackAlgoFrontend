@@ -23,6 +23,7 @@ const allRoles = {
     'getPayments',
     'manageStrategies',
     'getStrategies',
+    'strategyWithoutAuth',
     'deleteSubscriptionPlans',
     'updateSubscriptionPlans',
     'getSubscriptionPlans',

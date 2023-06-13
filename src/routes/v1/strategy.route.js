@@ -10,7 +10,7 @@ router
   .route('/')
   .post(auth('manageStrategies'), validate(strategyValidation.createStrategy), strategyController.createStrategy)
   .get(auth(), validate(strategyValidation.getStrategies), strategyController.getStrategies);
-
+router.route('/strategyWithoutAuth').get(validate(strategyValidation.getStrategies), strategyController.getStrategies);
 router
   .route('/:strategyId')
   .get(auth('getStrategies'), validate(strategyValidation.getStrategy), strategyController.getStrategy)
@@ -245,3 +245,64 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
+/**
+ * @swagger
+ * /strategyWithoutAuth:
+*   get:
+*     summary: Get all strategies
+*     description: Only admins can retrieve all strategies.
+*     tags: [Strategies]
+*     parameters:
+*       - in: query
+*         name: name
+*         schema:
+*           type: string
+*         description: Strategy name
+*       - in: query
+*         name: sortBy
+*         schema:
+*           type: string
+*         description: sort by query in the form of field:desc/asc (ex. name:asc)
+*       - in: query
+*         name: limit
+*         schema:
+*           type: integer
+*           minimum: 1
+*         default: 10
+*         description: Maximum number of strategies
+*       - in: query
+*         name: page
+*         schema:
+*           type: integer
+*           minimum: 1
+*           default: 1
+*         description: Page number
+*     responses:
+*       "200":
+*         description: OK
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 results:
+*                   type: array
+*                   items:
+*                     $ref: '#/components/schemas/Strategy'
+*                 page:
+*                   type: integer
+*                   example: 1
+*                 limit:
+*                   type: integer
+*                   example: 10
+*                 totalPages:
+*                   type: integer
+*                   example: 1
+*                 totalResults:
+*                   type: integer
+*                   example: 1
+*       "401":
+*         $ref: '#/components/responses/Unauthorized'
+*       "403":
+*         $ref: '#/components/responses/Forbidden'
+*/
