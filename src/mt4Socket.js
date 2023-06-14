@@ -47,17 +47,25 @@ const mtSocket = () => {
             return new Promise(async (resolve, reject) => {
               try {
                 const checkConnection = await mt4Server.checkConnection(user.serverToken);
-                console.log(checkConnection, '-----------------checkConnection');
+                console.log("Check Mt4 connection");
                 let BrokerToken;
+                let connectionAttempts = 0;
+                
                 if (checkConnection?.message) {
                   const maxAttempts = 3;
-                  let currentAttempt = 0;
                   const ipList = await mt4Server.getServerDataForIps(user.config.server);
+              
                   for (const ip of ipList) {
+                    if (connectionAttempts >= maxAttempts) {
+                      logger.warn('MT4 server connection reached maximum attempts limit');
+                      break;
+                    }
+              
                     let IP;
                     let PORT;
                     const [address, port] = ip.split(':');
                     logger.info(`Trying IP: ${ip}`);
+              
                     if (port) {
                       IP = address;
                       PORT = port;
@@ -65,18 +73,21 @@ const mtSocket = () => {
                       IP = ip;
                       PORT = '443';
                     }
+              
                     const response = await mt4Server.connect(user, IP, PORT);
-                    console.log(response, '--------------------responseresponse');
-                    await userExchangeConfig.updateServerTokenById(user.id, response);
-                    BrokerToken = response;
-                    currentAttempt++;
-                    if (currentAttempt === maxAttempts) {
-                      logger.warn('MT4 server connection reached maximum attempts limit');
-                      break; // Exit the loop if maximum attempts reached
+                    console.log("new mt4 token generated");
+              
+                    if (!response.message) {
+                      await userExchangeConfig.updateServerTokenById(user.id, response);
+                      BrokerToken = response;
+                      break;
+                    } else {
+                      connectionAttempts++;
                     }
                   }
                 } else {
                   BrokerToken = user.serverToken;
+                }
                   console.log(`Order sent to user: ${user}`);
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   if (tradingData) {
@@ -92,7 +103,6 @@ const mtSocket = () => {
                       title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
                       message: `The order for ${updatedData.lots} lots has been successfully closed.`,
                     },updatedData.userId);
-                    console.log(updatedData, '###########################');
                     emitData('MT4TradeUpdated', updatedData);
                   } else {
                     const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
@@ -115,7 +125,6 @@ const mtSocket = () => {
                       resolve();
                     }
                   }
-                }
               } catch (error) {
                 reject(error);
               }
@@ -135,7 +144,7 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => 
   const strategyName = strategy.strategyId.name;
   if (strategyName) {
     const userBalance = await mt4Server.accountSummary(serverToken);
-    console.log(userBalance, '---------------------------userBalance');
+    console.log('get userBalance');
     let finalLots;
     const priceRatio = masterBalance / userBalance.balance;
     if (strategyName === 'Conservative' && userBalance.balance > configData.conservative_min_amount) {
