@@ -45,7 +45,7 @@ const getUserStrategyById = catchAsync(async (req, res) => {
 });
 
 const updateUserStrategy = catchAsync(async (req, res) => {
-  const userStrategy = await userStrategyService.updateUserStrategyById(req.params.userStrategyId, req.body);
+  const userStrategy = await userStrategyService.updateUserStrategyById(req.user._id, req.body);
   res.send(userStrategy);
 });
 

@@ -70,7 +70,7 @@ const updateStrategyById = async (strategyId, updateBody) => {
  */
 const updateStrategyByName = async (strategyName, updateData) => {
   console.log(strategyName,"---------------");
-  const strategy = await Strategy.findOne({name:strategyName});
+  const strategy = await Strategy.find({name:strategyName});
   console.log("wqertyuiop[------------------------",strategy);
   if (!strategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Strategy not found');
