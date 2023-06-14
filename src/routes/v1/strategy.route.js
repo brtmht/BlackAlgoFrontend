@@ -247,7 +247,7 @@ module.exports = router;
  */
 /**
  * @swagger
- * /strategyWithoutAuth:
+ * /strategies/strategyWithoutAuth:
 *   get:
 *     summary: Get all strategies
 *     description: Only admins can retrieve all strategies.
