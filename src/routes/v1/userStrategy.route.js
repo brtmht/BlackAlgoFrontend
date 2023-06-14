@@ -104,7 +104,7 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *   patch:
- *     summary: update a userStrategy by token
+ *     summary: update a userStrategy onBoardProcess by token
  *     description: Logged in userStrategies can fetch only their own userStrategy information. Only admins can fetch other userStrategies.
  *     tags: [UserStrategies]
  *     security:
