@@ -67,16 +67,19 @@ const updateStrategyById = async (strategyId, updateBody) => {
 
 /**
  * Update strategy by name
+ * @param {string} strategyId
+ * @param {Object} updateData
+ * @returns {Promise<Strategy>}
  */
-const updateStrategyByName = async (strategyName, updateData) => {
-  console.log(strategyName,"---------------");
-  const strategyData = await getStrategyByName(strategyName);
+const updateStrategyByName = async (name, updateData) => {
+  console.log(name,"---------------");
+  const strategyData = await Strategy.find({name:"Conservative"});
   console.log("wqertyuiop[------------------------",strategyData);
   if (!strategyData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Strategy not found');
   }
 
-  const updateStrategy = await Strategy.findOneAndUpdate({name:strategyName}, {
+  const updateStrategy = await Strategy.findOneAndUpdate({name:name}, {
     monthly_return_percentage: updateData.monthly_return_percentage,
     annual_return_percentage: updateData.annual_return_percentage,
     max_drawdown_percentage: updateData.max_drawdown_percentage,

@@ -33,7 +33,6 @@ const onBoardUserStrategy = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
   res.send({"success":true, code:200 , "message":"User strategyonboard status updated Successfully"});
-  res.status(httpStatus.NO_CONTENT).send();
 });
 
 const getUserStrategyById = catchAsync(async (req, res) => {
@@ -46,7 +45,7 @@ const getUserStrategyById = catchAsync(async (req, res) => {
 
 const updateUserStrategy = catchAsync(async (req, res) => {
   const userStrategy = await userStrategyService.updateUserStrategyById(req.user._id, req.body);
-  res.send(userStrategy);
+  res.send({"success":true, code:201 , "message":"User strategy updated Successfully", "data":userStrategy});
 });
 
 const deleteUserStrategy = catchAsync(async (req, res) => {
