@@ -80,12 +80,14 @@ const mtSocket = () => {
                   console.log(`Order sent to user: ${user}`);
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   if (tradingData) {
-                    const closeData = await mt4Server.orderClose(user.BrokerToken, tradingData.ticketId, tradingData.lots);
+                    const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId, tradingData.lots);
+                    console.log("order close Data");
                     const updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
                       order.Ticket,
                       closeData,
                       'closeOrder'
                     );
+                    console.log("broker update data ----------------------");
                     await generateNotification({
                       title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
                       message: `The order for ${updatedData.lots} lots has been successfully closed.`,
@@ -96,7 +98,7 @@ const mtSocket = () => {
                     const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
                     if (userLots.lots) {
                       const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots);
-                      console.log(tradeData, '---------------------------tradeData');
+                      console.log('created broker order');
                       const createdTradeOrder = await tradingOrder.createTradingOrder(
                         tradeData,
                         user.userId,
