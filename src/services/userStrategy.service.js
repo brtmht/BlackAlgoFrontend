@@ -155,8 +155,8 @@ const getUserStrategyByName = async (name) => {
  * @param {Object} updateBody
  * @returns {Promise<UserStrategy>}
  */
-const updateUserStrategyById = async (strategyId, updateBody) => {
-  const userData = UserStrategy.findByIdAndUpdate(strategyId, { ...updateBody });
+const updateUserStrategyById = async (userStrategyId, updateBody) => {
+  const userData = UserStrategy.findByIdAndUpdate({_id:userStrategyId}, { ...updateBody });
   if (!userData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
