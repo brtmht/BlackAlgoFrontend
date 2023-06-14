@@ -8,7 +8,6 @@ const regionSchema = mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
-      lowercase: true,
     },
     description: {
       type: String,
