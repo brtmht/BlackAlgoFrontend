@@ -8,7 +8,6 @@ const strategySchema = mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
-      lowercase: true,
     },
     shortDescription:  {
       type: String,

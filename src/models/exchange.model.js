@@ -8,7 +8,6 @@ const exchangeSchema = mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
-      lowercase: true,
     },
     url: {
       type: String,

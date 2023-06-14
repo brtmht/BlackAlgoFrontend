@@ -11,7 +11,6 @@ const userWallet = mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      lowercase: true,
     },
     currency: {
       type: String,
