@@ -21,17 +21,13 @@ router
   .patch(auth('updateOnBoarding'), userStrategyController.onBoardUserStrategy);
 router.route('/userId').get(auth('getUserStrategiesByUserID'), userStrategyController.getUserStrategy);
 router.route('/getAll').get(auth('getAllUserStrategies'), userStrategyController.getAllUserStrategy);
+router.route('/updateUserStrategy').patch(auth('updateUserStrategy'),validate(userStrategyValidation.getUserStrategy), userStrategyController.updateUserStrategy);
 router
   .route('/:userStrategyId')
   .get(
     auth('getUserStrategies'),
     validate(userStrategyValidation.getUserStrategy),
     userStrategyController.getUserStrategyById
-  )
-  .patch(
-    auth('manageUserStrategies'),
-    validate(userStrategyValidation.updateUserStrategy),
-    userStrategyController.updateUserStrategy
   )
   .delete(
     auth('manageUserStrategies'),
@@ -232,46 +228,6 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
- *   patch:
- *     summary: Update a userStrategy
- *     description: Logged in userStrategies can only update their own information. Only admins can update other userStrategies.
- *     tags: [UserStrategies]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: UserStrategy id
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *             example:
- *               name: fake name
- *     responses:
- *       "200":
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/UserStrategy'
- *       "400":
- *         $ref: '#/components/responses/DuplicateName'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *       "404":
- *         $ref: '#/components/responses/NotFound'
- *
  *   delete:
  *     summary: Delete a userStrategy
  *     description: Logged in userStrategies can delete only themselves. Only admins can delete other userStrategies.
@@ -334,3 +290,40 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  */
+/**
+* @swagger
+* /userStrategies/updateUserStrategy:
+*   patch:
+*     summary: Update a userStrategy
+*     description: Logged in userStrategies can only update their own information. Only admins can update other userStrategies.
+*     tags: [UserStrategies]
+*     security:
+*       - bearerAuth: []
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               strategyId:
+*                 type: string
+*             example:
+*               strategyId: fake name
+*     responses:
+*       "200":
+*         description: OK
+*         content:
+*           application/json:
+*             schema:
+*                $ref: '#/components/schemas/UserStrategy'
+*       "400":
+*         $ref: '#/components/responses/DuplicateName'
+*       "401":
+*         $ref: '#/components/responses/Unauthorized'
+*       "403":
+*         $ref: '#/components/responses/Forbidden'
+*       "404":
+*         $ref: '#/components/responses/NotFound'
+*
+*/

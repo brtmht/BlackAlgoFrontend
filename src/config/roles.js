@@ -13,6 +13,7 @@ const allRoles = {
     'getTransactionHistory',
     'activate2Fa',
     'getUserStrategies',
+    'updateUserStrategy',
     'manageUserStrategies',
     'updateOnBoarding',
     'getBackUpSecretKey',
