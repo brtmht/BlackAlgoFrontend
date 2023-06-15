@@ -77,11 +77,27 @@ const getConnectedUser = async () => {
   return UserExchangeConfig.find({connected:true});
 };
 
+/**
+ * update mt4 connection
+ * @returns {Promise<UserExchangeConfig>}
+ */
+const updateConnectionData = async (user_id) => {
+  return UserExchangeConfig.findOneAndUpdate(
+    { userId: user_id },
+    {
+      $set: {
+        connected: true,
+      },
+    }
+  );
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
   updateUserExchangeConfigById,
   updateServerTokenById,
   getConnectedUser,
-  getUserExchangeConfigByUserId
+  getUserExchangeConfigByUserId,
+  updateConnectionData,
 };
