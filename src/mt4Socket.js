@@ -108,7 +108,7 @@ const mtSocket = () => {
                     const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
                     if (userLots.lots) {
                       const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots);
-                      console.log('created broker order');
+                      console.log('created broker order',tradeData);
                       const createdTradeOrder = await tradingOrder.createTradingOrder(
                         tradeData,
                         user.userId,
