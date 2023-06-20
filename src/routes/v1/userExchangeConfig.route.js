@@ -9,10 +9,8 @@ const router = express.Router();
 router
   .route('/UserExchangeConfig')
   .post(auth('createUserExchangeConfig'), validate(userExchangeConfigValidation.createUserExchangeConfig), userExchangeConfigController.createUserExchangeConfig)
-  .get(auth('getUserExchangeConfig'), userExchangeConfigController.getUserExchangeConfig);
-router
-  .route('/:userExchangeConfigId')
-  .patch(auth('updateUserExchangeConfig'), userExchangeConfigController.updateUserExchangeConfig)
+  .get(auth('getUserExchangeConfig'), userExchangeConfigController.getUserExchangeConfig)
+  .patch(auth('updateUserExchangeConfig'), userExchangeConfigController.updateUserExchangeConfig);
 
 module.exports = router;
 
@@ -61,5 +59,45 @@ module.exports = router;
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
- *         $ref: '#/components/responses/Forbidden'              
+ *         $ref: '#/components/responses/Forbidden' 
+ *   patch:
+ *     summary: update user exchange config
+ *     description: update logged in user excahnge config.
+ *     tags: [UserExchangeConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               exchangeId:
+ *                 type: string
+ *               config:
+ *                 type: object
+ *               strategyId:
+ *                 type: string
+ *             example:
+ *               exchangeId: 646c543f6086f579abe86b58
+ *               config:
+ *                   login: 260050728
+ *                   password: abc
+ *                   server: ICMarketsSC-Live26
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserExchangeConfig'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'             
  */

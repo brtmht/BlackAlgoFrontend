@@ -11,7 +11,7 @@ const ApiError = require('./utils/ApiError');
 const logger = require('./config/logger');
 mt4Socket.connect(config.mt4Server.SocketUrl + 'OnOrderUpdate?id=' + config.mt4Server.Mt4MasterToken);
 const { emitData } = require('./socket');
-const generateNotification = require('./middlewares/common');
+const {generateNotification} = require('./middlewares/common');
 
 const mtSocket = () => {
   mt4Socket.on('connectFailed', function (error) {
@@ -34,20 +34,34 @@ const mtSocket = () => {
       if (config.mt4Server.Mt4MasterToken === ordersData.Id) {
         const order = ordersData?.Data?.Update?.Order;
         const masterBalance = ordersData?.Data?.Balance;
+        console.log(order,"-----------------------------order");
         if (order) {
+          // console.log(order,"-----------------------------order");
           const masterAccount = await masterTradingOrder.checkTradingId(order.Ticket);
           if (masterAccount) {
-            await masterTradingOrder.updateTradeOrder(order, 'closeOrder');
+            if((order.StopLoss > 0  || order.TakeProfit > 0 )  && (order.Comment !== '[sl]' && order.Comment !== '[tp]')){
+              await masterTradingOrder.updateTradeOrder(order, 'Stop limit');
+              console.log("action : modify master stop limit");
+            }else if ((order.StopLoss > 0   || order.TakeProfit > 0 ) && (order.Comment !== '')) {
+              await masterTradingOrder.updateTradeOrder(order, 'closeOrder');
+              console.log("action : close master order using stop limit ");
+            }else if (order.StopLoss === 0 &&  order.TakeProfit === 0) {
+              await masterTradingOrder.updateTradeOrder(order, 'closeOrder');
+              console.log("action : close master order by market price");
+            }
+            
           } else {
             await masterTradingOrder.createMasterTradingOrder(order, 'orderSend');
+            console.log("action : Created master order ");
           }
           const connectedUsers = await userExchangeConfig.getConnectedUser();
           // Create an array of promises for sending order data to each user
           const sendOrderPromises = connectedUsers.map((user) => {
             return new Promise(async (resolve, reject) => {
               try {
+                console.log(`action: user: ${user}`);
                 const checkConnection = await mt4Server.checkConnection(user.serverToken);
-                console.log("Check Mt4 connection");
+                console.log("action: Check Mt4 connection");
                 let BrokerToken;
                 let connectionAttempts = 0;
                 
@@ -57,7 +71,7 @@ const mtSocket = () => {
               
                   for (const ip of ipList) {
                     if (connectionAttempts >= maxAttempts) {
-                      logger.warn('MT4 server connection reached maximum attempts limit');
+                      logger.warn('action: MT4 server connection reached maximum attempts limit');
                       break;
                     }
               
@@ -75,11 +89,12 @@ const mtSocket = () => {
                     }
               
                     const response = await mt4Server.connect(user, IP, PORT);
-                    console.log("new mt4 token generated");
-              
+                    console.log("action: new mt4 token generated");
                     if (!response.message) {
+                      console.log(response,"-------------------------responsetoken");
                       await userExchangeConfig.updateServerTokenById(user.id, response);
                       BrokerToken = response;
+                      console.log("updated broker server token in db");
                       break;
                     } else {
                       connectionAttempts++;
@@ -88,38 +103,82 @@ const mtSocket = () => {
                 } else {
                   BrokerToken = user.serverToken;
                 }
-                  console.log(`Order sent to user: ${user}`);
+                  //console.log(`action: Order sent to user: ${user}`);
+                  console.log(`action: Order sent to user`);
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
+                  console.log("action: find broker trading data");
                   if (tradingData) {
-                    const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId, tradingData.lots);
-                    console.log("order close Data");
-                    const updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
-                      order.Ticket,
-                      closeData,
-                      'closeOrder'
-                    );
-                    console.log("broker update data ----------------------");
-                    await generateNotification({
-                      title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
-                      message: `The order for ${updatedData.lots} lots has been successfully closed.`,
-                    },updatedData.userId);
-                    emitData('MT4TradeUpdated', updatedData);
+                    let updatedData;
+                    if ((order.StopLoss > 0 || order.TakeProfit > 0) && (order.Comment !== '[sl]' && order.Comment !== '[tp]')) {
+                      console.log(order,"--------------------------------------qwertyuiop[");
+                      const tradeData = await mt4Server.orderModify(order, BrokerToken, tradingData.ticketId);
+                      if(!tradeData.message){
+                        console.log(tradeData,"--------------------tradeData Broker");
+                        updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
+                          order.Ticket,
+                          tradeData,
+                          'limit'
+                        );
+                        console.log("action: update broker order stop limit data store in db----------------------",updatedData);
+                      }else{
+                        console.log(tradeData.message);
+                      }
+                 
+                   }
+                    else if ((order.StopLoss > 0 || order.TakeProfit > 0) && (order.Comment !== '')) {
+                      // const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId);
+                      // console.log(closeData,"---------------------------closeData");
+                      // console.log("action: using SL broker order close Data");
+                      updatedData = await tradingOrder.updateTradeOrderComments(
+                        order.Ticket,
+                        user.userId,
+                        'closeOrderUsingLimit'
+                      );
+                      console.log("action: close broker order using stop limit store in db----------------------");
+                    }else if ((order.StopLoss === 0 && order.TakeProfit === 0)&& order.Comment === '') {
+                      const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId);
+                      if(!closeData.mesaage){
+                        console.log("action: broker order close Data");
+                        updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
+                          order.Ticket,
+                          closeData,
+                          'closeOrder'
+                        );
+                        console.log("action: broker update close order data store in db ----------------------");
+                        await generateNotification({
+                          title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
+                          message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                        },updatedData.userId);
+                        emitData('MT4TradeUpdated', updatedData);
+                      }else{
+                        console.log(closeData.mesaage);
+                      }
+                     
+                    }
                   } else {
                     const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
                     if (userLots.lots) {
+                      console.log(userLots.lots,"-------------------------userLots.lots");
                       const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots);
-                      console.log('created broker order',tradeData);
-                      const createdTradeOrder = await tradingOrder.createTradingOrder(
-                        tradeData,
-                        user.userId,
-                        order,
-                        'orderSend'
-                      );
-                      await generateNotification({
-                        title: `Order sent  successfully`,
-                        message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
-                      },createdTradeOrder.userId);
-                      emitData('MT4TradeUpdated', createdTradeOrder);
+                     
+                      if(!tradeData.message){
+                        console.log('created broker order',tradeData);
+                        const createdTradeOrder = await tradingOrder.createTradingOrder(
+                          tradeData,
+                          user.userId,
+                          order,
+                          'orderSend'
+                        );
+                        console.log('created broker order data store in DB');
+                        await generateNotification({
+                          title: `Order sent  successfully`,
+                          message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                        },createdTradeOrder.userId);
+                        emitData('MT4TradeUpdated', createdTradeOrder);
+                      }else{
+                        console.log(tradeData.message);
+                      }
+                     
                       //console.log(`Order sent to user: ${user}`);
                       // Additional logic to send the order data to the user
                       resolve();

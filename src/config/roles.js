@@ -69,6 +69,7 @@ const allRoles = {
     'clearUserToken',
     'createUserExchangeConfig',
     'getUserExchangeConfig',
+    'updateUserExchangeConfig',
     'getConfigData',
     'getTermAndPolicyData',
   ],

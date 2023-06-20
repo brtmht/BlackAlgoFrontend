@@ -50,7 +50,9 @@ components:
         monthly_return_percentage:
           type: number
           format: float 
-        min_portfolio:
+        min_deposit_binance:
+          type: number
+        min_deposit_fxBroker:
           type: number
         risk_level:
           type: string
@@ -70,7 +72,8 @@ components:
         description: fake description
         annual_return_percentage: 0.1
         monthly_return_percentage: 0.1
-        min_portfolio: 2
+        min_deposit_binance: 2
+        min_deposit_fxBroker: 2
         profit_factor: 2.1
         risk_level: low
         max_drawdown_percentage: 10

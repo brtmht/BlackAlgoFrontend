@@ -5,12 +5,13 @@ var fs = require('fs');
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const logger = require('../config/logger');
+const {decryptData} = require('../middlewares/common');
 
 const Mt4Url = config.mt4Server.ApiUrl;
 const connectSrv = async (data) => {
   try {
     const user = data.config.login;
-    const password = data.config.password;
+    const password = await decryptData(data.config.password);
     const srvFile = data.config.server;
 
     const formData = new FormData();
@@ -36,7 +37,7 @@ const connectSrv = async (data) => {
   }
 };
 
-const connect = async (data, hostName, portNumber) => {
+const connectWithOutEncryption = async (data, hostName, portNumber) => {
   try {
     const user = data.config.login;
     const password = data.config.password;
@@ -59,23 +60,83 @@ const connect = async (data, hostName, portNumber) => {
     return next(new ApiError(httpStatus.BAD_REQUEST, error));
   }
 };
+
+const connect = async (data, hostName, portNumber) => {
+  try {
+    const user = data.config.login;
+    const password = await decryptData(data.config.password);
+    const host = hostName;
+    const port = portNumber;
+
+    console.log(`${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`);
+    var config = {
+      method: 'get',
+      url: `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`,
+      headers: {
+        accept: 'text/plain',
+      },
+    };
+
+    const response = await axios(config);
+    logger.info('Mt4 User Token received',response.data);
+    return response.data;
+  } catch (error) {
+    return next(new ApiError(httpStatus.BAD_REQUEST, error));
+  }
+};
 const orderSend = (data, BrokerToken, lots) => {
   return new Promise((resolve, reject) => {
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${data?.Lots}`,
-      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&slippage=3&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}&expiration=${data?.Expiration}`,
+      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&slippage=5&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}`,
       headers: {
         accept: 'text/json',
       },
     };
     axios(config)
       .then(function (response) {
-        logger.info('Mt4 Broker order send Successfully');
-        resolve(response.data);
+        console.log(response);
+        if(response.data){
+          logger.info('Mt4 Broker order send Successfully');
+          resolve(response.data);
+        }else if(response.message){
+          logger.error('something wrong while Mt4 Broker order creating');
+          resolve(response);
+        }
       })
       .catch(function (error) {
         logger.error('Facing error while sending order');
+        reject(error);
+      });
+  });
+};
+
+const orderModify = (data, BrokerToken, BrokerTicketId) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: 'get',
+      //url: `${Mt4Url}OrderModify??id=demo-token-mt4&ticket=324589765&stoploss=0.233&takeprofit=0.5454&price=132&expiration=2022-02-12`,
+      url: `${Mt4Url}OrderModify?id=${BrokerToken}&ticket=${BrokerTicketId}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit.toFixed(3)}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+    axios(config)
+      .then(function (response) {
+        console.log(response.data);
+        if(response.data){
+          logger.info('Mt4 Broker order Modify Successfully');
+          resolve(response.data);
+        }else if(response.message){
+          logger.error('something wrong while Mt4 Broker order modifiying');
+          resolve(response);
+        }
+       
+      })
+      .catch(function (error) {
+        console.log(error,"---------------------error");
+        logger.error('Facing error while modify order');
         reject(error);
       });
   });
@@ -113,8 +174,14 @@ const orderClose = (token, ticket, lots) => {
     };
     axios(config)
       .then(function (response) {
-        logger.info('Mt4 order closed successfully');
-        resolve(response.data);
+       
+        if(response.data){
+          logger.info('Mt4 order closed successfully');
+          resolve(response.data);
+        }else if(response.message){
+          logger.error('something wrong while Mt4 Broker order closing');
+          resolve(response);
+        }
       })
       .catch(function (error) {
         logger.error('An error occurred during the ordering process.');
@@ -232,4 +299,6 @@ module.exports = {
   orderClose,
   checkConnection,
   fxblueScript,
+  connectWithOutEncryption,
+  orderModify,
 };

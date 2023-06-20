@@ -187,6 +187,28 @@ const updateTradeOrderLots = async(ticketId,lots) =>{
 }
 
 /**
+ * Update trade order comment data on the bases of ticket id
+ * @param {string} masterTicketId - The trading masterTicketId
+ */
+const updateTradeOrderComments = async(ticketId,user_id,Comment) =>{
+
+  const updateOrder = await TradingOrder.findOneAndUpdate(
+    { masterTicketId: ticketId,userId:user_id },
+    {
+      $set: {
+        comment: Comment,
+      },
+    }
+  );
+  if (!updateOrder) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  return updateOrder;
+
+}
+
+/**
  * Create a TradingOrder
  * @param {Object} tradingOrderBody
  * @returns {Promise<TradingOrder>}
@@ -257,4 +279,5 @@ module.exports = {
   getAllTradingOrderWithPagination,
   checkMasterTradingId,
   updateTradeOrderByMasterTicket,
+  updateTradeOrderComments,
 };

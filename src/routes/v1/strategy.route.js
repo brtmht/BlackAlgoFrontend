@@ -73,7 +73,8 @@ module.exports = router;
  *               description: fake description
  *               annual_return_percentage: 0
  *               monthly_return_percentage: 0
- *               min_portfolio: 2
+ *               min_deposit_binance: 2
+ *               min_deposit_fxBroker: 2
  *               profit_factor: 2.1
  *               risk_level: low
  *               max_drawdown_percentage: 10

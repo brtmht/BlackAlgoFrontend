@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
+const {encryptData} = require('../middlewares/common');
 
 /**
  * Create a UserExchangeConfig
@@ -14,7 +15,7 @@ const createUserExchangeConfig = async (reqData, userId) => {
     exchangeId: reqData.exchangeId,
     config: {
       login: reqData.config.login,
-      password: reqData.config.password,
+      password: await encryptData(reqData.config.password),
       server: reqData.config.server,
     },
     connected: false,
@@ -34,16 +35,28 @@ const getUserExchangeConfigByUserId = async (id) => {
   return UserExchangeConfig.findOne({userId:id});
 };
 
-const updateUserExchangeConfigById = async (UserExchangeConfigId, updateBody) => {
-  const UserExchangeConfig = await getUserExchangeConfigById(UserExchangeConfigId);
-  if (!UserExchangeConfig) {
+const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
+  const exchangeConfig = await UserExchangeConfig.findOne({userId:user_id});
+  if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
   }
-  const updateUserExchangeConfig = await updateUserExchangeConfig.findByIdAndUpdate(UserExchangeConfigId, {
-    ...updateBody,
+  const updatedExchangeConfig = await UserExchangeConfig.findOneAndUpdate({userId:user_id}, {
+    userId:user_id,
+    exchangeId: updateBody.exchangeId,
+    config: {
+      login: updateBody.config.login,
+      password: await encryptData(updateBody.config.password),
+      server: updateBody.config.server,
+    },
+    serverToken:serverToken,
+    connected: true,
   });
 
-  return updateUserExchangeConfig;
+  // if(updateUserExchangeConfig){
+  //   const data = await UserExchangeConfig.findById(id);
+  // }
+
+  return updatedExchangeConfig;
 };
 
 /**

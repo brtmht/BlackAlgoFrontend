@@ -33,7 +33,11 @@ const strategySchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    min_portfolio: {
+    min_deposit_binance: {
+      type: Number,
+      default: 0,
+    },
+    min_deposit_fxBroker: {
       type: Number,
       default: 0,
     },
