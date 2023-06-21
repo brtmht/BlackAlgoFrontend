@@ -2,6 +2,8 @@ const httpStatus = require('http-status');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
 const {encryptData, decryptData} = require('../middlewares/common');
+const { getExchangeById } = require('./exchange.service');
+const { exchangeService } = require('.');
 
 /**
  * Create a UserExchangeConfig
@@ -37,7 +39,9 @@ const getUserExchangeConfigByUserId = async (id) => {
 
 const getConnectedUserExchangeConfig = async (id) => {
   const data = await UserExchangeConfig.findOne({userId:id, connected:true});
+  const exchangeData = await exchangeService.getExchangeById(data.exchangeId);
   data.config.password = decryptData(data.config.password);
+  data.exchangeName = exchangeData.name;
   return data;
 };
 
