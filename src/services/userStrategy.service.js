@@ -119,7 +119,7 @@ const queryUserStrategies = async (filter, options) => {
  * @returns {Promise<UserStrategy>}
  */
 const getUserStrategyByUserId = async (id) => {
-  return UserStrategy.find({ userId: id });
+  return UserStrategy.find({ userId: id }).populate('strategyId').populate('exchangeId');
 };
 
 /**
