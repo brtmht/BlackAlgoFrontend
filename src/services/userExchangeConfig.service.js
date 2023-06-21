@@ -15,6 +15,7 @@ const createUserExchangeConfig = async (reqData, userId) => {
   return UserExchangeConfig.create({
     userId: userId._id,
     exchangeId: reqData.exchangeId,
+    strategyId: reqData.strategyId,
     config: {
       login: reqData.config.login,
       password: await encryptData(reqData.config.password),
