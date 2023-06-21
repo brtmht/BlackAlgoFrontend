@@ -39,10 +39,26 @@ const getUserExchangeConfigByUserId = async (id) => {
 
 const getConnectedUserExchangeConfig = async (id) => {
   const data = await UserExchangeConfig.findOne({userId:id, connected:true});
-  const exchangeData = await exchangeService.getExchangeById(data.exchangeId);
-  data.config.password = decryptData(data.config.password);
-  data.exchangeName = exchangeData.name;
-  return data;
+  const { _id, userId, strategyId, exchangeId, config, serverToken, connected, tokenExpiry, status, createdAt, updatedAt, __v } = data._doc;
+  const exchangeData = await exchangeService.getExchangeById(exchangeId);
+  console.log(exchangeData);
+  config.password = decryptData(data.config.password);
+  const updatedResponse = {
+    _id,
+    userId,
+    strategyId,
+    exchangeId,
+    config,
+    serverToken,
+    connected,
+    tokenExpiry,
+    status,
+    createdAt,
+    updatedAt,
+    exchangeName: exchangeData.name,
+    __v,
+  };
+  return updatedResponse;
 };
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
