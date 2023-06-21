@@ -60,6 +60,25 @@ module.exports = router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden' 
+ *   get:
+ *     summary: Get user exachange config
+ *     description: Logged in users can fetch exachange config.
+ *     tags: [UserExchangeConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserExchangeConfig'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   patch:
  *     summary: update user exchange config
  *     description: update logged in user excahnge config.

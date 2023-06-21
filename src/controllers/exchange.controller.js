@@ -10,9 +10,7 @@ const createExchange = catchAsync(async (req, res) => {
 });
 
 const getExchanges = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await exchangeService.queryExchanges(filter, options);
+  const result = await exchangeService.getExchanges();
   res.send({"success":true, code:201 , "message":"Exchanges get Successfully", "data":result});
 });
 

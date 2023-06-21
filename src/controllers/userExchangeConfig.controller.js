@@ -58,13 +58,12 @@ const createUserExchangeConfig = catchAsync(async (req, res) => {
   }
 });
 
-
 const getUserExchangeConfig = catchAsync(async (req, res) => {
-  const userExchangeConfig = await userExchangeConfig.getUserExchangeConfigById(req.user._id);
-  if (!userExchangeConfig) {
+  const exchangeConfig = await userExchangeConfig.getConnectedUserExchangeConfig(req.user._id);
+  if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User ExchangeConfig not found');
   }
-  res.send(userExchangeConfig);
+  res.send({"success":true, code:201, "message":"Get user ExchangeConfig Succesfully", "data":exchangeConfig});
 });
 
 const updateUserExchangeConfig = catchAsync(async (req, res) => {
