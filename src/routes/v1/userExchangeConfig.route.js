@@ -45,6 +45,7 @@ module.exports = router;
  *                 type: string
  *             example:
  *               exchangeId: 646c543f6086f579abe86b58
+ *               strategyId: 646c543f6086f579abe86b58
  *               config:
  *                   login: 260050728
  *                   password: abc
