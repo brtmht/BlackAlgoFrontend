@@ -125,7 +125,7 @@ const queryUserStrategies = async (filter, options) => {
   console.log(response);
   const exchange = await exchangeService.getExchangeById(response.exchangeId);
   console.log(exchange);
-  const { _id, userId, use_futures, onBoardProcess, isDeleted, status, createdAt, updatedAt, __v, strategyId, exchangeId } = response._doc;
+  const { _id, userId, use_futures, onBoardProcess, isDeleted, status, createdAt, updatedAt, __v, strategyId, exchangeId, paymentDetailId, subscriptionPlanId } = response._doc;
   
   const updatedResponse = {
     _id,
@@ -139,7 +139,9 @@ const queryUserStrategies = async (filter, options) => {
     __v,
     strategyId,
     exchangeId,
-    type: exchange.type
+    exchangeType: exchange.type,
+    paymentDetailId,
+    subscriptionPlanId
   };
 
    return updatedResponse;
