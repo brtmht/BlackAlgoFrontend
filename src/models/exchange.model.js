@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
+const constants = require('../config/constants');
 
 const exchangeSchema = mongoose.Schema(
   {
@@ -8,6 +9,11 @@ const exchangeSchema = mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
+    },
+    type: {
+      type: String,
+      type: String,
+      enum: [constants.TRADING_ORDER_TYPE.BINANCE, constants.TRADING_ORDER_TYPE.MT4],
     },
     url: {
       type: String,

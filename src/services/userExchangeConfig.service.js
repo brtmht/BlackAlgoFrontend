@@ -35,6 +35,10 @@ const getUserExchangeConfigByUserId = async (id) => {
   return UserExchangeConfig.findOne({userId:id});
 };
 
+const getConnectedUserExchangeConfig = async (id) => {
+  return UserExchangeConfig.findOne({userId:id, connected:true});
+};
+
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
   const exchangeConfig = await UserExchangeConfig.findOne({userId:user_id});
   if (!exchangeConfig) {
@@ -113,4 +117,5 @@ module.exports = {
   getConnectedUser,
   getUserExchangeConfigByUserId,
   updateConnectionData,
+  getConnectedUserExchangeConfig,
 };
