@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
-const {encryptData} = require('../middlewares/common');
+const {encryptData, decryptData} = require('../middlewares/common');
 
 /**
  * Create a UserExchangeConfig
@@ -36,7 +36,9 @@ const getUserExchangeConfigByUserId = async (id) => {
 };
 
 const getConnectedUserExchangeConfig = async (id) => {
-  return UserExchangeConfig.findOne({userId:id, connected:true});
+  const data = await UserExchangeConfig.findOne({userId:id, connected:true});
+  data.config.password = decryptData(data.config.password);
+  return data;
 };
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
