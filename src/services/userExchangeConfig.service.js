@@ -56,7 +56,7 @@ const getConnectedUserExchangeConfig = async (id) => {
     status,
     createdAt,
     updatedAt,
-    exchangeName: exchangeData.name,
+    exchangeName: exchangeData?exchangeData.name:'',
     __v,
   };
   return updatedResponse;
