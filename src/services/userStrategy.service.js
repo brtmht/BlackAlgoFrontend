@@ -3,6 +3,7 @@ const httpStatus = require('http-status');
 const { UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { TransactionHistory } = require('../models');
+const { exchangeService } = require('.');
 
 /**
  * Get all userStrategy data
@@ -118,9 +119,33 @@ const queryUserStrategies = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<UserStrategy>}
  */
-const getUserStrategyByUserId = async (id) => {
-  return UserStrategy.find({ userId: id });
-};
+  const getUserStrategyByUserId = async (id) => {
+    
+  const response = await UserStrategy.findOne({ userId: id });
+  console.log(response);
+  const exchange = await exchangeService.getExchangeById(response.exchangeId);
+  console.log(exchange);
+  const { _id, userId, use_futures, onBoardProcess, isDeleted, status, createdAt, updatedAt, __v, strategyId, exchangeId, paymentDetailId, subscriptionPlanId } = response._doc;
+  
+  const updatedResponse = {
+    _id,
+    userId,
+    use_futures,
+    onBoardProcess,
+    isDeleted,
+    status,
+    createdAt,
+    updatedAt,
+    __v,
+    strategyId,
+    exchangeId,
+    exchangeType: exchange.type,
+    paymentDetailId,
+    subscriptionPlanId
+  };
+
+   return updatedResponse;
+  };
 
 /**
  * Get userStrategy by Userid and name

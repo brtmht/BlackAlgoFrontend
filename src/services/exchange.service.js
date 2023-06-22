@@ -23,8 +23,8 @@ const createExchange = async (exchangeBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryExchanges = async (filter, options) => {
-  const exchanges = await Exchange.paginate(filter, options);
+const getExchanges = async () => {
+  const exchanges = await Exchange.find({status:true});
   return exchanges;
 };
 
@@ -79,7 +79,7 @@ const deleteExchangeById = async (exchangeId) => {
 
 module.exports = {
   createExchange,
-  queryExchanges,
+  getExchanges,
   getExchangeById,
   getExchangeByName,
   updateExchangeById,

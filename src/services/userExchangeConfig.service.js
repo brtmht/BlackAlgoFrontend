@@ -1,7 +1,9 @@
 const httpStatus = require('http-status');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
-const {encryptData} = require('../middlewares/common');
+const {encryptData, decryptData} = require('../middlewares/common');
+const { getExchangeById } = require('./exchange.service');
+const { exchangeService } = require('.');
 
 /**
  * Create a UserExchangeConfig
@@ -13,6 +15,7 @@ const createUserExchangeConfig = async (reqData, userId) => {
   return UserExchangeConfig.create({
     userId: userId._id,
     exchangeId: reqData.exchangeId,
+    strategyId: reqData.strategyId,
     config: {
       login: reqData.config.login,
       password: await encryptData(reqData.config.password),
@@ -33,6 +36,30 @@ const getUserExchangeConfigById = async (id) => {
 
 const getUserExchangeConfigByUserId = async (id) => {
   return UserExchangeConfig.findOne({userId:id});
+};
+
+const getConnectedUserExchangeConfig = async (id) => {
+  const data = await UserExchangeConfig.findOne({userId:id, connected:true});
+  const { _id, userId, strategyId, exchangeId, config, serverToken, connected, tokenExpiry, status, createdAt, updatedAt, __v } = data._doc;
+  const exchangeData = await exchangeService.getExchangeById(exchangeId);
+  console.log(exchangeData);
+  config.password = decryptData(data.config.password);
+  const updatedResponse = {
+    _id,
+    userId,
+    strategyId,
+    exchangeId,
+    config,
+    serverToken,
+    connected,
+    tokenExpiry,
+    status,
+    createdAt,
+    updatedAt,
+    exchangeName: exchangeData.name,
+    __v,
+  };
+  return updatedResponse;
 };
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
@@ -113,4 +140,5 @@ module.exports = {
   getConnectedUser,
   getUserExchangeConfigByUserId,
   updateConnectionData,
+  getConnectedUserExchangeConfig,
 };
