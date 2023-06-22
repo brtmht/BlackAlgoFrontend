@@ -14,6 +14,7 @@ router.patch(
   adminController.updateUser
 );
 module.exports = router;
+router.get('/send2faKey/:userId', auth('updateUserEmail'), adminController.send2faBackupKey);
 
 /**
  * @swagger
@@ -114,4 +115,33 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /admin/send2faKey/{id}:
+ *   get:
+ *     summary: send 2fa key via email
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: userId
+ *     responses:
+ *       "204":
+ *         description: No content
+ *       "401":
+ *         description: verify email failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               code: 401
+ *               message: 2fa sent via email
  */
