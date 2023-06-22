@@ -139,7 +139,7 @@ const queryUserStrategies = async (filter, options) => {
     __v,
     strategyId,
     exchangeId,
-    exchangeType: exchange.type,
+    exchangeType: exchange?exchange.type:"",
     paymentDetailId,
     subscriptionPlanId
   };
