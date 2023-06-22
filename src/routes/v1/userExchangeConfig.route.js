@@ -11,6 +11,8 @@ router
   .post(auth('createUserExchangeConfig'), validate(userExchangeConfigValidation.createUserExchangeConfig), userExchangeConfigController.createUserExchangeConfig)
   .get(auth('getUserExchangeConfig'), userExchangeConfigController.getUserExchangeConfig)
   .patch(auth('updateUserExchangeConfig'), userExchangeConfigController.updateUserExchangeConfig);
+router.route('/getAllConnectedUser').post(auth('getAllConnectedUser'), userExchangeConfigController.getAllConnectedUser);
+    
 
 module.exports = router;
 
@@ -120,4 +122,45 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'             
+ */
+/**
+ * @swagger
+ * /getAllConnectedUser:
+ *   post:
+ *     summary: Get global config Data
+ *     description: Managed and retreived Global config data.
+ *     tags: [UserExchangeConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               brokerName:
+ *                 type: string
+ *               limit:
+ *                 type: string
+ *               page:
+ *                 type: string
+ *             example:
+ *               brokerName: bybit
+ *               limit: 10
+ *               page: 1
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/GlobalConfig'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
  */

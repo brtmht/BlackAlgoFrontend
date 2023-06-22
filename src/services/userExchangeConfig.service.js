@@ -10,7 +10,7 @@ const { exchangeService } = require('.');
  * @param {Object}reqData
  * @returns {Promise<Exchange>}
  */
-const createUserExchangeConfig = async (reqData, userId) => {
+const createUserExchangeConfig = async (reqData, userId, serverToken) => {
 
   return UserExchangeConfig.create({
     userId: userId._id,
@@ -21,6 +21,7 @@ const createUserExchangeConfig = async (reqData, userId) => {
       password: await encryptData(reqData.config.password),
       server: reqData.config.server,
     },
+    serverToken: serverToken,
     connected: false,
   });
 };
@@ -132,6 +133,33 @@ const updateConnectionData = async (user_id) => {
   );
 };
 
+
+/**
+ * update mt4 connection
+ * @returns {Promise<UserExchangeConfig>}
+ */
+const getAllConnectionData = async (options) => {
+  const skipCount = (options.page - 1) * options.limit;
+  const exchange = await exchangeService.getExchangeByName(options.brokerName);
+  const connectedUserList = await UserExchangeConfig.find( {connected: true, exchangeId:exchange.id}).populate('userId').sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
+ const connectedUserCount = await UserExchangeConfig.countDocuments({connected: true});
+ const disconnectedUserCount = await UserExchangeConfig.countDocuments({connected: false});
+ if (connectedUserList.length === 0) {
+  throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
+}
+return {
+  userList:connectedUserList,
+  page: options.page,
+  pageLimit: options.limit,
+  connectedUserCount:connectedUserCount,
+  disconnectedUserCount: disconnectedUserCount,
+  totalCount: connectedUserCount,
+};
+
+ return ({connectedUserList:connectedUserList,connectedUserCount:connectedUserCount,disconnectedUserCount:disconnectedUserCount});
+
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -141,4 +169,5 @@ module.exports = {
   getUserExchangeConfigByUserId,
   updateConnectionData,
   getConnectedUserExchangeConfig,
+  getAllConnectionData,
 };
