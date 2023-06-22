@@ -23,8 +23,15 @@ const updateUser = catchAsync(async (req, res) => {
   }
   res.send(user);
 });
-
+const send2faBackupKey = catchAsync(async (req, res) => {
+  const result = await adminService.send2faKey(req.params.userId);
+  if (!result) {
+    throw new ApiError(httpStatus.NO_CONTENT);
+  }
+  res.status(httpStatus.NO_CONTENT).send();
+});
 module.exports = {
   adminlogin,
   updateUser,
+  send2faBackupKey,
 };
