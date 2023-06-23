@@ -84,6 +84,7 @@ const allRoles = {
     'getUserById',
     'deleteUsers',
     'monthlyUsers',
+    'getExchanges',
   ],
 
   admin: [
@@ -98,6 +99,7 @@ const allRoles = {
     'deleteUsers',
     'monthlyUsers',
     'getAllConnectedUser',
+    'getExchanges',
   ],
 };
 
