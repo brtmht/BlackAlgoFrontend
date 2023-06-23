@@ -9,11 +9,11 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageExchanges'), validate(exchangeValidation.createExchange), exchangeController.createExchange)
-  .get(auth(), validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
+  .get(auth('getExchanges'), validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
 
 router
   .route('/:exchangeId')
-  .get(auth('getExchanges'), validate(exchangeValidation.getExchange), exchangeController.getExchange)
+  .get(auth('getExchange'), validate(exchangeValidation.getExchange), exchangeController.getExchange)
   .patch(auth('manageExchanges'), validate(exchangeValidation.updateExchange), exchangeController.updateExchange)
   .delete(auth('manageExchanges'), validate(exchangeValidation.deleteExchange), exchangeController.deleteExchange);
 

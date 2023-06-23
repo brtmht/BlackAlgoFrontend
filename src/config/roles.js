@@ -84,6 +84,7 @@ const allRoles = {
     'getUserById',
     'deleteUsers',
     'monthlyUsers',
+    'getExchanges',
     'getAllConnectedUser',
   ],
 
@@ -99,6 +100,7 @@ const allRoles = {
     'deleteUsers',
     'monthlyUsers',
     'getAllConnectedUser',
+    'getExchanges',
   ],
 };
 
