@@ -25,27 +25,26 @@ const createUserExchangeConfig = catchAsync(async (req, res) => {
           PORT = port;
         } else {
           IP = ip;
-          PORT = "443";
+          PORT = '443';
         }
         const response = await mt4Server.connectWithOutEncryption(req.body, IP, PORT);
-        console.log(response, "---------------------response");
         if (!response.message) {
           const existConnection = await userExchangeConfig.getUserExchangeConfigByUserId(req.user._id);
           if (existConnection) {
             await userExchangeConfig.updateServerTokenById(existConnection.id, response);
             res.send({
-              "success": true,
-              "code": 201,
-              "message": "Mt4 server connection Update Succesfully",
-              "data": { "token": response }
+              success: true,
+              code: 201,
+              message: 'Mt4 server connection Update Succesfully',
+              data: { token: response },
             });
           } else {
             const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user, response);
             res.send({
-              "success": true,
-              "code": 201,
-              "message": "Check Mt4 server connection Succesfully",
-              "data": { "token": response }
+              success: true,
+              code: 201,
+              message: 'Check Mt4 server connection Succesfully',
+              data: { token: response },
             });
           }
           success = true; // Set success flag to true
@@ -62,31 +61,29 @@ const createUserExchangeConfig = catchAsync(async (req, res) => {
       if (!success) {
         logger.error('All IPs tried, none of them returned a successful response.');
         res.status(404).send({
-          "success": false,
-          "error_code": 404,
-          "message": "Cannot connect to any server: Invalid account"
+          success: false,
+          error_code: 404,
+          message: 'Cannot connect to any server: Invalid account',
         });
       }
     } catch (error) {
       logger.error(`Error retrieving IP list: ${error.message}`);
       res.status(502).send({
-        "success": false,
-        "error_code": 502,
-        "message": "Internal server error"
+        success: false,
+        error_code: 502,
+        message: 'Internal server error',
       });
     }
   }
 });
-
 
 const getUserExchangeConfig = catchAsync(async (req, res) => {
   const exchangeConfig = await userExchangeConfig.getConnectedUserExchangeConfig(req.user._id);
   if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User ExchangeConfig not found');
   }
-  res.send({"success":true, code:201, "message":"Get user ExchangeConfig Succesfully", "data":exchangeConfig});
+  res.send({ success: true, code: 201, message: 'Get user ExchangeConfig Succesfully', data: exchangeConfig });
 });
-
 
 const updateUserExchangeConfig = catchAsync(async (req, res) => {
   if (req.body.config.server) {
@@ -106,7 +103,7 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
           PORT = port;
         } else {
           IP = ip;
-          PORT = "443";
+          PORT = '443';
         }
         const response = await mt4Server.connectWithOutEncryption(req.body, IP, PORT);
         if (!response.message) {
@@ -118,17 +115,17 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
               await userStrategyService.updateUserStrategyById(req.user._id, { exchangeId: req.body.exchangeId });
               success = true; // Set success flag to true
               res.send({
-                "success": true,
-                "code": 201,
-                "message": "Mt4 connection update Succesfully",
-                "data": updatedData
+                success: true,
+                code: 201,
+                message: 'Mt4 connection update Succesfully',
+                data: updatedData,
               });
               break; // Exit the loop if a successful response is sent
             } else {
               res.send({
-                "success": false,
-                "error_code": 400,
-                "message": "Error while updating mt4 connection"
+                success: false,
+                error_code: 400,
+                message: 'Error while updating mt4 connection',
               });
               return; // Return early to prevent further execution
             }
@@ -136,10 +133,10 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
             const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user, response);
             success = true; // Set success flag to true
             res.send({
-              "success": true,
-              "code": 201,
-              "message": "Mt4 connection create Succesfully",
-              "data": exchangeConfig
+              success: true,
+              code: 201,
+              message: 'Mt4 connection create Succesfully',
+              data: exchangeConfig,
             });
             break; // Exit the loop if a successful response is sent
           }
@@ -156,29 +153,28 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
       if (!success) {
         logger.error('All IPs tried, none of them returned a successful response.');
         res.status(404).send({
-          "success": false,
-          "error_code": 404,
-          "message": "Cannot connect to any server: Invalid account"
+          success: false,
+          error_code: 404,
+          message: 'Cannot connect to any server: Invalid account',
         });
       }
     } catch (error) {
       logger.error(`Error retrieving IP list: ${error.message}`);
       res.status(502).send({
-        "success": false,
-        "error_code": 502,
-        "message": "Internal server error"
+        success: false,
+        error_code: 502,
+        message: 'Internal server error',
       });
     }
   }
 });
-
 
 const getAllConnectedUser = catchAsync(async (req, res) => {
   const exchangeConfig = await userExchangeConfig.getAllConnectionData(req.body);
   if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
-  res.send({"success":true, code:201, "message":"Get connected user list Succesfully", "data":exchangeConfig});
+  res.send({ success: true, code: 201, message: 'Get connected user list Succesfully', data: exchangeConfig });
 });
 
 module.exports = {
