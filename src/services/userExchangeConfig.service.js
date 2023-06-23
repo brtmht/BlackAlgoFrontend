@@ -3,7 +3,7 @@ const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
 const {encryptData, decryptData} = require('../middlewares/common');
 const { getExchangeById } = require('./exchange.service');
-const { exchangeService } = require('.');
+const { exchangeService, userStrategyService } = require('.');
 
 /**
  * Create a UserExchangeConfig
@@ -40,27 +40,39 @@ const getUserExchangeConfigByUserId = async (id) => {
 };
 
 const getConnectedUserExchangeConfig = async (id) => {
+  const userExchange = await userStrategyService.getStrategyByUserId(id);
   const data = await UserExchangeConfig.findOne({userId:id, connected:true});
-  const { _id, userId, strategyId, exchangeId, config, serverToken, connected, tokenExpiry, status, createdAt, updatedAt, __v } = data._doc;
-  const exchangeData = await exchangeService.getExchangeById(exchangeId);
-  console.log(exchangeData);
-  config.password = decryptData(data.config.password);
-  const updatedResponse = {
-    _id,
-    userId,
-    strategyId,
-    exchangeId,
-    config,
-    serverToken,
-    connected,
-    tokenExpiry,
-    status,
-    createdAt,
-    updatedAt,
-    exchangeName: exchangeData?exchangeData.name:'',
-    __v,
-  };
-  return updatedResponse;
+  console.log(data,"----------------------data");
+  if(data){
+
+    const { _id, userId, strategyId, exchangeId, config, serverToken, connected, tokenExpiry, status, createdAt, updatedAt, __v } = data._doc;
+    const exchangeData = await exchangeService.getExchangeById(exchangeId);
+    console.log(exchangeData);
+    config.password = decryptData(data.config.password);
+    const updatedResponse = {
+      _id,
+      userId,
+      strategyId,
+      exchangeId,
+      config,
+      serverToken,
+      connected,
+      tokenExpiry,
+      status,
+      createdAt,
+      updatedAt,
+      exchangeName: exchangeData?exchangeData.name:'',
+      __v,
+    };
+    return updatedResponse;
+  }else{
+    const updatedResponse = {
+      exchangeName: userExchange?userExchange.name:'',
+      connected:false,
+    };
+  }
+
+ 
 };
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
