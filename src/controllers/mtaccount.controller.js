@@ -88,7 +88,7 @@ const FxblueScript = catchAsync(async (req, res) => {
   const jsonObject = eval('(' + jsonContent + ')');
   await strategyService.updateStrategyByName("Conservative",{
     monthly_return_percentage: (jsonObject.monthlyBankedGrowth)/2,
-    annual_return_percentage: (jsonObject.totalBankedGrowth)/2,
+    annual_return_percentage: ((jsonObject.totalBankedGrowth)/2).toFixed(2),
     max_drawdown_percentage: (jsonObject.deepestValleyPercent)/2,
     profit_factor: jsonObject.bankedProfitFactor,
   });
