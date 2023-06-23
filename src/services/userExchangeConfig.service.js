@@ -152,11 +152,9 @@ const getAllConnectionData = async (options) => {
   const skipCount = (options.page - 1) * options.limit;
   const exchange = await exchangeService.getExchangeByName(options.brokerName);
   const connectedUserList = await UserExchangeConfig.find( {connected: true, exchangeId:exchange.id}).populate('userId').sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
+  console.log(connectedUserList,"-----------------");
  const connectedUserCount = await UserExchangeConfig.countDocuments({connected: true});
  const disconnectedUserCount = await UserExchangeConfig.countDocuments({connected: false});
- if (connectedUserList.length === 0) {
-  throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
-}
 return {
   userList:connectedUserList,
   page: options.page,
