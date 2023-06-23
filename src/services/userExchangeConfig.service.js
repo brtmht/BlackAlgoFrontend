@@ -41,15 +41,15 @@ const getUserExchangeConfigByUserId = async (id) => {
 
 const getConnectedUserExchangeConfig = async (id) => {
   const userExchange = await userStrategyService.getStrategyByUserId(id);
+  console.log(userExchange);
   const data = await UserExchangeConfig.findOne({userId:id, connected:true});
-  console.log(data,"----------------------data");
   if(data){
 
     const { _id, userId, strategyId, exchangeId, config, serverToken, connected, tokenExpiry, status, createdAt, updatedAt, __v } = data._doc;
     const exchangeData = await exchangeService.getExchangeById(exchangeId);
     console.log(exchangeData);
     config.password = decryptData(data.config.password);
-    const updatedResponse = {
+    return updatedResponse = {
       _id,
       userId,
       strategyId,
@@ -64,15 +64,13 @@ const getConnectedUserExchangeConfig = async (id) => {
       exchangeName: exchangeData?exchangeData.name:'',
       __v,
     };
-    return updatedResponse;
   }else{
-    const updatedResponse = {
-      exchangeName: userExchange?userExchange.name:'',
+    const exchangeData = await exchangeService.getExchangeById(userExchange.exchangeId);
+    return updatedResponse = {
+      exchangeName: exchangeData?exchangeData.name:'',
       connected:false,
     };
   }
-
- 
 };
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {

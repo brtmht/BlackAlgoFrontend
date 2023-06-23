@@ -84,6 +84,7 @@ const allRoles = {
     'getUserById',
     'deleteUsers',
     'monthlyUsers',
+    'getAllConnectedUser',
   ],
 
   admin: [
