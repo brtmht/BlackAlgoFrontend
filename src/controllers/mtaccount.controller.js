@@ -87,24 +87,24 @@ const FxblueScript = catchAsync(async (req, res) => {
   const jsonContent = response.substring(jsonStart, jsonEnd + 1);
   const jsonObject = eval('(' + jsonContent + ')');
   await strategyService.updateStrategyByName("Conservative",{
-    monthly_return_percentage: (jsonObject.monthlyBankedGrowth)/2,
+    monthly_return_percentage: ((jsonObject.monthlyBankedGrowth)/2).toFixed(2),
     annual_return_percentage: ((jsonObject.totalBankedGrowth)/2).toFixed(2),
-    max_drawdown_percentage: (jsonObject.deepestValleyPercent)/2,
-    profit_factor: jsonObject.bankedProfitFactor,
+    max_drawdown_percentage: ((jsonObject.deepestValleyPercent)/2).toFixed(2),
+    profit_factor: (jsonObject.bankedProfitFactor).toFixed(2),
   });
 
   await strategyService.updateStrategyByName("Balanced",{
-    monthly_return_percentage: jsonObject.monthlyBankedGrowth,
-    annual_return_percentage: jsonObject.totalBankedGrowth,
-    max_drawdown_percentage: jsonObject.deepestValleyPercent,
-    profit_factor: jsonObject.bankedProfitFactor,
+    monthly_return_percentage: (jsonObject.monthlyBankedGrowth).toFixed(2),
+    annual_return_percentage: (jsonObject.totalBankedGrowth).toFixed(2),
+    max_drawdown_percentage: (jsonObject.deepestValleyPercent).toFixed(2),
+    profit_factor: (jsonObject.bankedProfitFactor).toFixed(2),
   });
 
   await strategyService.updateStrategyByName("Dynamic",{
-    monthly_return_percentage: (jsonObject.monthlyBankedGrowth)*2,
-    annual_return_percentage: (jsonObject.totalBankedGrowth)*2,
-    max_drawdown_percentage: (jsonObject.deepestValleyPercent)*2,
-    profit_factor: jsonObject.bankedProfitFactor,
+    monthly_return_percentage: ((jsonObject.monthlyBankedGrowth)*2).toFixed(2),
+    annual_return_percentage: ((jsonObject.totalBankedGrowth)*2).toFixed(2),
+    max_drawdown_percentage: ((jsonObject.deepestValleyPercent)*2).toFixed(2),
+    profit_factor: (jsonObject.bankedProfitFactor).toFixed(2),
   });
   
   res.send({"success":true, code:201 , "message":"Fxblue Data fetch Successfully", "data":jsonObject});
