@@ -239,22 +239,88 @@ const deleteTradingOrderById = async (id) => {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
 };
+
 /**
- * Get tradingOrder by userId
- * @param {ObjectId} userId
+ * Get Graph order trade history
+ * @param {Object} orderData
  * @returns {Promise<TradingOrder>}
  */
-const getLast24HrTardingOrders = async (id) => {
+const getGraphTradeOrder = async (orderData, id) => {
+  const { step } = orderData;
+  let ordersList;
+
+  switch (step) {
+    case '24hr':
+      const TwentyHourAgo = new Date(orderData.timestamp - 24 * 60 * 60 * 1000);
+      ordersList = await TradingOrder.find({
+        userId: id,
+        createdAt: { $gte: TwentyHourAgo },
+      }).exec();
+      break;
+    case '1hr':
+      const oneHourAgo = new Date(orderData.timestamp - 1 * 60 * 60 * 1000);
+      ordersList = await TradingOrder.find({
+        userId: id,
+        createdAt: { $gt: oneHourAgo },
+      }).exec();
+      break;
+    case '7day':
+      const sevenDaysAgo = new Date(orderData.timestamp - 7 * 24 * 60 * 60 * 1000);
+      ordersList = await TradingOrder.find({
+        userId: id,
+        createdAt: { $gte: sevenDaysAgo },
+      }).exec();
+      break;
+    case '30day':
+      const thirtyDaysAgo = new Date(orderData.timestamp - 30 * 24 * 60 * 60 * 1000);
+      ordersList = await TradingOrder.find({
+        userId: id,
+        createdAt: { $gte: thirtyDaysAgo },
+      }).exec();
+      break;
+    case '90day':
+      const ninetyDaysAgo = new Date(orderData.timestamp - 90 * 24 * 60 * 60 * 1000);
+      ordersList = await TradingOrder.find({
+        userId: id,
+        createdAt: { $gte: ninetyDaysAgo },
+      }).exec();
+      break;
+      case '1year':
+        const oneYearAgo = new Date(orderData.timestamp - 365 * 24 * 60 * 60 * 1000);
+        ordersList = await TradingOrder.find({
+          userId: id,
+          createdAt: { $gte: oneYearAgo },
+        }).exec();
+        break;
+      case 'all':
+        ordersList = await TradingOrder.find({
+          userId: id,
+        }).exec();
+        break;
+    default:
+      ordersList;
+      break;
+  }
+  return ordersList;
+};
+
+
+
+const getLast24HrTardingOrders = async (id,timestamp, step) => {
+  if(step){
+
+  }
   const orders24Hr = TradingOrder.find({
     userId: id,
-    createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    createdAt: { $gt: new Date(timestamp - 24 * 60 * 60 * 1000) },
   }).exec();
+
   return orders24Hr;
 };
 const getLast1HrTardingOrders = async (id) => {
   const orders24Hr = TradingOrder.find({
     userId: id,
-    createdAt: { $gt: new Date(Date.now() - 1 * 60 * 60 * 1000) },
+    createdAt: { $gt: new Date(timestamp - 1 * 60 * 60 * 1000) },
   }).exec();
   return orders24Hr;
 };
@@ -280,4 +346,5 @@ module.exports = {
   checkMasterTradingId,
   updateTradeOrderByMasterTicket,
   updateTradeOrderComments,
+  getGraphTradeOrder,
 };

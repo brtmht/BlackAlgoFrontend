@@ -15,9 +15,11 @@ router
   )
   .get(auth('tradingOrderWithPagination'), tradingController.tradingOrderWithPagination);
   // .get(auth(), validate(tradingOrderValidation.getTradingOrder), tradingController.getTradingOrder);
-router.route('/getOrderLast24Hr').get(auth(), tradingController.getLast24HrTardingOrders);
-router.route('/getOrderLast1Hr').get(auth(), tradingController.getLast1HrTardingOrders);
-router.route('/getOrderLast1Week').get(auth(), tradingController.getLast1WeekTardingOrders);
+// router.route('/getOrderLast24Hr').get(auth(), tradingController.getLast24HrTardingOrders);
+// router.route('/getOrderLast1Hr').get(auth(), tradingController.getLast1HrTardingOrders);
+// router.route('/getOrderLast1Week').get(auth(), tradingController.getLast1WeekTardingOrders);
+router.route('/graphTradeOrders').post(auth(), tradingController.graphTradeOrders);
+
 
 router
   .route('/tradingOrder/:orderId')
@@ -157,78 +159,6 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  */
-/**
- * @swagger
- * /getOrderLast24Hr:
- *   get:
- *     summary: Get last 24Hr's user order
- *     description: Logged in user can fetch  their  trading order information for last 24 Hours.
- *     tags: [TradingOrder]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       "200":
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/TradingOrder'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *       "404":
- *         $ref: '#/components/responses/NotFound'
- */
-
-/**
- * @swagger
- * /getOrderLast1Hr:
- *   get:
- *     summary: Get last 1 Hour's user order
- *     description: Logged in user can fetch  their  trading order information for last 1 Hour.
- *     tags: [TradingOrder]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       "200":
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/TradingOrder'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *       "404":
- *         $ref: '#/components/responses/NotFound'
- */
-
-/**
- * @swagger
- * /getOrderLast1Week:
- *   get:
- *     summary: Get last 1 Week's user order
- *     description: Logged in user can fetch  their  trading order information from last 1 Week.
- *     tags: [TradingOrder]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       "200":
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/TradingOrder'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *       "404":
- *         $ref: '#/components/responses/NotFound'
- */
-
 /**
  * @swagger
  * /tradingOrder/{id}:
@@ -386,4 +316,42 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /graphTradeOrders:
+ *   post:
+ *     summary: Get trade order history for graph
+ *     description: Get trade history for 24hr, 1hr, 7day, 30day, 90day.
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       description: <h4>Options for step ( 24hr,1hr,7day,30day,90day,1year,all).</h4>
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               timestamp:
+ *                 type: string
+ *               step:
+ *                 type: string
+ *             example:
+ *               timestamp: 1687763820659
+ *               step: 24hr
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */
