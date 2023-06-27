@@ -48,8 +48,7 @@ const mtSocket = () => {
             }else if (order.StopLoss === 0 &&  order.TakeProfit === 0) {
               await masterTradingOrder.updateTradeOrder(order, 'closeOrder');
               console.log("action : close master order by market price");
-            }
-            
+            }  
           } else {
             await masterTradingOrder.createMasterTradingOrder(order, 'orderSend');
             console.log("action : Created master order ");
@@ -126,16 +125,19 @@ const mtSocket = () => {
                  
                    }
                     else if ((order.StopLoss > 0 || order.TakeProfit > 0) && (order.Comment !== '')) {
-                      // const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId);
-                      // console.log(closeData,"---------------------------closeData");
+                      const checkOrder = await mt4Server.checkOpenOrder(BrokerToken, tradingData.ticketId);
+                      console.log(checkOrder.data,"---------------------------closeData");
                       // console.log("action: using SL broker order close Data");
-                      updatedData = await tradingOrder.updateTradeOrderComments(
-                        order.Ticket,
-                        user.userId,
-                        'closeOrderUsingLimit'
-                      );
-                      console.log("action: close broker order using stop limit store in db----------------------");
-                    }else if ((order.StopLoss === 0 && order.TakeProfit === 0)&& order.Comment === '') {
+                      if(!checkOrder.data){
+                        console.log("--------------------testing");
+                        updatedData = await tradingOrder.updateTradeOrderComments(
+                          order.Ticket,
+                          user.userId,
+                          'closeOrderUsingLimit'
+                        );
+                        console.log("action: close broker order using stop limit store in db----------------------",updatedData);
+                      }
+                    }else if ((order.StopLoss === 0 && order.TakeProfit === 0)) {
                       const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId);
                       if(!closeData.mesaage){
                         console.log("action: broker order close Data");
