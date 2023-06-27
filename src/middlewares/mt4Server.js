@@ -89,7 +89,7 @@ const orderSend = (data, BrokerToken, lots) => {
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${data?.Lots}`,
-      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&slippage=5&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}`,
+      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&slippage=3&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}`,
       headers: {
         accept: 'text/json',
       },
@@ -117,11 +117,12 @@ const orderModify = (data, BrokerToken, BrokerTicketId) => {
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderModify??id=demo-token-mt4&ticket=324589765&stoploss=0.233&takeprofit=0.5454&price=132&expiration=2022-02-12`,
-      url: `${Mt4Url}OrderModify?id=${BrokerToken}&ticket=${BrokerTicketId}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit.toFixed(3)}`,
+      url: `${Mt4Url}OrderModify?id=${BrokerToken}&ticket=${BrokerTicketId}&stoploss=${data?.StopLoss.toFixed(3)}&takeprofit=${data?.TakeProfit.toFixed(3)}`,
       headers: {
         accept: 'text/json',
       },
     };
+    console.log(config,"-----------------------config");
     axios(config)
       .then(function (response) {
         console.log(response.data);
@@ -137,6 +138,28 @@ const orderModify = (data, BrokerToken, BrokerTicketId) => {
       .catch(function (error) {
         console.log(error,"---------------------error");
         logger.error('Facing error while modify order');
+        reject(error);
+      });
+  });
+};
+
+const checkOpenOrder = (BrokerToken, BrokerTicketId) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: 'get',
+      //url: `${Mt4Url}OrderModify??id=demo-token-mt4&ticket=324589765&stoploss=0.233&takeprofit=0.5454&price=132&expiration=2022-02-12`,
+      url: `${Mt4Url}OpenedOrder?id=${BrokerToken}&ticket=${BrokerTicketId}`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+    axios(config)
+      .then(function (response) {
+          resolve(response); 
+      })
+      .catch(function (error) {
+        console.log(error,"---------------------error");
+        logger.error('Facing error while check open order');
         reject(error);
       });
   });
@@ -301,4 +324,5 @@ module.exports = {
   fxblueScript,
   connectWithOutEncryption,
   orderModify,
+  checkOpenOrder,
 };
