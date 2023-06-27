@@ -130,7 +130,7 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
               return; // Return early to prevent further execution
             }
           } else {
-            const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user, response);
+            const exchangeConfig = await userExchangeConfig.createAndConnectedConfig(req.body, req.user, response);
             success = true; // Set success flag to true
             res.send({
               success: true,
