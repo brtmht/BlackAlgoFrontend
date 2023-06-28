@@ -5,7 +5,7 @@ var fs = require('fs');
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const logger = require('../config/logger');
-const {decryptData} = require('../middlewares/common');
+const {decryptData, checkDecimalVal} = require('../middlewares/common');
 
 const Mt4Url = config.mt4Server.ApiUrl;
 const connectSrv = async (data) => {
@@ -84,19 +84,35 @@ const connect = async (data, hostName, portNumber) => {
     return next(new ApiError(httpStatus.BAD_REQUEST, error));
   }
 };
-const orderSend = (data, BrokerToken, lots) => {
+const orderSend = (data, BrokerToken, lots,brokerName ) => {
   return new Promise((resolve, reject) => {
+    let symbol;
+    console.log(brokerName);
+    switch (brokerName) {
+      case 'Binance Global':
+        symbol = "BTCUSDT"
+        break;
+      case 'Bybit':
+        symbol = "BTCUSDT"
+        break;
+      case 'Pepperstone':
+        symbol = "BTCUSD.a"
+        break;
+      default:
+        symbol = "BTCUSD";
+        break;
+    }
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderSend?id=${user.serverToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${data?.Lots}`,
-      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${data?.Symbol}&operation=${data?.Type}&volume=${lots}&slippage=3&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}`,
+      url: `${Mt4Url}OrderSend?id=${BrokerToken}&symbol=${symbol}&operation=${data?.Type}&volume=${lots}&slippage=3&price=${data?.price}&stoploss=${data?.StopLoss}&takeprofit=${data?.TakeProfit}&comment=${data?.Comment}&magic=${data?.MagicNumber}`,
       headers: {
         accept: 'text/json',
       },
     };
     axios(config)
       .then(function (response) {
-        console.log(response);
+        console.log(response.data,"============================");
         if(response.data){
           logger.info('Mt4 Broker order send Successfully');
           resolve(response.data);
@@ -117,7 +133,7 @@ const orderModify = (data, BrokerToken, BrokerTicketId) => {
     const config = {
       method: 'get',
       //url: `${Mt4Url}OrderModify??id=demo-token-mt4&ticket=324589765&stoploss=0.233&takeprofit=0.5454&price=132&expiration=2022-02-12`,
-      url: `${Mt4Url}OrderModify?id=${BrokerToken}&ticket=${BrokerTicketId}&stoploss=${data?.StopLoss.toFixed(3)}&takeprofit=${data?.TakeProfit.toFixed(3)}`,
+      url: `${Mt4Url}OrderModify?id=${BrokerToken}&ticket=${BrokerTicketId}&stoploss=${checkDecimalVal(data?.StopLoss) < 3 ? data?.StopLoss.toFixed(3) : data?.StopLoss }&takeprofit=${ checkDecimalVal(data?.TakeProfit) < 3 ? data?.TakeProfit.toFixed(3) : data?.TakeProfit}`,
       headers: {
         accept: 'text/json',
       },
