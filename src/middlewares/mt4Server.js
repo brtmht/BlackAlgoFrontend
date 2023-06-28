@@ -90,16 +90,20 @@ const orderSend = (data, BrokerToken, lots,brokerName ) => {
     console.log(brokerName);
     switch (brokerName) {
       case 'Binance Global':
-        symbol = "BTCUSDT"
+        symbol = data?.Symbol === "BTCUSD" ?? "BTCUSDT"
+        symbol = data?.Symbol === "ETHUSD" ?? "ETHUSDT"
         break;
       case 'Bybit':
-        symbol = "BTCUSDT"
+        symbol = data?.Symbol === "BTCUSD" ?? "BTCUSDT"
+        symbol = data?.Symbol === "ETHUSD" ?? "ETHUSDT"
         break;
       case 'Pepperstone':
-        symbol = "BTCUSD.a"
+        symbol = data?.Symbol === "BTCUSD" ?? "BTCUSD.a"
+        symbol = data?.Symbol === "ETHUSD" ?? "ETHUSD.a"
         break;
       default:
         symbol = "BTCUSD";
+        symbol = "ETHUSD"
         break;
     }
     const config = {
