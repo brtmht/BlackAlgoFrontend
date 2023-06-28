@@ -25,8 +25,15 @@ const decryptData = (data) => {
  return decrypted;
 }
 
+const checkDecimalVal = (num) => {
+  const epsilon = 0.0000001;
+  const fraction = (num + epsilon) % 1;
+  return fraction.toString().length - 2;
+}
+
 module.exports = {
   generateNotification,
   encryptData,
   decryptData,
+  checkDecimalVal,
 };

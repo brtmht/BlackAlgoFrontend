@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { TradingOrder } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { symbol } = require('joi');
 
 /**
  * Create a TradingOrder
@@ -190,13 +191,13 @@ const updateTradeOrderLots = async(ticketId,lots) =>{
  * Update trade order comment data on the bases of ticket id
  * @param {string} masterTicketId - The trading masterTicketId
  */
-const updateTradeOrderComments = async(ticketId,user_id,Comment) =>{
+const updateTradeOrderType = async(ticketId, user_id, orderType) =>{
 
   const updateOrder = await TradingOrder.findOneAndUpdate(
-    { masterTicketId: ticketId,userId:user_id },
+    { masterTicketId: ticketId, userId: user_id },
     {
       $set: {
-        comment: Comment,
+        orderType: orderType,
       },
     }
   );
@@ -345,6 +346,6 @@ module.exports = {
   getAllTradingOrderWithPagination,
   checkMasterTradingId,
   updateTradeOrderByMasterTicket,
-  updateTradeOrderComments,
+  updateTradeOrderType,
   getGraphTradeOrder,
 };
