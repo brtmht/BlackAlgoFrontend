@@ -87,23 +87,22 @@ const connect = async (data, hostName, portNumber) => {
 const orderSend = (data, BrokerToken, lots,brokerName ) => {
   return new Promise((resolve, reject) => {
     let symbol;
-    console.log(brokerName);
     switch (brokerName) {
       case 'Binance Global':
-        symbol = data?.Symbol === "BTCUSD" ?? "BTCUSDT"
-        symbol = data?.Symbol === "ETHUSD" ?? "ETHUSDT"
-        break;
       case 'Bybit':
-        symbol = data?.Symbol === "BTCUSD" ?? "BTCUSDT"
-        symbol = data?.Symbol === "ETHUSD" ?? "ETHUSDT"
+        symbol = data?.Symbol === "BTCUSD" ? "BTCUSDT" :
+                 data?.Symbol === "ETHUSD" ? "ETHUSDT" :
+                 undefined;
         break;
       case 'Pepperstone':
-        symbol = data?.Symbol === "BTCUSD" ?? "BTCUSD.a"
-        symbol = data?.Symbol === "ETHUSD" ?? "ETHUSD.a"
+        symbol = data?.Symbol === "BTCUSD" ? "BTCUSD.a" :
+                 data?.Symbol === "ETHUSD" ? "ETHUSD.a" :
+                 undefined;
         break;
       default:
-        symbol = "BTCUSD";
-        symbol = "ETHUSD"
+        symbol = data?.Symbol === "BTCUSD" ? "BTCUSD" :
+                 data?.Symbol === "ETHUSD" ? "ETHUSD" :
+                 undefined;
         break;
     }
     const config = {
