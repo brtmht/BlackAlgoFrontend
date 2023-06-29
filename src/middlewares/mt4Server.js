@@ -43,8 +43,6 @@ const connectWithOutEncryption = async (data, hostName, portNumber) => {
     const password = data.config.password;
     const host = hostName;
     const port = portNumber;
-
-    console.log(`${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`);
     var config = {
       method: 'get',
       url: `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`,
@@ -67,8 +65,6 @@ const connect = async (data, hostName, portNumber) => {
     const password = await decryptData(data.config.password);
     const host = hostName;
     const port = portNumber;
-
-    console.log(`${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`);
     var config = {
       method: 'get',
       url: `${Mt4Url}Connect?user=${user}&password=${password}&host=${host}&port=${port}`,
@@ -115,7 +111,6 @@ const orderSend = (data, BrokerToken, lots,brokerName ) => {
     };
     axios(config)
       .then(function (response) {
-        console.log(response.data,"============================");
         if(response.data){
           logger.info('Mt4 Broker order send Successfully');
           resolve(response.data);
@@ -141,10 +136,8 @@ const orderModify = (data, BrokerToken, BrokerTicketId) => {
         accept: 'text/json',
       },
     };
-    console.log(config,"-----------------------config");
     axios(config)
       .then(function (response) {
-        console.log(response.data);
         if(response.data){
           logger.info('Mt4 Broker order Modify Successfully');
           resolve(response.data);

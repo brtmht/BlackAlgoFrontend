@@ -122,9 +122,7 @@ const queryUserStrategies = async (filter, options) => {
   const getUserStrategyByUserId = async (id) => {
     
   const response = await UserStrategy.findOne({ userId: id });
-  console.log(response);
   const exchange = await exchangeService.getExchangeById(response.exchangeId);
-  console.log(exchange);
   const { _id, userId, use_futures, onBoardProcess, isDeleted, status, createdAt, updatedAt, __v, strategyId, exchangeId, paymentDetailId, subscriptionPlanId } = response._doc;
   
   const updatedResponse = {
