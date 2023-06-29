@@ -92,17 +92,17 @@ const orderSend = (data, BrokerToken, lots,brokerName ) => {
       case 'Bybit':
         symbol = data?.Symbol === "BTCUSD" ? "BTCUSDT" :
                  data?.Symbol === "ETHUSD" ? "ETHUSDT" :
-                 undefined;
+                 data?.Symbol;
         break;
       case 'Pepperstone':
         symbol = data?.Symbol === "BTCUSD" ? "BTCUSD.a" :
                  data?.Symbol === "ETHUSD" ? "ETHUSD.a" :
-                 undefined;
+                 data?.Symbol;
         break;
       default:
         symbol = data?.Symbol === "BTCUSD" ? "BTCUSD" :
                  data?.Symbol === "ETHUSD" ? "ETHUSD" :
-                 undefined;
+                 data?.Symbol;
         break;
     }
     const config = {

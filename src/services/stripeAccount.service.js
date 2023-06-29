@@ -18,7 +18,7 @@ const saveStripeAccount = async (StripeData, customerID, user) => {
     customerId: customerID,
     email: StripeData.email,
     phoneNo: StripeData.phone,
-    country: StripeData.country,
+    name: StripeData.name,
   });
   return data;
 };
@@ -131,7 +131,7 @@ const stripeWebhook = async (req, user) => {
 const createNewCustomer = async (stripeAccountBody) => {
   const newCustomer = await Stripe.customers.create({
     email: stripeAccountBody.email,
-    address: { country: stripeAccountBody.country },
+    name: stripeAccountBody.name,
     phone: stripeAccountBody.phone,
   });
   return newCustomer;

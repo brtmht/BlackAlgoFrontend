@@ -4,7 +4,7 @@ const { objectId } = require('./custom.validation');
 const createPayment = {
   body: Joi.object().keys({
     email: Joi.string().email(),
-    country: Joi.string(),
+    name: Joi.string(),
     amount: Joi.number(),
     phone: Joi.string(),
     paymentType: Joi.string(),

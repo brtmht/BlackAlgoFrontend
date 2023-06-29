@@ -21,7 +21,7 @@ const stripeAccountSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    country: {
+    name: {
       type: String,
       trim: true,
     },
