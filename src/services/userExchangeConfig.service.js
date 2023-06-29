@@ -40,7 +40,6 @@ const getUserExchangeConfigByUserId = async (id) => {
 
 const getConnectedUserExchangeConfig = async (id) => {
   const userExchange = await userStrategyService.getStrategyByUserId(id);
-  console.log(userExchange);
   const data = await UserExchangeConfig.findOne({ userId: id, connected: true });
   if (data) {
     const {
@@ -58,7 +57,6 @@ const getConnectedUserExchangeConfig = async (id) => {
       __v,
     } = data._doc;
     const exchangeData = await exchangeService.getExchangeById(exchangeId);
-    console.log(exchangeData);
     config.password = decryptData(data.config.password);
     return (updatedResponse = {
       _id,
@@ -169,7 +167,6 @@ const getAllConnectionData = async (options) => {
     .sort({ createdAt: -1 })
     .skip(skipCount)
     .limit(options.limit);
-  console.log(connectedUserList, '-----------------');
   const connectedUserCount = await UserExchangeConfig.countDocuments({ connected: true });
   const disconnectedUserCount = await UserExchangeConfig.countDocuments({ connected: false });
   return {

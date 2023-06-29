@@ -110,7 +110,7 @@ const mtSocket = () => {
                   case "PositionOpen":
                     const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
                     if (userLots.lots) {
-                      console.log(userLots.lots, "-------------------------userLots.lots");
+                      console.log(userLots.lots, "userLots.lots");
                       const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots, exchangeData.name);
 
                       if (!tradeData.message) {
