@@ -89,6 +89,8 @@ components:
           type: string
         description:
           type: string
+        image: 
+          type: string
         url:
           type: string
         isDeleted:
@@ -100,6 +102,7 @@ components:
         name: fake name
         description: fake description
         url: https://fake.com
+        image: exchange/Pepperstone.png
         isDeleted: false
         status: true
     SubscriptionPlan:

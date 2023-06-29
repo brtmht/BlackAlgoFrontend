@@ -12,7 +12,6 @@ const exchangeSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      type: String,
       enum: [constants.TRADING_ORDER_TYPE.BINANCE, constants.TRADING_ORDER_TYPE.MT4],
     },
     url: {
@@ -21,6 +20,10 @@ const exchangeSchema = mongoose.Schema(
       trim: true,
     },
     description: {
+      type: String,
+      default: '',
+    },
+    image: {
       type: String,
       default: '',
     },
