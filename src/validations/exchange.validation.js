@@ -3,7 +3,7 @@ const { objectId } = require('./custom.validation');
 
 const createExchange = {
   body: Joi.object().keys({
-    name: Joi.string().required(),
+    name: Joi.string(),
     description: Joi.string(),
     url: Joi.string(),
   }),

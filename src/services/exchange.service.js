@@ -8,10 +8,19 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Exchange>}
  */
 const createExchange = async (exchangeBody) => {
-  if (await Exchange.isNameTaken(exchangeBody.name)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
-  }
-  return Exchange.create(exchangeBody);
+  const { file } = exchangeBody;
+  const updatedFilePath =  exchangeBody?.file?.path?.replace(/\\/g, '/').replace('public/', '');
+  if (file || Object.keys(exchangeBody.body).length !== 0) {
+      const exchange = await Exchange.create({
+            name: exchangeBody.body.name ,
+            discordId: exchangeBody.body.description,
+            url: exchangeBody.body.url,
+            image: updatedFilePath,
+          },
+      );
+      return exchange;
+    }
+    throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Request data not found');
 };
 
 /**

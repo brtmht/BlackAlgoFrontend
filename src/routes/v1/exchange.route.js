@@ -3,12 +3,18 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const { exchangeValidation } = require('../../validations');
 const { exchangeController } = require('../../controllers');
+const imageUploadMiddleware = require('../../middlewares/imageUpload');
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageExchanges'), validate(exchangeValidation.createExchange), exchangeController.createExchange)
+  .post(
+    auth('postExchanges'),
+    imageUploadMiddleware('exchange'),
+    validate(exchangeValidation.createExchange),
+    exchangeController.createExchange
+  )
   .get(auth('getExchanges'), validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
 
 router
@@ -38,24 +44,26 @@ module.exports = router;
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - description
- *               - url
+ *               - image
  *             properties:
  *               name:
  *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *               description:
  *                 type: string
  *               url:
  *                 type: string
  *             example:
  *               name: fake name
+ *               image: choose a image
  *               description: fake description
- *               url: https://fake.com
+ *               url: fake@yopmail.com
  *     responses:
  *       "201":
  *         description: Created
