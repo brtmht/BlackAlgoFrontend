@@ -230,7 +230,7 @@ components:
           type: string
         phoneNo: 
           type: string
-        countryCode:
+        name:
           type: string
         status: 
           type: boolean
@@ -242,7 +242,7 @@ components:
         customerId: cus_ycj_eff45
         email: example@example.com
         phoneNo: 7384728935
-        countryCode: India
+        name: john deo
         isDeleted: false
         status: true 
 

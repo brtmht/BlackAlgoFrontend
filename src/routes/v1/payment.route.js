@@ -52,8 +52,6 @@ module.exports = router;
  *                 enum: [card,crypto]
  *               currency:
  *                 type: string
- *               name:
- *                  type: string
  *               subscriptionplanId:
  *                  type: string
  *             example:
