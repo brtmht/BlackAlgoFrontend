@@ -2,8 +2,8 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { mtAccountService, mtBrokerService } = require('../services');
-const mt4Server = require('../middlewares/mt4Server')
+const { mtAccountService, mtBrokerService, strategyService } = require('../services');
+const mt4Server = require('../middlewares/mt4Server');
 // Mt account crud apis
 const createMtAccount = catchAsync(async (req, res) => {
   const mtAccount = await mtAccountService.createMtAccountNew(req.body);
@@ -80,6 +80,38 @@ const getServerData = catchAsync(async (req, res) => {
   res.send({"success":true, code:201 , "message":"Get broker server list Successfully", "data":serverData});
 });
 
+const FxblueScript = catchAsync(async (req, res) => {
+  const response = await mt4Server.fxblueScript();
+  const jsonStart = response.indexOf("{");
+  const jsonEnd = response.lastIndexOf("}");
+  const jsonContent = response.substring(jsonStart, jsonEnd + 1);
+  const jsonObject = eval('(' + jsonContent + ')');
+  await strategyService.updateStrategyByName("Conservative",{
+    monthly_return_percentage: ((jsonObject.monthlyBankedGrowth)/2).toFixed(2),
+    annual_return_percentage: ((jsonObject.totalBankedGrowth)/2).toFixed(2),
+    max_drawdown_percentage: ((jsonObject.deepestValleyPercent)/2).toFixed(2),
+    profit_factor: (jsonObject.bankedProfitFactor).toFixed(2),
+  });
+
+  await strategyService.updateStrategyByName("Balanced",{
+    monthly_return_percentage: (jsonObject.monthlyBankedGrowth).toFixed(2),
+    annual_return_percentage: (jsonObject.totalBankedGrowth).toFixed(2),
+    max_drawdown_percentage: (jsonObject.deepestValleyPercent).toFixed(2),
+    profit_factor: (jsonObject.bankedProfitFactor).toFixed(2),
+  });
+
+  await strategyService.updateStrategyByName("Dynamic",{
+    monthly_return_percentage: ((jsonObject.monthlyBankedGrowth)*2).toFixed(2),
+    annual_return_percentage: ((jsonObject.totalBankedGrowth)*2).toFixed(2),
+    max_drawdown_percentage: ((jsonObject.deepestValleyPercent)*2).toFixed(2),
+    profit_factor: (jsonObject.bankedProfitFactor).toFixed(2),
+  });
+  
+  res.send({"success":true, code:201 , "message":"Fxblue Data fetch Successfully", "data":jsonObject});
+});
+
+
+
 
 
 module.exports = {
@@ -94,4 +126,5 @@ module.exports = {
   updateMtBroker,
   deleteMtBroker,
   getServerData,
+  FxblueScript,
 };

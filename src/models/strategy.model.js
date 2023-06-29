@@ -8,7 +8,6 @@ const strategySchema = mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
-      lowercase: true,
     },
     shortDescription:  {
       type: String,
@@ -30,7 +29,15 @@ const strategySchema = mongoose.Schema(
       type: String,
       default: '',
     },
-    min_portfolio: {
+    profit_factor: {
+      type: Number,
+      default: 0,
+    },
+    min_deposit_binance: {
+      type: Number,
+      default: 0,
+    },
+    min_deposit_fxBroker: {
       type: Number,
       default: 0,
     },

@@ -34,7 +34,7 @@ module.exports = router;
  *             type: object
  *             required:
  *               - email
- *               - country
+ *               - name
  *               - phone
  *               - planId
  *               - paymentType
@@ -52,8 +52,6 @@ module.exports = router;
  *                 enum: [card,crypto]
  *               currency:
  *                 type: string
- *               country:
- *                  type: string
  *               subscriptionplanId:
  *                  type: string
  *             example:
@@ -61,7 +59,7 @@ module.exports = router;
  *               phone: "8973655725"
  *               amount: 100
  *               currency: inr
- *               country: india
+ *               name: john deo
  *               paymentType: card
  *               subscriptionplanId: 642c5224d1ad6a54f0407072
  *     responses:

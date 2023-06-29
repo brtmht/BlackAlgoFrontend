@@ -52,6 +52,14 @@ const deleteTradingOrder = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const graphTradeOrders = catchAsync(async (req, res) => {
+  const Orders = await tradingOrderService.getGraphTradeOrder(req.body,req.user._id);
+  if (!Orders) {
+    throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
+  }
+  res.send({"success":true, code:201 , "message":"Transaction history data listed", "data":Orders});
+});
+
 const getLast24HrTardingOrders = catchAsync(async (req, res) => {
   const last24HrOrders = await tradingOrderService.getLast24HrTardingOrders(req.user._id);
   if (!last24HrOrders) {
@@ -60,7 +68,7 @@ const getLast24HrTardingOrders = catchAsync(async (req, res) => {
   res.send(last24HrOrders);
 });
 const getLast1HrTardingOrders = catchAsync(async (req, res) => {
-  const last24HrOrders = await tradingOrderService.getLast24HrTardingOrders(req.user._id);
+  const last24HrOrders = await tradingOrderService.getLast1HrTardingOrders(req.user._id);
   if (!last24HrOrders) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE);
   }
@@ -83,4 +91,5 @@ module.exports = {
   updateTradingOrder,
   deleteTradingOrder,
   tradingOrderWithPagination,
+  graphTradeOrders,
 };

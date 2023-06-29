@@ -19,6 +19,10 @@ module.exports = {
     subject: 'Reset your Blackalgo password',
     template_name: 'resetPassword.ejs',
   },
+  SEND_BACKUP_2FA: {
+    subject: 'Your Blackalgo 2FA Key',
+    template_name: 'send2fa.ejs',
+  },
   TRADING_ORDER_TYPE: {
     BINANCE: 'Binance',
     MT4: 'MT4',

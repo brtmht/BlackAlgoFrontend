@@ -29,9 +29,6 @@ const getUserStrategy = {
 };
 
 const updateUserStrategy = {
-  params: Joi.object().keys({
-    userStrategyId: Joi.required().custom(objectId),
-  }),
   body: Joi.object()
     .keys({
       userId: Joi.string().custom(objectId),

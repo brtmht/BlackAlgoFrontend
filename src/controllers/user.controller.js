@@ -110,6 +110,14 @@ const getUserWalletAmount = catchAsync(async (req, res) => {
   res.send(amount);
 });
 
+const checkEmail = catchAsync(async (req,res) =>{
+    const data = await userService.getUserByEmail(req.body.email);
+    if(data){
+      res.send({"success":false, code:409 , "message":"Email already exist"});
+    }
+    res.send({"success":true, code:200 , "message":"Email not exist"});
+})
+
 module.exports = {
   createUser,
   getUsers,
@@ -130,4 +138,5 @@ module.exports = {
   unblockUser,
   getUserWalletAmount,
   disabled2faBySecret,
+  checkEmail,
 };

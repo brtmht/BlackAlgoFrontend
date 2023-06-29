@@ -11,7 +11,6 @@ const mtAccountSchema = mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      lowercase: true,
     },
     login: {
       type: String,

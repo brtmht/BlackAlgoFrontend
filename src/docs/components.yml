@@ -50,9 +50,13 @@ components:
         monthly_return_percentage:
           type: number
           format: float 
-        min_portfolio:
+        min_deposit_binance:
+          type: number
+        min_deposit_fxBroker:
           type: number
         risk_level:
+          type: string
+        profit_factor:
           type: string
         max_drawdown_percentage:
           type: number
@@ -68,7 +72,9 @@ components:
         description: fake description
         annual_return_percentage: 0.1
         monthly_return_percentage: 0.1
-        min_portfolio: 2
+        min_deposit_binance: 2
+        min_deposit_fxBroker: 2
+        profit_factor: 2.1
         risk_level: low
         max_drawdown_percentage: 10
         isDeleted: false
@@ -83,6 +89,8 @@ components:
           type: string
         description:
           type: string
+        image: 
+          type: string
         url:
           type: string
         isDeleted:
@@ -94,6 +102,7 @@ components:
         name: fake name
         description: fake description
         url: https://fake.com
+        image: exchange/Pepperstone.png
         isDeleted: false
         status: true
     SubscriptionPlan:
@@ -224,7 +233,7 @@ components:
           type: string
         phoneNo: 
           type: string
-        countryCode:
+        name:
           type: string
         status: 
           type: boolean
@@ -236,7 +245,7 @@ components:
         customerId: cus_ycj_eff45
         email: example@example.com
         phoneNo: 7384728935
-        countryCode: India
+        name: john deo
         isDeleted: false
         status: true 
 
@@ -566,42 +575,42 @@ components:
         tokenExpiry: 2023-03-16T16:18:04.793Z
         strategyId: 6434fd92e457b33f15d398f7 
     GlobalConfig:
-    type: object
-    properties:
-      id:
-        type: string
-      balanced_check_amount:
-        type: number
-      stripe_payment:
-        type: boolean
-      binance_payment:
-        type: boolean
-      conservative_min_amount:
-        type: number
-      balanced_min_amount:
-        type: number
-      dynamic_min_amount:
-        type: number
-      binance_min_amount:
-        type: number
-      conservative_check_amount:
-        type: number
-      dynamic_check_amount:
-        type: number
-      lots_min_amount:
-        type: number  
-    example:
-      id: 5ebac534954b54139806c112        
-      balanced_check_amount: null
-      stripe_payment: true
-      binance_payment: true
-      conservative_min_amount: 4000
-      balanced_min_amount: 2000
-      dynamic_min_amount: 1000
-      binance_min_amount": 500
-      conservative_check_amount: 2
-      dynamic_check_amount: 2
-      lots_min_amount: 0.01
+      type: object
+      properties:
+        id:
+          type: string
+        balanced_check_amount:
+          type: number
+        stripe_payment:
+          type: boolean
+        binance_payment:
+          type: boolean
+        conservative_min_amount:
+          type: number
+        balanced_min_amount:
+          type: number
+        dynamic_min_amount:
+          type: number
+        binance_min_amount:
+          type: number
+        conservative_check_amount:
+          type: number
+        dynamic_check_amount:
+          type: number
+        lots_min_amount:
+          type: number  
+      example:
+        id: 5ebac534954b54139806c112        
+        balanced_check_amount: null
+        stripe_payment: true
+        binance_payment: true
+        conservative_min_amount: 4000
+        balanced_min_amount: 2000
+        dynamic_min_amount: 1000
+        binance_min_amount": 500
+        conservative_check_amount: 2
+        dynamic_check_amount: 2
+        lots_min_amount: 0.01
     Token:
       type: object
       properties:

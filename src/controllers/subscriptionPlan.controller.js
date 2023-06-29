@@ -57,7 +57,7 @@ const getAllSubscriptionPlans = catchAsync(async (req, res) => {
   if (!subscriptionPlan) {
     throw new ApiError(httpStatus.BAD_REQUEST,"Empty Data");
   }
-  res.send({"success":true, code:201 , "message":"Subscription plans listed Successfully", "data":subscriptionPlan});
+  res.send({"success":true, code:201 , "message":"Subscription plans listed Successfully", "data":{result:subscriptionPlan}});
 });
 const getSubscriptionPlan = catchAsync(async (req, res) => {
   const subscriptionPlan = await subscriptionPlanService.getSubscriptionPlanById(req.params.subscriptionPlanId);

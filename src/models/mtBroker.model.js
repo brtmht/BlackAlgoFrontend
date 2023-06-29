@@ -7,7 +7,6 @@ const mtBrokertSchema = mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      lowercase: true,
     },
     mtVersion: {
       type: String,

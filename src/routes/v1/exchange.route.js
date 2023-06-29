@@ -9,11 +9,11 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageExchanges'), validate(exchangeValidation.createExchange), exchangeController.createExchange)
-  .get(auth(), validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
+  .get(auth('getExchanges'), validate(exchangeValidation.getExchanges), exchangeController.getExchanges);
 
 router
   .route('/:exchangeId')
-  .get(auth('getExchanges'), validate(exchangeValidation.getExchange), exchangeController.getExchange)
+  .get(auth('getExchange'), validate(exchangeValidation.getExchange), exchangeController.getExchange)
   .patch(auth('manageExchanges'), validate(exchangeValidation.updateExchange), exchangeController.updateExchange)
   .delete(auth('manageExchanges'), validate(exchangeValidation.deleteExchange), exchangeController.deleteExchange);
 
@@ -76,31 +76,6 @@ module.exports = router;
  *     tags: [Exchanges]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: Exchange name
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *         description: sort by query in the form of field:desc/asc (ex. name:asc)
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of exchanges
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
  *     responses:
  *       "200":
  *         description: OK

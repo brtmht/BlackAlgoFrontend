@@ -3,6 +3,7 @@ const allRoles = {
     'updateUser',
     'getUser',
     'changePassword',
+    'checkEmail',
     'generate2fa',
     'verify2Fa',
     'turnOn2Fa',
@@ -12,6 +13,7 @@ const allRoles = {
     'getTransactionHistory',
     'activate2Fa',
     'getUserStrategies',
+    'updateUserStrategy',
     'manageUserStrategies',
     'updateOnBoarding',
     'getBackUpSecretKey',
@@ -22,6 +24,7 @@ const allRoles = {
     'getPayments',
     'manageStrategies',
     'getStrategies',
+    'strategyWithoutAuth',
     'deleteSubscriptionPlans',
     'updateSubscriptionPlans',
     'getSubscriptionPlans',
@@ -43,6 +46,7 @@ const allRoles = {
     'getMtBrokerById',
     'getMtAccountById',
     'ServerList',
+    'FxblueScript',
     'firebaseToken',
     'history',
     'getUserStrategiesByUserID',
@@ -65,6 +69,7 @@ const allRoles = {
     'clearUserToken',
     'createUserExchangeConfig',
     'getUserExchangeConfig',
+    'updateUserExchangeConfig',
     'getConfigData',
     'getTermAndPolicyData',
   ],
@@ -79,6 +84,8 @@ const allRoles = {
     'getUserById',
     'deleteUsers',
     'monthlyUsers',
+    'getExchanges',
+    'getAllConnectedUser',
   ],
 
   admin: [
@@ -92,6 +99,8 @@ const allRoles = {
     'getUserById',
     'deleteUsers',
     'monthlyUsers',
+    'getAllConnectedUser',
+    'getExchanges',
   ],
 };
 

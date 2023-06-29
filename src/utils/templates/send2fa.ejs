@@ -27,18 +27,32 @@
     </tr>
     <tr>
     <td  style="padding: 20px;font-size: 16px;">
-        <p>Dear <%= receiver.name %>,</p>
-        <p>Welcome to BLACKALGO! We're excited to have you join our community of AI-powered traders. Before we get
-          started, we need to verify your email address to ensure the security of your account.</p>
-        <p>Please click the link below to confirm your email address:</p>
-        <p style="text-align: center; padding: 20px;">
-          <a class="btn btn-primary"  href=<%= content.url + "/auth/verify-email?token=" + content.token %>
-            style="display: inline-block; font-weight: 600; padding: 15px 40px; text-align: center ;text-decoration: none; background-color: #0088cc; color: #ffffff; border-radius: 25px;">Verify
-            your email</a>
+        <p>
+          We received a request to get your 2FA BACKUP KEY for your account.
+          if you've lost your 2FA key or wish to reset it, </p>
+        <p>Here is your 2FA BACKUPKEY</p>
+        <div align="center">
+          2FA SECRET KEY
+         
+           <span
+             style="
+               display: block;
+               padding: 14px 44px 13px;
+               line-height: 120%;
+             "
+             ><span style="font-size: 16px; line-height: 19.2px"
+               ><strong
+                 ><span style="line-height: 19.2px; font-size: 16px"
+                   >  <%= content.token %>
+                   </span
+                 ></strong
+               ></span
+             ></span
+           >
+         </a>
+       </div>
         </p>
-        <p>If you didn't request this email or if you think it's been sent to you in error, please ignore it.</p>
-        <p>Once your email is confirmed, you'll have full access to our platform and can start exploring our
-          cutting-edge AI trading solutions.</p>
+        <p>If you did not request, Only a person with access this email can reset your account password.</p>
         <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team on our
           <a class="btn btn-primary" href="https://discord.com/invite/HxdjMXWDGu" style="color: #0088cc">
           [Discord]</a>. </p>
