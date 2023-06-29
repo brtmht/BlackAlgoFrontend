@@ -10,8 +10,8 @@ const createExchange = catchAsync(async (req, res) => {
 });
 
 const getExchanges = catchAsync(async (req, res) => {
-  const result = await exchangeService.getExchanges();
-  res.send({"success":true, code:201 , "message":"Exchanges get Successfully", "data":result});
+  const data = await exchangeService.getExchanges();
+  res.send({"success":true, code:201 , "message":"Exchanges get Successfully", "data":{result:data}});
 });
 
 const getExchange = catchAsync(async (req, res) => {
