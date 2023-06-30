@@ -22,7 +22,7 @@ const getExchange = catchAsync(async (req, res) => {
 });
 
 const updateExchange = catchAsync(async (req, res) => {
-  const exchange = await exchangeService.updateExchangeById(req.params.exchangeId, req.body);
+  const exchange = await exchangeService.updateExchangeById(req.params.exchangeId, req);
   res.send(exchange);
 });
 

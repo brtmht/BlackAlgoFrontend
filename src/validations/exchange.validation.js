@@ -28,12 +28,6 @@ const updateExchange = {
   params: Joi.object().keys({
     exchangeId: Joi.required().custom(objectId),
   }),
-  body: Joi.object()
-    .keys({
-      name: Joi.string(),
-      url: Joi.string(),
-    })
-    .min(1),
 };
 
 const deleteExchange = {
