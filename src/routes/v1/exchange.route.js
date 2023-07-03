@@ -20,7 +20,12 @@ router
 router
   .route('/:exchangeId')
   .get(auth('getExchange'), validate(exchangeValidation.getExchange), exchangeController.getExchange)
-  .patch(auth('manageExchanges'), validate(exchangeValidation.updateExchange), exchangeController.updateExchange)
+  .patch(
+    auth('manageExchanges'),
+    imageUploadMiddleware('exchange'),
+    validate(exchangeValidation.updateExchange),
+    exchangeController.updateExchange
+  )
   .delete(auth('manageExchanges'), validate(exchangeValidation.deleteExchange), exchangeController.deleteExchange);
 
 module.exports = router;
@@ -47,8 +52,6 @@ module.exports = router;
  *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - image
  *             properties:
  *               name:
  *                 type: string
@@ -160,14 +163,24 @@ module.exports = router;
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *               description:
+ *                 type: string
+ *               url:
+ *                 type: string
  *             example:
  *               name: fake name
+ *               image: choose a image
+ *               description: fake description
+ *               url: fake@yopmail.com
  *     responses:
  *       "200":
  *         description: OK

@@ -9,18 +9,17 @@ const ApiError = require('../utils/ApiError');
  */
 const createExchange = async (exchangeBody) => {
   const { file } = exchangeBody;
-  const updatedFilePath =  exchangeBody?.file?.path?.replace(/\\/g, '/').replace('public/', '');
+  const updatedFilePath = exchangeBody?.file?.path?.replace(/\\/g, '/').replace('public/', '');
   if (file || Object.keys(exchangeBody.body).length !== 0) {
-      const exchange = await Exchange.create({
-            name: exchangeBody.body.name ,
-            discordId: exchangeBody.body.description,
-            url: exchangeBody.body.url,
-            image: updatedFilePath,
-          },
-      );
-      return exchange;
-    }
-    throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Request data not found');
+    const exchange = await Exchange.create({
+      name: exchangeBody.body.name,
+      description: exchangeBody.body.description,
+      url: exchangeBody.body.url,
+      image: updatedFilePath,
+    });
+    return exchange;
+  }
+  throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Request data not found');
 };
 
 /**
@@ -33,7 +32,7 @@ const createExchange = async (exchangeBody) => {
  * @returns {Promise<QueryResult>}
  */
 const getExchanges = async () => {
-  const exchanges = await Exchange.find({status:true});
+  const exchanges = await Exchange.find({ status: true });
   return exchanges;
 };
 
@@ -62,14 +61,26 @@ const getExchangeByName = async (name) => {
  */
 const updateExchangeById = async (exchangeId, updateBody) => {
   const exchange = await getExchangeById(exchangeId);
-  if (!exchange) {
+  if (!exchange) {  
     throw new ApiError(httpStatus.NOT_FOUND, 'Exchange not found');
   }
-  const updateExchange = await Exchange.findByIdAndUpdate(exchangeId, {
-    ...updateBody,
-  });
-
-  return updateExchange;
+  const { file } = updateBody;
+  const updatedFilePath = updateBody?.file?.path?.replace(/\\/g, '/').replace('public/', '');
+  if (file || Object.keys(updateBody?.body).length !== 0) {
+    const updateExchange = await Exchange.findOneAndUpdate(
+      { _id: exchangeId },
+      {
+        $set: {
+          name: updateBody.body.name,
+          description: updateBody.body.description,
+          url: updateBody.body.url,
+          image: updatedFilePath,
+        },
+      }
+    );
+    return updateExchange;
+  }
+  throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Request data not found');
 };
 
 /**
