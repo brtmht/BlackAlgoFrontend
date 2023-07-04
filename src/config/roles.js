@@ -89,7 +89,9 @@ const allRoles = {
   ],
 
   admin: [
+    'updateUser',
     'getUser',
+    'postExchanges',
     'getUsers',
     'updateUserEmail',
     'getAllUserStrategies',

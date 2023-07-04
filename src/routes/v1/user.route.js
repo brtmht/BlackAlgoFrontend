@@ -11,7 +11,7 @@ router
   .route('/users')
   .post(auth('createUsers'), validate(userValidation.createUser), userController.createUser)
   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers)
-  .patch(auth('updateUser'), imageUploadMiddleware, userController.updateUser);
+  .patch(auth('updateUser'), imageUploadMiddleware('uploads'), userController.updateUser);
 
 router.route('/getUser').get(auth('getUser'), validate(userValidation.getUser), userController.getUser);
 router.route('/users/turnOff2fa').get(auth('turnOff2Fa'), userController.turnOff2fa);
@@ -27,10 +27,8 @@ router.route('/clearFirebaseToken').patch(auth('clearUserToken'), userController
 router
   .route('/changePassword')
   .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
-  router
-  .route('/checkEmail')
-  .post(validate(userValidation.updateUser), userController.checkEmail);
-  
+router.route('/checkEmail').post(validate(userValidation.updateUser), userController.checkEmail);
+
 router
   .route('/users/:userId')
   .get(auth('getUserById'), userController.getUserById)
@@ -185,7 +183,6 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
  *               - image
  *             properties:
  *               name:
