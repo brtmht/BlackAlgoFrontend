@@ -12,6 +12,10 @@ router
   router
   .route('/term&Policy')
   .get(globalConfigController.getTermAndPolicyData);
+  router
+  .route('/graphData')
+  .get(globalConfigController.graphData);
+  
   
 module.exports = router;
 
@@ -62,6 +66,30 @@ module.exports = router;
  *           application/json:
  *             schema:
  *                $ref: '#/components/schemas/SucessResponse'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /graphData:
+ *   get:
+ *     summary: Get graph data from csv file
+ *     description: Retreived graph csv data using ftp details .
+ *     tags: [GlobalConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/GlobalConfig'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
