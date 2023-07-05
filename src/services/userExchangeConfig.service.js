@@ -177,15 +177,15 @@ const updateConnectionData = async (user_id) => {
 const getAllConnectionData = async (options) => {
   const skipCount = (options.page - 1) * options.limit;
   const exchange = await exchangeService.getExchangeByName(options.brokerName);
-  const connectedUserList = await UserExchangeConfig.find({ connected: true, exchangeId: exchange.id })
-    .populate('userId')
+  const userList = await UserExchangeConfig.find({exchangeId: exchange.id })
+    .populate('userId','strategyId')
     .sort({ createdAt: -1 })
     .skip(skipCount)
     .limit(options.limit);
   const connectedUserCount = await UserExchangeConfig.countDocuments({ connected: true });
   const disconnectedUserCount = await UserExchangeConfig.countDocuments({ connected: false });
   return {
-    userList: connectedUserList,
+    userList: userList,
     page: options.page,
     pageLimit: options.limit,
     connectedUserCount: connectedUserCount,
