@@ -178,7 +178,7 @@ const getAllConnectionData = async (options) => {
   const skipCount = (options.page - 1) * options.limit;
   const exchange = await exchangeService.getExchangeByName(options.brokerName);
   const userList = await UserExchangeConfig.find({exchangeId: exchange.id })
-    .populate('userId','strategyId')
+    .populate('userId').populate('strategyId')
     .sort({ createdAt: -1 })
     .skip(skipCount)
     .limit(options.limit);
