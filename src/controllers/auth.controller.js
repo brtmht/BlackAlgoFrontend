@@ -20,6 +20,9 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
+  if (user.role === 'admin' || user.role === 'manager') {
+    res.send({ "success": false, "error_code": 401, "message": 'You are not authorised' });
+  }
   if (user.isEmailVerified === false) {
     const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
     const contentData = {
