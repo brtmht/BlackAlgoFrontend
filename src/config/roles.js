@@ -72,7 +72,6 @@ const allRoles = {
     'updateUserExchangeConfig',
     'getConfigData',
     'getTermAndPolicyData',
-    'getAllConnectedUser',
   ],
   manager: [
     'getUser',
