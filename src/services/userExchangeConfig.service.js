@@ -22,6 +22,7 @@ const createUserExchangeConfig = async (reqData, userId, serverToken) => {
     },
     serverToken: serverToken,
     connected: false,
+    subscriptionStatus: false
   });
 };
 
@@ -65,6 +66,7 @@ const getConnectedUserExchangeConfig = async (id) => {
       config,
       serverToken,
       connected,
+      subscriptionStatus,
       tokenExpiry,
       status,
       createdAt,
@@ -81,6 +83,7 @@ const getConnectedUserExchangeConfig = async (id) => {
       config,
       serverToken,
       connected,
+      subscriptionStatus,
       tokenExpiry,
       status,
       createdAt,
@@ -152,7 +155,7 @@ const updateServerTokenById = async (UserExchangeConfigId, serverToken) => {
  * @returns {Promise<UserExchangeConfig>}
  */
 const getConnectedUser = async () => {
-  return UserExchangeConfig.find({ connected: true });
+  return UserExchangeConfig.find({ connected: true, subscriptionStatus:true });
 };
 
 /**
@@ -218,7 +221,7 @@ const disconnectConnection = async (id) => {
       { userId: id },
       {
         $set: {
-          connected: false,
+          subscriptionStatus: false,
         },
       }
     );

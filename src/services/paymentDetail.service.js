@@ -74,17 +74,18 @@ const updatePaymentDetails = async (reqData) => {
   return udatedPaymentDetail;
 };
 
-/**
- * Get subscriptionPlan by id
- * @param {ObjectId} id
- * @returns {Promise<SubscriptionPlan>}
- */
 const getPayments = async (id) => {
   return PaymentDetail.findById(id);
+};
+
+
+const getPaymentDataByUserId = async (id) => {
+  return PaymentDetail.findOne({userId:id});
 };
 
 module.exports = {
   savePaymentDetails,
   getPayments,
   updatePaymentDetails,
+  getPaymentDataByUserId,
 };
