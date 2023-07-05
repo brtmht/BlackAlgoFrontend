@@ -8,71 +8,81 @@ const mt4Server = require('../middlewares/mt4Server');
 const logger = require('../config/logger');
 
 const createUserExchangeConfig = catchAsync(async (req, res) => {
-  if (req.body.config.server) {
-    const maxAttempts = 3;
-    let currentAttempt = 0;
-    let success = false; // Track if a successful response has been sent
+  const existConfig = await userExchangeConfig.getUserExchangeConfigByLogin(req.body);
+  if (existConfig) {
+    res.status(406).send({
+      success: false,
+      error_code: 406,
+      message: 'MT4 account already exists',
+    });
+  }
+  if (!existConfig) {
+    if (req.body.config.server) {
+      const maxAttempts = 3;
+      let currentAttempt = 0;
+      let success = false; // Track if a successful response has been sent
 
-    try {
-      const ipList = await mt4Server.getServerDataForIps(req.body.config.server);
-      for (const ip of ipList) {
-        let IP;
-        let PORT;
-        const [address, port] = ip.split(':');
-        logger.info(`Trying IP: ${ip}`);
-        if (port) {
-          IP = address;
-          PORT = port;
-        } else {
-          IP = ip;
-          PORT = '443';
-        }
-        const response = await mt4Server.connectWithOutEncryption(req.body, IP, PORT);
-        if (!response.message) {
-          const existConnection = await userExchangeConfig.getUserExchangeConfigByUserId(req.user._id);
-          if (existConnection) {
-            await userExchangeConfig.updateServerTokenById(existConnection.id, response);
-            res.send({
-              success: true,
-              code: 201,
-              message: 'Mt4 server connection Update Succesfully',
-              data: { token: response },
-            });
+      try {
+        const ipList = await mt4Server.getServerDataForIps(req.body.config.server);
+        for (const ip of ipList) {
+          let IP;
+          let PORT;
+          const [address, port] = ip.split(':');
+          logger.info(`Trying IP: ${ip}`);
+          if (port) {
+            IP = address;
+            PORT = port;
           } else {
-            const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user, response);
-            res.send({
-              success: true,
-              code: 201,
-              message: 'Check Mt4 server connection Succesfully',
-              data: { token: response },
-            });
+            IP = ip;
+            PORT = '443';
           }
-          success = true; // Set success flag to true
-          break;
-        } else {
-          logger.warn('API request failed, trying the next IP...');
+          const response = await mt4Server.connectWithOutEncryption(req.body, IP, PORT);
+          if (!response.message) {
+            const existConnection = await userExchangeConfig.getUserExchangeConfigByUserId(req.user._id);
+            if (existConnection) {
+              await userExchangeConfig.updateServerTokenById(existConnection.id, response);
+              res.send({
+                success: true,
+                code: 201,
+                message: 'Mt4 server connection Update Succesfully',
+                data: { token: response },
+              });
+            } else {
+              const exchangeConfig = await userExchangeConfig.createUserExchangeConfig(req.body, req.user, response);
+              res.send({
+                success: true,
+                code: 201,
+                message: 'Check Mt4 server connection Succesfully',
+                data: { token: response },
+              });
+            }
+            success = true; // Set success flag to true
+            break;
+          } else {
+            logger.warn('API request failed, trying the next IP...');
+          }
+          currentAttempt++;
+          if (currentAttempt === maxAttempts) {
+            logger.warn('MT4 server connection reached maximum attempts limit');
+            break; // Exit the loop if maximum attempts reached
+          }
         }
-        currentAttempt++;
-        if (currentAttempt === maxAttempts) {
-          logger.warn('MT4 server connection reached maximum attempts limit');
-          break; // Exit the loop if maximum attempts reached
+        if (!success) {
+          logger.error('All IPs tried, none of them returned a successful response.');
+          res.status(404).send({
+            success: false,
+            error_code: 404,
+            message: 'Cannot connect to any server: Invalid account',
+          });
         }
-      }
-      if (!success) {
-        logger.error('All IPs tried, none of them returned a successful response.');
-        res.status(404).send({
+      } catch (error) {
+        logger.error(`Error retrieving IP list: ${error.message}`);
+        res.status(502).send({
           success: false,
-          error_code: 404,
-          message: 'Cannot connect to any server: Invalid account',
+          error_code: 502,
+          message: 'Internal server error',
         });
       }
-    } catch (error) {
-      logger.error(`Error retrieving IP list: ${error.message}`);
-      res.status(502).send({
-        success: false,
-        error_code: 502,
-        message: 'Internal server error',
-      });
     }
   }
 });
@@ -86,6 +96,15 @@ const getUserExchangeConfig = catchAsync(async (req, res) => {
 });
 
 const updateUserExchangeConfig = catchAsync(async (req, res) => {
+  const existConfig = await userExchangeConfig.getUserExchangeConfigByLogin(req.body);
+
+  if (existConfig) {
+    res.status(406).send({
+      success: false,
+      error_code: 406,
+      message: 'MT4 account already exists',
+    });
+  }
   if (req.body.config.server) {
     const maxAttempts = 3;
     let currentAttempt = 0;

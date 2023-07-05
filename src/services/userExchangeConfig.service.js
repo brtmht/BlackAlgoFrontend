@@ -34,6 +34,21 @@ const getUserExchangeConfigById = async (id) => {
   return UserExchangeConfig.findById(id);
 };
 
+const getUserExchangeConfigByLogin = async (reqData) => {
+  try {
+    const { login, server } = reqData.config;
+    const userExchangeConfig = await UserExchangeConfig.findOne({
+      "config.login": login,
+      "config.server": server,
+    });
+    return userExchangeConfig;
+  } catch (error) {
+    console.error('Error retrieving user exchange config:', error);
+    // Handle the error appropriately
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong');
+  }
+};
+
 const getUserExchangeConfigByUserId = async (id) => {
   return UserExchangeConfig.findOne({ userId: id });
 };
@@ -206,4 +221,5 @@ module.exports = {
   getConnectedUserExchangeConfig,
   getAllConnectionData,
   createAndConnectedConfig,
+  getUserExchangeConfigByLogin,
 };
