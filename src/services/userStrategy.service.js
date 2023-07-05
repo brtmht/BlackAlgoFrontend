@@ -79,7 +79,7 @@ const createUserStrategy = async (userStrategyBody, id) => {
       );
       break;
     case 'payment':
-      const transactionData = await TransactionHistory.findOne({ stripeTransactionId: userStrategyBody.paymentDetailId });
+      const transactionData = await TransactionHistory.findOne({ stripeTransactionId: userStrategyBody.paymentDetailId, paymentStatus:'success' });
       if (transactionData) {
         await UserStrategy.updateOne(
           { _id: strategyId },
