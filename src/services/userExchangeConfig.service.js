@@ -38,8 +38,8 @@ const getUserExchangeConfigByLogin = async (reqData) => {
   try {
     const { login, server } = reqData.config;
     const userExchangeConfig = await UserExchangeConfig.findOne({
-      "config.login": login,
-      "config.server": server,
+      'config.login': login,
+      'config.server': server,
     });
     return userExchangeConfig;
   } catch (error) {
@@ -177,25 +177,26 @@ const updateConnectionData = async (user_id) => {
 const getAllConnectionData = async (options) => {
   const skipCount = (options.page - 1) * options.limit;
   const exchange = await exchangeService.getExchangeByName(options.brokerName);
-  const userList = await UserExchangeConfig.find({exchangeId: exchange.id })
-    .populate('userId').populate('strategyId')
+  const userList = await UserExchangeConfig.find({ exchangeId: exchange.id })
+    .populate('userId')
+    .populate('strategyId')
     .sort({ createdAt: -1 })
     .skip(skipCount)
     .limit(options.limit);
   const connectedUserCount = await UserExchangeConfig.countDocuments({ connected: true });
-  const disconnectedUserCount = await UserExchangeConfig.countDocuments({ connected: false });
+  const totalCount = await UserExchangeConfig.countDocuments({ connected: true });
+  const disconnectedUserCount = await UserExchangeConfig.countDocuments();
   return {
     userList: userList,
     page: options.page,
     pageLimit: options.limit,
     connectedUserCount: connectedUserCount,
     disconnectedUserCount: disconnectedUserCount,
-    totalCount: connectedUserCount,
+    totalCount: totalCount,
   };
 };
 
 const createAndConnectedConfig = async (reqData, userId, serverToken) => {
-
   return UserExchangeConfig.create({
     userId: userId._id,
     exchangeId: reqData.exchangeId,
@@ -210,6 +211,20 @@ const createAndConnectedConfig = async (reqData, userId, serverToken) => {
   });
 };
 
+const disconnectConnection = async (id) => {
+  const data = UserExchangeConfig.findOne({ userId: id });
+  if (data) {
+   return UserExchangeConfig.findOneAndUpdate(
+      { userId: id },
+      {
+        $set: {
+          connected: false,
+        },
+      }
+    );
+  }
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -222,4 +237,5 @@ module.exports = {
   getAllConnectionData,
   createAndConnectedConfig,
   getUserExchangeConfigByLogin,
+  disconnectConnection,
 };
