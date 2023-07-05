@@ -200,8 +200,8 @@ const disconnectConnection = catchAsync(async (req, res) => {
   if (userList) {
     const subscriptionData = await paymentDetailService.getPaymentDataByUserId(userList.userId);
     if (subscriptionData) {
-      const retrieval = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
-      if (retrieval) {
+      const retrieve = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
+      if (retrieve) {
         const exchangeConfig = await userExchangeConfig.disconnectConnection(req.user._id);
         if (exchangeConfig) {
           logger.info(userList.userId,'Get connected user list Succesfully');
