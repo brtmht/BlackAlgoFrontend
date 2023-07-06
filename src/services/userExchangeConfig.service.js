@@ -188,7 +188,7 @@ const getAllConnectionData = async (options) => {
     .limit(options.limit);
   const connectedUserCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id, connected: true });
   const totalCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id, connected: true });
-  const disconnectedUserCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id });
+  const disconnectedUserCount = await UserExchangeConfig.countDocuments({connected: false,exchangeId: exchange.id });
   return {
     userList: userList,
     page: options.page,
