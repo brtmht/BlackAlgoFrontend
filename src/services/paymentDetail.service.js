@@ -3,6 +3,7 @@ const { PaymentDetail } = require('../models');
 const { SubscriptionPlan } = require('../models');
 const { StripeAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { userStrategyService, userExchangeConfig } = require('.');
 // eslint-disable-next-line import/order
 const Stripe = require('stripe')(process.env.STRIPE_KEY);
 
@@ -68,6 +69,12 @@ const updatePaymentDetails = async (reqData) => {
       },
     }
   );
+  const userData = userStrategyService.getUserStrategyByUser(paymentDetails.userId);
+  if(userData){
+    await userExchangeConfig.updateSubscription(userData);
+  }
+
+  
   if (!udatedPaymentDetail) {
     throw new ApiError(httpStatus['100_MESSAGE'], 'the payment data cannot be updated');
   }

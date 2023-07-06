@@ -174,6 +174,35 @@ const updateConnectionData = async (user_id) => {
 };
 
 /**
+ * update subscription
+ * @returns {Promise<UserExchangeConfig>}
+ */
+const updateSubscription = async (user) => {
+  const exchangeConfig = await UserExchangeConfig.findOne({ userId: user.userId });
+  if (!exchangeConfig) {
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: user.userId },
+      {
+        $set: {
+          subscriptionStatus: true,
+        },
+      }
+    );
+  }
+
+  if (exchangeConfig) {
+    return UserExchangeConfig.create({
+      userId: user.userId,
+      exchangeId: user.exchangeId,
+      strategyId: user.strategyId,
+      connected: false,
+      subscriptionStatus: true
+    });
+  }
+  
+};
+
+/**
  * update mt4 connection
  * @returns {Promise<UserExchangeConfig>}
  */
@@ -241,4 +270,5 @@ module.exports = {
   createAndConnectedConfig,
   getUserExchangeConfigByLogin,
   disconnectConnection,
+  updateSubscription,
 };
