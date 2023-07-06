@@ -164,6 +164,15 @@ const getUserStrategyById = async (id) => {
 };
 
 /**
+ * Get userStrategy by userId
+ * @param {string} name
+ * @returns {Promise<UserStrategy>}
+ */
+const getUserStrategyByUser = async (userId) => {
+  return UserStrategy.findOne({ userId });
+};
+
+/**
  * Get userStrategy by name
  * @param {string} name
  * @returns {Promise<UserStrategy>}
@@ -235,5 +244,6 @@ module.exports = {
   deleteUserStrategyById,
   getUserStrategyByUserId,
   updateOnBoardStrategy,
-  getStrategyByUserId
+  getStrategyByUserId,
+  getUserStrategyByUser,
 };
