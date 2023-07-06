@@ -22,6 +22,7 @@ const createUserExchangeConfig = async (reqData, userId, serverToken) => {
     },
     serverToken: serverToken,
     connected: false,
+    subscriptionStatus: false
   });
 };
 
@@ -65,6 +66,7 @@ const getConnectedUserExchangeConfig = async (id) => {
       config,
       serverToken,
       connected,
+      subscriptionStatus,
       tokenExpiry,
       status,
       createdAt,
@@ -81,6 +83,7 @@ const getConnectedUserExchangeConfig = async (id) => {
       config,
       serverToken,
       connected,
+      subscriptionStatus,
       tokenExpiry,
       status,
       createdAt,
@@ -152,7 +155,7 @@ const updateServerTokenById = async (UserExchangeConfigId, serverToken) => {
  * @returns {Promise<UserExchangeConfig>}
  */
 const getConnectedUser = async () => {
-  return UserExchangeConfig.find({ connected: true });
+  return UserExchangeConfig.find({ connected: true, subscriptionStatus:true });
 };
 
 /**
@@ -185,7 +188,7 @@ const getAllConnectionData = async (options) => {
     .limit(options.limit);
   const connectedUserCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id, connected: true });
   const totalCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id, connected: true });
-  const disconnectedUserCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id });
+  const disconnectedUserCount = await UserExchangeConfig.countDocuments({connected: false,exchangeId: exchange.id });
   return {
     userList: userList,
     page: options.page,
@@ -218,7 +221,7 @@ const disconnectConnection = async (id) => {
       { userId: id },
       {
         $set: {
-          connected: false,
+          subscriptionStatus: false,
         },
       }
     );

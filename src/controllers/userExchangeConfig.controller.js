@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userExchangeConfig, userStrategyService } = require('../services');
+const { userExchangeConfig, userStrategyService, userService, paymentDetailService } = require('../services');
 const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
 const logger = require('../config/logger');
@@ -187,7 +187,6 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
     }
   }
 });
-
 const getAllConnectedUser = catchAsync(async (req, res) => {
   const exchangeConfig = await userExchangeConfig.getAllConnectionData(req.body);
   if (!exchangeConfig) {
@@ -196,9 +195,26 @@ const getAllConnectedUser = catchAsync(async (req, res) => {
   res.send({ success: true, code: 201, message: 'Get connected user list Succesfully', data: exchangeConfig });
 });
 
+const disconnectConnection = catchAsync(async (req, res) => {
+  const userList = await userExchangeConfig.getConnectedUser();
+  if (userList) {
+    const subscriptionData = await paymentDetailService.getPaymentDataByUserId(userList.userId);
+    if (subscriptionData) {
+      const retrieve = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
+      if (retrieve) {
+        const exchangeConfig = await userExchangeConfig.disconnectConnection(req.user._id);
+        if (exchangeConfig) {
+          logger.info(userList.userId,'Get connected user list Succesfully');
+        } 
+      }
+    }
+  } 
+});
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfig,
   updateUserExchangeConfig,
   getAllConnectedUser,
+  disconnectConnection,
 };

@@ -28,6 +28,10 @@ const userExchangeConfigSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    subscriptionStatus: {
+      type: Boolean,
+      default: false,
+    },
     tokenExpiry: {
       type: Date,
       default: '',
