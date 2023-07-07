@@ -72,6 +72,7 @@ const allRoles = {
     'updateUserExchangeConfig',
     'getConfigData',
     'getTermAndPolicyData',
+    'manuallyDisconnectAccount',
   ],
   manager: [
     'getUser',

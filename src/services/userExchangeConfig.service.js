@@ -41,6 +41,7 @@ const getUserExchangeConfigByLogin = async (reqData) => {
     const userExchangeConfig = await UserExchangeConfig.findOne({
       'config.login': login,
       'config.server': server,
+      'connected': true,
     });
     return userExchangeConfig;
   } catch (error) {
@@ -232,7 +233,7 @@ const createAndConnectedConfig = async (reqData, userId, serverToken) => {
   });
 };
 
-const disconnectConnection = async (id) => {
+const disconnectConnectionSubscription = async (id) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
    return UserExchangeConfig.findOneAndUpdate(
@@ -240,6 +241,20 @@ const disconnectConnection = async (id) => {
       {
         $set: {
           subscriptionStatus: false,
+        },
+      }
+    );
+  }
+};
+
+const disconnectConnection = async (id) => {
+  const data = UserExchangeConfig.findOne({ userId: id });
+  if (data) {
+   return UserExchangeConfig.findOneAndUpdate(
+      { userId: id },
+      {
+        $set: {
+          connected: false,
         },
       }
     );
@@ -258,6 +273,7 @@ module.exports = {
   getAllConnectionData,
   createAndConnectedConfig,
   getUserExchangeConfigByLogin,
-  disconnectConnection,
+  disconnectConnectionSubscription,
   updateStripeSubscription,
+  disconnectConnection,
 };
