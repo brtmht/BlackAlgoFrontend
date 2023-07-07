@@ -12,6 +12,7 @@ router
   .get(auth('getUserExchangeConfig'), userExchangeConfigController.getUserExchangeConfig)
   .patch(auth('updateUserExchangeConfig'), userExchangeConfigController.updateUserExchangeConfig);
 router.route('/getAllConnectedUser').post(auth('getAllConnectedUser'), userExchangeConfigController.getAllConnectedUser);
+router.route('/manuallyDisconnectAccount').post(auth('manuallyDisconnectAccount'), userExchangeConfigController.manuallyDisconnectAccount);
     
 
 module.exports = router;
@@ -156,6 +157,30 @@ module.exports = router;
  *           application/json:
  *             schema:
  *                $ref: '#/components/schemas/GlobalConfig'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /manuallyDisconnectAccount:
+ *   post:
+ *     summary: update server connection
+ *     description: Managed user connection.
+ *     tags: [UserExchangeConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":

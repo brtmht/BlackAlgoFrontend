@@ -195,14 +195,14 @@ const getAllConnectedUser = catchAsync(async (req, res) => {
   res.send({ success: true, code: 201, message: 'Get connected user list Succesfully', data: exchangeConfig });
 });
 
-const disconnectConnection = catchAsync(async (req, res) => {
+const disconnectConnectionSubscription = catchAsync(async (req, res) => {
   const userList = await userExchangeConfig.getConnectedUser();
   if (userList) {
     const subscriptionData = await paymentDetailService.getPaymentDataByUserId(userList.userId);
     if (subscriptionData) {
       const retrieve = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
       if (retrieve) {
-        const exchangeConfig = await userExchangeConfig.disconnectConnection(req.user._id);
+        const exchangeConfig = await userExchangeConfig.disconnectConnectionSubscription(req.user._id);
         if (exchangeConfig) {
           logger.info(userList.userId,'Get connected user list Succesfully');
         } 
@@ -211,10 +211,24 @@ const disconnectConnection = catchAsync(async (req, res) => {
   } 
 });
 
+const manuallyDisconnectAccount = catchAsync(async (req, res) => {
+
+  const configData = await userExchangeConfig.getUserExchangeConfigByUserId(req.user._id);
+  if (!configData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
+  }
+  const updatedData = await userExchangeConfig.disconnectConnection(req.user._id);
+   if(updatedData){
+    res.send({ success: true, code: 200, message: 'Connection disconnect Succesfully'});
+   }
+
+});
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfig,
   updateUserExchangeConfig,
   getAllConnectedUser,
-  disconnectConnection,
+  disconnectConnectionSubscription,
+  manuallyDisconnectAccount,
 };
