@@ -164,14 +164,26 @@ const getConnectedUser = async () => {
  * @returns {Promise<UserExchangeConfig>}
  */
 const updateConnectionData = async (user_id) => {
+  const notExist = UserExchangeConfig.findOne({userId:user_id,config: { $exists: true, $ne: {} } });
+  if(notExist){
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: user_id },
+      {
+        $set: {
+          connected: true,
+        },
+      }
+    );
+  }
   return UserExchangeConfig.findOneAndUpdate(
     { userId: user_id },
     {
       $set: {
-        connected: true,
+        connected: false,
       },
     }
   );
+ 
 };
 
 const updateStripeSubscription = async (user) => {
@@ -188,7 +200,6 @@ const updateStripeSubscription = async (user) => {
     exchangeId: user.exchangeId,
     strategyId: user.strategyId,
     subscriptionStatus: true,
-    connected: false,
   });
 };
 
