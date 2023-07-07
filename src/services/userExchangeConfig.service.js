@@ -164,7 +164,7 @@ const getConnectedUser = async () => {
  * @returns {Promise<UserExchangeConfig>}
  */
 const updateConnectionData = async (user_id) => {
-  const notExist = UserExchangeConfig.findOne({userId:user_id,config: { $exists: true, $ne: {} } });
+  const notExist = await UserExchangeConfig.findOne({userId:user_id,config: { $exists: true, $ne: {} } });
   if(notExist){
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user_id },
