@@ -187,7 +187,8 @@ const updateStripeSubscription = async (user) => {
     userId: user.userId,
     exchangeId: user.exchangeId,
     strategyId: user.strategyId,
-    subscriptionStatus: true
+    subscriptionStatus: true,
+    connected: false,
   });
 };
 
