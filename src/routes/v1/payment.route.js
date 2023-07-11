@@ -224,40 +224,6 @@ module.exports = router;
  *     tags: [Payment]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - country
- *               - phone
- *               - planId
- *               - paymentType
- *               - currency
- *             properties:
- *               email:
- *                 type: string
- *               name:
- *                 type: string
- *               amount:
- *                 type: number
- *               paymentType:
- *                 type: string
- *                 enum: [card,crypto]
- *               currency:
- *                 type: string
- *               country:
- *                  type: string
- *             example:
- *               email: exampl@example.com
- *               phone: "8973655725"
- *               amount: 100
- *               currency: inr
- *               country: india
- *               paymentType: card
  *     responses:
  *       "201":
  *         description: Created
