@@ -11,23 +11,22 @@ const {
   userExchangeConfig,
 } = require('../services');
 const PaymentDetail = require('../models/paymentDetail.model');
-const { binance, loginBinanceManually } = require('../services/binance.service');
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
-  const binanceData = await binanceService.getAllOrders();
+  const binanceData = await binanceService.createBinancePayOrder();
   res.send(binanceData);
 });
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
-  const binanceData = await binanceService.placeMarketOrder();
+  const binanceData = await binanceService.createBinancePayOrderNew();
   res.send(binanceData);
 });
-// log in binance
-const loginBinance = catchAsync(async (req, res) => {
-  const result = await binanceService.loginBinanceManually(req.body);
-  res.send(result);
-});
+// // log in binance
+// const loginBinance = catchAsync(async (req, res) => {
+//   const result = await binanceService.loginBinanceManually(req.body);
+//   res.send(result);
+// });
 // stripe config
 const getStripeConfig = catchAsync(async (req, res) => {
   const clientSecret = await stripeAccountService.configStripe();
@@ -45,7 +44,12 @@ const createPayment = catchAsync(async (req, res) => {
 
   if (req.body.paymentType === 'card') {
     paymentData = await stripeAccountService.createStripePayment(req.body, user);
-    res.send({"success":true, code:201 , "message":"stripe token created Successfully", "data":{ stripe_token: paymentData.paymentIntent.client_secret }});
+    res.send({
+      success: true,
+      code: 201,
+      message: 'stripe token created Successfully',
+      data: { stripe_token: paymentData.paymentIntent.client_secret },
+    });
   }
   if (req.body.paymentType === 'crypto') {
     paymentData = '';
@@ -66,7 +70,7 @@ const savePaymentDetails = catchAsync(async (req, res) => {
     // await stripeAccountService.updateStripeAccount(PaymentDetails.stripeAccountId, req.body.customerCardId);
     await userExchangeConfig.updateConnectionData(user);
   }
-  res.send({"success":true, code:201 , "message":"payment Successfully", "data":PaymentDetails});
+  res.send({ success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
 });
 
 // get user payment detail
@@ -97,5 +101,4 @@ module.exports = {
   getPayment,
   getPaymentHistory,
   savePaymentDetails,
-  loginBinance,
 };
