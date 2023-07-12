@@ -15,6 +15,10 @@ module.exports = {
     subject: 'Please verify your blackalgo email',
     template_name: 'verifyEmail.ejs',
   },
+  SUBSCRIPTION_EMAIL_OPTIONS: {
+    subject: 'Details of user requesting subscription',
+    template_name: 'userDetail.ejs',
+  },
   RESETPASSWORD_EMAIL_OPTIONS: {
     subject: 'Reset your Blackalgo password',
     template_name: 'resetPassword.ejs',

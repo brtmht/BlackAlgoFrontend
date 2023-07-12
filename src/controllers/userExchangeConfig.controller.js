@@ -2,7 +2,13 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userExchangeConfig, userStrategyService, userService, paymentDetailService } = require('../services');
+const {
+  userExchangeConfig,
+  userStrategyService,
+  userService,
+  paymentDetailService,
+  subscriptionPlanService,
+} = require('../services');
 const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
 const logger = require('../config/logger');
@@ -201,27 +207,25 @@ const disconnectConnectionSubscription = catchAsync(async (req, res) => {
     const subscriptionData = await paymentDetailService.getPaymentDataByUserId(userList.userId);
     if (subscriptionData) {
       const retrieve = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
-      if (retrieve) {
+      if (retrieve.status === 'canceled') {
         const exchangeConfig = await userExchangeConfig.disconnectConnectionSubscription(req.user._id);
         if (exchangeConfig) {
-          logger.info(userList.userId,'Get connected user list Succesfully');
-        } 
+          logger.info(userList.userId, 'Get connected user list Succesfully');
+        }
       }
     }
-  } 
+  }
 });
 
 const manuallyDisconnectAccount = catchAsync(async (req, res) => {
-
   const configData = await userExchangeConfig.getUserExchangeConfigByUserId(req.user._id);
   if (!configData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
   const updatedData = await userExchangeConfig.disconnectConnection(req.user._id);
-   if(updatedData){
-    res.send({ success: true, code: 200, message: 'Connection disconnect Succesfully'});
-   }
-
+  if (updatedData) {
+    res.send({ success: true, code: 200, message: 'Connection disconnect Succesfully' });
+  }
 });
 
 module.exports = {
