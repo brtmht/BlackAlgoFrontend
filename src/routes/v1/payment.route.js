@@ -19,7 +19,7 @@ router
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
   router
   .route('/binanceWebhook')
-  .post(auth(), paymentController.binanceWebhook);
+  .post(paymentController.binanceWebhook);
 module.exports = router;
 
 /**
