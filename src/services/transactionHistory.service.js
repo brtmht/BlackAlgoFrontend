@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { TransactionHistory, PaymentDetail } = require('../models');
-const {getPaymentByToken} = require('./paymentDetail.service');
-const {getUserStrategyByUser, createUserStrategy} = require('./userStrategy.service'); 
+const { getPaymentByToken } = require('./paymentDetail.service');
+const { getUserStrategyByUser, createUserStrategy } = require('./userStrategy.service');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -35,14 +35,14 @@ const saveTransactionHistory = async (paymentData, reqData) => {
 };
 
 const saveBinanceTransactionHistory = async (paymentData) => {
-  const PaymentDetails = await getPaymentByToken (paymentData.bizIdStr);
-  if(PaymentDetails){
+  const PaymentDetails = await getPaymentByToken(paymentData.bizIdStr);
+  if (PaymentDetails) {
     const TransactionDetails = await TransactionHistory.findOne({ paymentDetailId: PaymentDetails.id });
     if (!TransactionDetails) {
       const history = await TransactionHistory.create({
         userId: PaymentDetails.userId,
         paymentDetailId: PaymentDetails.id,
-        paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? "success":"incomplete",
+        paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? 'success' : 'incomplete',
         transactionId: paymentData.data.transactionId,
         payerId: paymentData.data.paymentInfo.payerId,
         merchantTradeNo: paymentData.data.merchantTradeNo,
@@ -51,7 +51,10 @@ const saveBinanceTransactionHistory = async (paymentData) => {
       const userData = await getUserStrategyByUser(PaymentDetails.userId);
 
       if (userData) {
-        await createUserStrategy({ paymentDetailId: paymentData.data.transactionId,step: "payment"},PaymentDetails.userId)
+        await createUserStrategy(
+          { paymentDetailId: paymentData.data.transactionId, step: 'payment' },
+          PaymentDetails.userId
+        );
       }
       if (!history) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
@@ -63,7 +66,7 @@ const saveBinanceTransactionHistory = async (paymentData) => {
       {
         $set: {
           paymentDetailId: PaymentDetails.id,
-          paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? "success":"incomplete",
+          paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? 'success' : 'incomplete',
           transactionId: paymentData.data.transactionId,
         },
       }
@@ -126,5 +129,4 @@ module.exports = {
   getLast1WeekTransactionHistory,
   getLast30DaysTransactionHistory,
   saveBinanceTransactionHistory,
-
 };

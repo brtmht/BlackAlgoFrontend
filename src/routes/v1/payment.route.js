@@ -17,9 +17,7 @@ router
 router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
-  router
-  .route('/binanceWebhook')
-  .post(paymentController.binanceWebhook);
+router.route('/binanceWebhook').post(paymentController.binanceWebhook);
 module.exports = router;
 
 /**
@@ -27,7 +25,10 @@ module.exports = router;
  * /payment/stripePayment:
  *   post:
  *     summary: Create a payment using card and crypto
- *     description: User can create the plan payment using card and crypto .
+ *     description: |
+ *       Options for step:
+ *       - Options for crypto { "paymentType" : "crypto","terminalType": "WEB","orderAmount":"0.6","currency": "USDT","portfolioAmount": "10","type": "month"}. |
+ *       - Options for card { "email": "exampl@example.com","phone": "8973655725","amount": 100,"currency": "inr","name": "john deo","paymentType": "card","subscriptionplanId": "642c5224d1ad6a54f0407072"}.
  *     tags: [Payment]
  *     security:
  *       - bearerAuth: []

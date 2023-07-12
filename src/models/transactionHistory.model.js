@@ -29,6 +29,12 @@ const transactionHistorySchema = mongoose.Schema(
     transactionId: {
       type: String,
     },
+    payerId: {
+      type: String,
+    },
+    merchantTradeNo: {
+      type: String,
+    },
   },
   {
     timestamps: true,
