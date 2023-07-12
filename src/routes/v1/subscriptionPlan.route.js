@@ -47,6 +47,8 @@ router
     validate(subscriptionPlanValidation.getSubscriptionPlan),
     subscriptionPlanController.resumeStripeSubscription
   );
+router.route('/requestForSubscription').post(auth(), subscriptionPlanController.requestForSubscription);
+
 module.exports = router;
 
 /**
@@ -306,4 +308,48 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /subscriptionPlans/requestForSubscription:
+ *   post:
+ *     summary: Request a subscriptionPlan
+ *     description: User can request a subscriptionPlan.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - phoneNo
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phoneNo:
+ *                 type: number
+ *             example:
+ *               name: blackalgo
+ *               email: blackalgo@yopmail.com
+ *               phoneNo: 9876543210
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SubscriptionPlan'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */

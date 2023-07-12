@@ -2,6 +2,8 @@
 const httpStatus = require('http-status');
 const { SubscriptionPlan } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { emailService } = require('.');
+const constants = require('../config/constants');
 const Stripe = require('stripe')(process.env.STRIPE_KEY);
 
 /**
@@ -166,6 +168,22 @@ const deleteSubscriptionPlanById = async (subscriptionPlanId) => {
   const subscriptionDeleted = await SubscriptionPlan.findByIdAndUpdate(subscriptionPlanId, { isDeleted: true });
   return subscriptionDeleted;
 };
+/**
+ * Delete subscriptioPlan by id
+ * @param {Object} userDetails
+ * @returns {Promise<SubscriptionPlan>}
+ */
+const sendSubscriptionMail = async (userDetails) => {
+  const contentData = {
+    name: userDetails.name,
+    email: userDetails.email,
+    phoneNo: userDetails.phoneNo,
+  };
+  const contact = {
+    email: 'contact@blackalgo.com',
+  };
+  await emailService.sendEmail(contact, contentData, constants.SUBSCRIPTION_EMAIL_OPTIONS);
+};
 module.exports = {
   createSubscription,
   retrieveStripeSubsPlan,
@@ -177,4 +195,5 @@ module.exports = {
   updateSubscriptionPlanById,
   deleteSubscriptionPlanById,
   deleteStripeSubscription,
+  sendSubscriptionMail,
 };
