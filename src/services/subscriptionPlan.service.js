@@ -180,7 +180,8 @@ const sendSubscriptionMail = async (userDetails) => {
     phoneNo: userDetails.phoneNo,
   };
   const contact = {
-    email: 'contact@blackalgo.com',
+    // email: 'contact@blackalgo.com',
+    email: 'mailtest@yopmail.com',
   };
   await emailService.sendEmail(contact, contentData, constants.SUBSCRIPTION_EMAIL_OPTIONS);
 };
