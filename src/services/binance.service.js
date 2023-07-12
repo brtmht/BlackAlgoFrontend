@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const axios = require('axios');
 const crypto = require('crypto');
+const { paymentDetailService } = require('.');
 
 function generateNonce(length) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -121,24 +122,23 @@ function generateNonce(length) {
 //   }
 // };
 
-const createBinancePayOrder = async () => {
+const createBinancePayOrder = async (userId,reqData) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/v2/order';
 
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
   const payload = {
     env: {
-      terminalType: 'WEB',
+      terminalType: reqData.terminalType,
     },
     merchantTradeNo: Math.floor(Math.random() * (9825382937292 - 982538) + 982538),
-    orderAmount: 1,
-    currency: 'USDT',
+    orderAmount: reqData.orderAmount,
+    currency: reqData.currency,
     goods: {
-      goodsType: '01',
-      goodsCategory: 'D000',
-      referenceGoodsId: '7876763A3B',
-      goodsName: 'Ice Cream',
-      goodsDetail: 'Greentea ice cream cone',
+      goodsType: '02',
+      goodsCategory: 'Z000',
+      referenceGoodsId: userId,
+      goodsName: reqData.type,
     },
   };
 
@@ -162,7 +162,12 @@ const createBinancePayOrder = async () => {
 
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
-    return response.data;
+    if(response.data){
+      console.log("-----------------",response.data);
+      await paymentDetailService.saveBinacePaymentDetails(userId,response.data,reqData);
+      return response.data;
+    }
+    
   } catch (error) {
     console.error(error.message);
   }

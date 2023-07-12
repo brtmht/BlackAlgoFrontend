@@ -26,7 +26,7 @@ const transactionHistorySchema = mongoose.Schema(
       //   constants.PAYMENT_STATUS.CANCELLED,
       // ],
     },
-    stripeTransactionId: {
+    transactionId: {
       type: String,
     },
   },

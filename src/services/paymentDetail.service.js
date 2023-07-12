@@ -30,6 +30,26 @@ const savePaymentDetails = async (paymentData, stripeData, reqData) => {
   return trasactionData;
 };
 
+
+const saveBinacePaymentDetails = async (userId,paymentData,reqData) => {
+  if(paymentData.status === 'SUCCESS'){
+    const paymentCreated = await PaymentDetail.create({
+      userId: userId,
+      amount: reqData.orderAmount,
+      portfolioAmount: reqData?.portfolioAmount? reqData?.portfolioAmount:'',
+      paymentToken: paymentData.data.prepayId,
+      paymentStatus: paymentData.data.status === 'SUCCESS' ? "success":"incomplete",
+    });
+  
+    if (!paymentCreated) {
+      throw new ApiError(httpStatus['201_MESSAGE'], 'transaction failed at details');
+    }
+    return paymentCreated;
+  }
+  throw new ApiError(httpStatus['400_MESSAGE'], 'Something went wrong');
+  
+};
+
 // To update payment details after a transaction is processed
 // const updatePaymentDetails = async (reqData) => {
 //   let userId;
@@ -150,14 +170,47 @@ const getPayments = async (id) => {
   return PaymentDetail.findById(id);
 };
 
+const getPaymentByToken = async (token) => {
+  return PaymentDetail.findOne({paymentToken:token});
+};
+
 
 const getPaymentDataByUserId = async (id) => {
   return PaymentDetail.findOne({userId:id});
 };
+
+
+// const updateBinancePaymentDetails = async (paymentData) => {
+//   const PaymentDetails = await getPaymentByToken (paymentData.data.paymentInfo.payerId);
+//   const updatedPaymentDetail = await PaymentDetail.updateOne(
+//     { paymentToken: reqData.paymentToken },
+//     {
+//       $set: {
+//         ...reqData,
+//         subscriptionPlanId: subscription ? subscription.id : null,
+//       },
+//     }
+//   );
+
+//   const userData = await userStrategyService.getUserStrategyByUser(userId);
+
+//   if (userData) {
+//     await updateStripeSubscription(userData);
+//   }
+
+//   if (updatedPaymentDetail.nModified === 0) {
+//     throw new ApiError(httpStatus['100_MESSAGE'], 'The payment data cannot be updated');
+//   }
+
+//   return updatedPaymentDetail;
+// };
+
 
 module.exports = {
   savePaymentDetails,
   getPayments,
   updatePaymentDetails,
   getPaymentDataByUserId,
+  saveBinacePaymentDetails,
+  getPaymentByToken,
 };

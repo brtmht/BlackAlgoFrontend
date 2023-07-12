@@ -14,20 +14,34 @@ const PaymentDetail = require('../models/paymentDetail.model');
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
-  const binanceData = await binanceService.createBinancePayOrder();
-  res.send(binanceData);
+ // const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+  res.send();
 });
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
-  // const binanceData = await binanceService.createBinancePayOrderNew();
-  res.send();
+  const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+  console.log(binanceData,"==============binanceData");
+  res.send(binanceData);
 });
 // // log in binance
 const binanceWebhook = catchAsync(async (req, res) => {
-  console.log(req.body,"===========req.body");
-  console.log(req.query,"===========req.query");
-  console.log(req.param,"===========req.param");
-  res.send();
+  console.log(req.body, '===========req.body');
+  if (req.body) {
+//     if (req.body.bizType === 'PAY') {
+//       if(req.body.bizStatus === 'PAY_SUCCESS'){
+//         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
+//       }
+// //       if(req.body.bizStatus === 'PAY_CLOSED'){
+// //  await pay
+// //       }
+      
+//     }
+    res.send({
+      "returnCode":"SUCCESS",
+      "returnMessage":null
+     });
+  }
+  
 });
 // stripe config
 const getStripeConfig = catchAsync(async (req, res) => {
@@ -41,11 +55,18 @@ const stripeWebhook = catchAsync(async (req) => {
 });
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
-  let paymentData;
+  // let paymentData;
   const user = req.user._id;
 
   if (req.body.paymentType === 'card') {
-    paymentData = await stripeAccountService.createStripePayment(req.body, user);
+    const paymentData = await stripeAccountService.createStripePayment(req.body, user);
+    if (paymentData) {
+      const stripePaymentDetail = await paymentDetailService.savePaymentDetails(
+        paymentData,
+        paymentData.stripeData,
+        req.body
+      );
+    }
     res.send({
       success: true,
       code: 201,
@@ -54,11 +75,17 @@ const createPayment = catchAsync(async (req, res) => {
     });
   }
   if (req.body.paymentType === 'crypto') {
-    paymentData = '';
-    throw new ApiError(httpStatus.NOT_FOUND, 'This mode is not ready yet');
-  }
-  if (paymentData) {
-    const stripePaymentDetail = await paymentDetailService.savePaymentDetails(paymentData, paymentData.stripeData, req.body);
+    const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+    console.log(binanceData,"-------------");
+    if(binanceData.status === 'SUCCESS'){
+      res.send({
+        success: true,
+        code: 201,
+        message: 'stripe token created Successfully',
+        data: { BinanceData: binanceData },
+      });
+    }
+    res.send({"success": false,"error_code": 400,"message": "Something wrong"});
   }
 });
 
