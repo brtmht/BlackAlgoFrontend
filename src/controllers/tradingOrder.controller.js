@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { tradingOrderService } = require('../services');
+const { tradingOrderService, userExchangeConfig } = require('../services');
 // Mt account crud apis
 const createTradingOrder = catchAsync(async (req, res) => {
   const userId = req.user._id;
@@ -60,6 +60,16 @@ const graphTradeOrders = catchAsync(async (req, res) => {
   res.send({"success":true, code:201 , "message":"Transaction history data listed", "data":Orders});
 });
 
+
+// const performanceCalculation = catchAsync(async (req, res) => {
+//  const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
+//  const profitLoss = await tradingOrderService.
+  
+
+// });
+
+
+
 const getLast24HrTardingOrders = catchAsync(async (req, res) => {
   const last24HrOrders = await tradingOrderService.getLast24HrTardingOrders(req.user._id);
   if (!last24HrOrders) {
@@ -92,4 +102,5 @@ module.exports = {
   deleteTradingOrder,
   tradingOrderWithPagination,
   graphTradeOrders,
+  //performanceCalculation,
 };
