@@ -72,16 +72,18 @@ const updateStrategyById = async (strategyId, updateBody) => {
  * @returns {Promise<Strategy>}
  */
 const updateStrategyByName = async (name, updateData) => {
-  const updateStrategy = await Strategy.findOneAndUpdate({name:name}, {
-    monthly_return_percentage: updateData.monthly_return_percentage,
-    annual_return_percentage: updateData.annual_return_percentage,
-    max_drawdown_percentage: updateData.max_drawdown_percentage,
-    profit_factor: updateData.profit_factor,
-  });
+  const updateStrategy = await Strategy.findOneAndUpdate(
+    { name },
+    {
+      monthly_return_percentage: updateData.monthly_return_percentage,
+      annual_return_percentage: updateData.annual_return_percentage,
+      max_drawdown_percentage: updateData.max_drawdown_percentage,
+      profit_factor: updateData.profit_factor,
+    }
+  );
 
   return updateStrategy;
 };
-
 
 /**
  * Delete strategy by id

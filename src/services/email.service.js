@@ -50,14 +50,6 @@ const sendEmail = async (receiver, content, tempData) => {
           console.log('Message sent: %s', info.messageId);
           return { response: 'email sent succesfully' };
         });
-
-        // const sendResponse = await transport.sendMail(mailOptions);
-        // if (!sendResponse.messageId) {
-        //   console.log("---------error");
-        //   return { error: sendResponse };
-        // }
-        // console.log("---------success");
-        // return { success: sendResponse.messageId };
       }
     }
   );

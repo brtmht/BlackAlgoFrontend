@@ -174,15 +174,20 @@ const deleteSubscriptionPlanById = async (subscriptionPlanId) => {
  * @returns {Promise<SubscriptionPlan>}
  */
 const sendSubscriptionMail = async (userDetails) => {
+  if (!userDetails) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+
   const contentData = {
     name: userDetails.name,
     email: userDetails.email,
     phoneNo: userDetails.phoneNo,
   };
+
   const contact = {
-    // email: 'contact@blackalgo.com',
-    email: 'mailtest@yopmail.com',
+    email: 'mailtest@yopmail.com', // Replace with the actual contact email
   };
+
   await emailService.sendEmail(contact, contentData, constants.SUBSCRIPTION_EMAIL_OPTIONS);
 };
 module.exports = {
