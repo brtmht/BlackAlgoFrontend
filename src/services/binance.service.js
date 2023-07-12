@@ -131,7 +131,7 @@ const createBinancePayOrder = async () => {
       terminalType: 'WEB',
     },
     merchantTradeNo: Math.floor(Math.random() * (9825382937292 - 982538) + 982538),
-    orderAmount: 25.17,
+    orderAmount: 1,
     currency: 'USDT',
     goods: {
       goodsType: '01',
