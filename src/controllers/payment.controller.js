@@ -19,8 +19,8 @@ const getBinance = catchAsync(async (req, res) => {
 });
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
-  const binanceData = await binanceService.createBinancePayOrderNew();
-  res.send(binanceData);
+  // const binanceData = await binanceService.createBinancePayOrderNew();
+  res.send();
 });
 // // log in binance
 const binanceWebhook = catchAsync(async (req, res) => {
