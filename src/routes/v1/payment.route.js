@@ -10,7 +10,10 @@ router
   .route('/stripePayment')
   .post(auth('createPayment'), paymentController.createPayment)
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
-router.route('/binance').post(paymentController.postBinance).get(paymentController.getBinance);
+router
+  .route('/binance')
+  .post(auth('binancePayment'), paymentController.postBinance)
+  .get(auth('binancePayment'), paymentController.getBinance);
 router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
