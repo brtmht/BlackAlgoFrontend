@@ -36,11 +36,10 @@ const binanceWebhook = catchAsync(async (req, res) => {
 // //       }
       
 //     }
-    // res.send({
-    //   "returnCode":"SUCCESS",
-    //   "returnMessage":null
-    //  });
-    res.send();
+    res.send({
+      "returnCode":"SUCCESS",
+      "returnMessage":null
+     });
   }
   
 });
