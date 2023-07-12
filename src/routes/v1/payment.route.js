@@ -162,7 +162,7 @@ module.exports = router;
  *             properties:
  *               subscriptionPlanId:
  *                 type: string
- *               stripeTransactionId:
+ *               transactionId:
  *                 type: string
  *               planId:
  *                 type: string
@@ -175,7 +175,7 @@ module.exports = router;
  *                 type: number
  *             example:
  *               paymentToken: "642c5224d1ad6a54f0407072"
- *               stripeTransactionId: "ipi_ue73f_4yei"
+ *               transactionId: "ipi_ue73f_4yei"
  *               paymentStatus: pending
  *               subscriptionPlanId: sub_ewcjvwecvbweh
  *               paymentMethod: pm_wetreryuyiou

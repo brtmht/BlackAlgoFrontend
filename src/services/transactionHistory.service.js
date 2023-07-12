@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { TransactionHistory, PaymentDetail } = require('../models');
+const {getPaymentByToken} = require('./paymentDetail.service');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -8,13 +9,13 @@ const ApiError = require('../utils/ApiError');
  * @returns {Object}
  */
 const saveTransactionHistory = async (paymentData, reqData) => {
-  const PaymentDetails = await TransactionHistory.findOne({ paymentDetailId: paymentData._id });
-  if (!PaymentDetails) {
+  const TransactionDetails = await TransactionHistory.findOne({ paymentDetailId: paymentData._id });
+  if (!TransactionDetails) {
     const history = await TransactionHistory.create({
       userId: reqData.user._id,
       paymentDetailId: paymentData._id,
       paymentStatus: reqData.body.paymentStatus,
-      stripeTransactionId: reqData.body.stripeTransactionId,
+      transactionId: reqData.body.transactionId,
     });
     if (!history) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
@@ -30,6 +31,37 @@ const saveTransactionHistory = async (paymentData, reqData) => {
     }
   );
   return transactionHistory;
+};
+
+const saveBinanceTransactionHistory = async (paymentData) => {
+  const PaymentDetails = await getPaymentByToken (paymentData.data.paymentInfo.payerId);
+  if(PaymentDetails){
+    const TransactionDetails = await TransactionHistory.findOne({ paymentDetailId: PaymentDetails.id });
+    if (!TransactionDetails) {
+      const history = await TransactionHistory.create({
+        userId: reqData.user._id,
+        paymentDetailId: PaymentDetails.id,
+        paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? "success":"incomplete",
+        transactionId: paymentData.data.transactionId,
+      });
+      if (!history) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
+      }
+      return history;
+    }
+    const transactionHistory = await TransactionHistory.updateOne(
+      { paymentDetailId: PaymentDetails._id },
+      {
+        $set: {
+          paymentDetailId: PaymentDetails.id,
+          paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? "success":"incomplete",
+          transactionId: paymentData.data.transactionId,
+        },
+      }
+    );
+    return transactionHistory;
+  }
+  throw new ApiError(httpStatus.BAD_REQUEST, 'payment detail not found');
 };
 const getPaymentsById = async (id) => {
   const paymentHistory = await TransactionHistory.find({ userId: id });
@@ -84,4 +116,6 @@ module.exports = {
   getLast24HrTransactionHistory,
   getLast1WeekTransactionHistory,
   getLast30DaysTransactionHistory,
+  saveBinanceTransactionHistory,
+
 };
