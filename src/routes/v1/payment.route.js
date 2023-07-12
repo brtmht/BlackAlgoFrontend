@@ -14,7 +14,9 @@ router.route('/binance').post(paymentController.postBinance).get(paymentControll
 router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
-
+  router
+  .route('/binanceWebhook')
+  .post(auth(), paymentController.binanceWebhook);
 module.exports = router;
 
 /**

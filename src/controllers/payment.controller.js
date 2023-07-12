@@ -23,10 +23,12 @@ const postBinance = catchAsync(async (req, res) => {
   res.send(binanceData);
 });
 // // log in binance
-// const loginBinance = catchAsync(async (req, res) => {
-//   const result = await binanceService.loginBinanceManually(req.body);
-//   res.send(result);
-// });
+const binanceWebhook = catchAsync(async (req, res) => {
+  console.log(req.body,"===========req.body");
+  console.log(req.query,"===========req.query");
+  console.log(req.param,"===========req.param");
+  res.send();
+});
 // stripe config
 const getStripeConfig = catchAsync(async (req, res) => {
   const clientSecret = await stripeAccountService.configStripe();
@@ -97,6 +99,7 @@ module.exports = {
   getStripeConfig,
   getBinance,
   postBinance,
+  binanceWebhook,
   createPayment,
   getPayment,
   getPaymentHistory,
