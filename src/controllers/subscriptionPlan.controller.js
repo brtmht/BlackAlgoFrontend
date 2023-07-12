@@ -81,8 +81,13 @@ const deleteSubscriptionPlan = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 const requestForSubscription = catchAsync(async (req, res) => {
-  await subscriptionPlanService.sendSubscriptionMail(req.body);
-  res.status(httpStatus.NO_CONTENT).send();
+  if (req.body) {
+    await subscriptionPlanService.sendSubscriptionMail(req.body);
+
+    res.status(httpStatus.CREATED).json({ success: true, code: httpStatus.CREATED, message: 'Email sent successfully' });
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Data not found');
+  }
 });
 module.exports = {
   createSubscriptionPlan,

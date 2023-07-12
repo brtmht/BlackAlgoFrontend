@@ -29,7 +29,7 @@ const sendEmail = async (receiver, content, tempData) => {
   ejs.renderFile(
     path.join(__dirname, '../utils//templates/' + tempData.template_name),
     { receiver, content },
-    (err, data) => {
+    async (err, data) => {
       if (err) {
         // eslint-disable-next-line no-console
         console.log(err);
@@ -41,14 +41,23 @@ const sendEmail = async (receiver, content, tempData) => {
           html: data,
         };
         // const msg = { from: config.email.from, to, subject, text };
-        transport.sendMail(mailOptions, (error, info) => {
+        await transport.sendMail(mailOptions, (error, info) => {
           if (error) {
             // eslint-disable-next-line no-console
             return console.log(error);
           }
           // eslint-disable-next-line no-console
           console.log('Message sent: %s', info.messageId);
+          return { response: 'email sent succesfully' };
         });
+
+        // const sendResponse = await transport.sendMail(mailOptions);
+        // if (!sendResponse.messageId) {
+        //   console.log("---------error");
+        //   return { error: sendResponse };
+        // }
+        // console.log("---------success");
+        // return { success: sendResponse.messageId };
       }
     }
   );
