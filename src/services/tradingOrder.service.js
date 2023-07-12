@@ -2,6 +2,8 @@ const httpStatus = require('http-status');
 const { TradingOrder } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { symbol } = require('joi');
+const mt4Server = require('../middlewares/mt4Server');
+const { getUserExchangeConfigByUserId } = require('./userExchangeConfig.service');
 
 /**
  * Create a TradingOrder
@@ -305,6 +307,33 @@ const getGraphTradeOrder = async (orderData, id) => {
   return ordersList;
 };
 
+const getPortfolioValue = async (userId) => {
+  try {
+    const userConfig = await getUserExchangeConfigByUserId(userId);
+  
+    if (userConfig) {
+      const portfolioSize = await mt4Server.accountSummary(userConfig.config.serverToken);
+      return portfolioSize;
+    }
+  } catch (error) {
+    console.error('Error in getPortfolioValue:', error);
+    throw new ApiError(httpStatus.NOT_FOUND, 'Error in getPortfolioValue');
+  }
+};
+
+const calculateProfitLoss = async (userId) => {
+  try {
+    const userConfig = await getUserExchangeConfigByUserId(userId);
+  
+    if (userConfig) {
+      const portfolioSize = await mt4Server.accountSummary(userConfig.config.serverToken);
+      return portfolioSize;
+    }
+  } catch (error) {
+    console.error('Error in getPortfolioValue:', error);
+    throw new ApiError(httpStatus.NOT_FOUND, 'Error in getPortfolioValue');
+  }
+};
 
 
 const getLast24HrTardingOrders = async (id,timestamp, step) => {
@@ -348,4 +377,5 @@ module.exports = {
   updateTradeOrderByMasterTicket,
   updateTradeOrderType,
   getGraphTradeOrder,
+  getPortfolioValue,
 };
