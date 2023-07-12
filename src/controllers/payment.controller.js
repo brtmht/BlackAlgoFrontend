@@ -27,19 +27,19 @@ const postBinance = catchAsync(async (req, res) => {
 const binanceWebhook = catchAsync(async (req, res) => {
   console.log(req.body, '===========req.body');
   if (req.body) {
-//     if (req.body.bizType === 'PAY') {
-//       if(req.body.bizStatus === 'PAY_SUCCESS'){
-//         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
-//       }
-// //       if(req.body.bizStatus === 'PAY_CLOSED'){
-// //  await pay
-// //       }
-      
-//     }
-    res.send({
-      "returnCode":"SUCCESS",
-      "returnMessage":null
-     });
+    if (req.body.bizType === 'PAY') {
+      if(req.body.bizStatus === 'PAY_SUCCESS'){
+        await transactionHistoryService.saveBinanceTransactionHistory(req.body);
+      }
+      if(req.body.bizStatus === 'PAY_CLOSED'){
+        await paymentDetailService.updateBinancePaymentDetails(req.body);
+      }
+      res.send({
+        "returnCode":"SUCCESS",
+        "returnMessage":null
+       }); 
+    }
+    
   }
   
 });
@@ -87,6 +87,7 @@ const createPayment = catchAsync(async (req, res) => {
     }
     res.send({"success": false,"error_code": 400,"message": "Something wrong"});
   }
+  res.send({"success": false,"error_code": 403,"message": "payment type not valid"});
 });
 
 // save data in transaction table

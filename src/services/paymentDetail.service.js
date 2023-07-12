@@ -180,30 +180,22 @@ const getPaymentDataByUserId = async (id) => {
 };
 
 
-// const updateBinancePaymentDetails = async (paymentData) => {
-//   const PaymentDetails = await getPaymentByToken (paymentData.data.paymentInfo.payerId);
-//   const updatedPaymentDetail = await PaymentDetail.updateOne(
-//     { paymentToken: reqData.paymentToken },
-//     {
-//       $set: {
-//         ...reqData,
-//         subscriptionPlanId: subscription ? subscription.id : null,
-//       },
-//     }
-//   );
+const updateBinancePaymentDetails = async (paymentData) => {
+  const PaymentDetails = await getPaymentByToken (paymentData.bizIdStr);
+  if(PaymentDetails){
 
-//   const userData = await userStrategyService.getUserStrategyByUser(userId);
+    const updatedPaymentDetail = await PaymentDetail.updateOne(
+      { paymentToken: paymentData.bizIdStr },
+      {
+        $set: {
+          paymentStatus: "cancelled",
+        },
+      }
+    );
+    return updatedPaymentDetail;
+  }
 
-//   if (userData) {
-//     await updateStripeSubscription(userData);
-//   }
-
-//   if (updatedPaymentDetail.nModified === 0) {
-//     throw new ApiError(httpStatus['100_MESSAGE'], 'The payment data cannot be updated');
-//   }
-
-//   return updatedPaymentDetail;
-// };
+};
 
 
 module.exports = {
@@ -213,4 +205,5 @@ module.exports = {
   getPaymentDataByUserId,
   saveBinacePaymentDetails,
   getPaymentByToken,
+  updateBinancePaymentDetails,
 };

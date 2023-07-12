@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { TransactionHistory, PaymentDetail } = require('../models');
 const {getPaymentByToken} = require('./paymentDetail.service');
+const {getUserStrategyByUser, createUserStrategy} = require('./userStrategy.service'); 
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -34,16 +35,24 @@ const saveTransactionHistory = async (paymentData, reqData) => {
 };
 
 const saveBinanceTransactionHistory = async (paymentData) => {
-  const PaymentDetails = await getPaymentByToken (paymentData.data.paymentInfo.payerId);
+  const PaymentDetails = await getPaymentByToken (paymentData.bizIdStr);
   if(PaymentDetails){
     const TransactionDetails = await TransactionHistory.findOne({ paymentDetailId: PaymentDetails.id });
     if (!TransactionDetails) {
       const history = await TransactionHistory.create({
-        userId: reqData.user._id,
+        userId: PaymentDetails.userId,
         paymentDetailId: PaymentDetails.id,
         paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? "success":"incomplete",
         transactionId: paymentData.data.transactionId,
+        payerId: paymentData.data.paymentInfo.payerId,
+        merchantTradeNo: paymentData.data.merchantTradeNo,
       });
+
+      const userData = await getUserStrategyByUser(PaymentDetails.userId);
+
+      if (userData) {
+        await createUserStrategy({ paymentDetailId: paymentData.data.transactionId,step: "payment"},PaymentDetails.userId)
+      }
       if (!history) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
       }
