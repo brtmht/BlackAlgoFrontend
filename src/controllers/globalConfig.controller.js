@@ -4,6 +4,8 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { globalConfig } = require('../services');
 const { processFileData } = require('../middlewares/ftpData');
+const fs = require('fs');
+const csv = require('csv-parser');
 
 const getConfigData = catchAsync(async (req, res) => {
   const result = await globalConfig.getGlobalConfig();
@@ -16,6 +18,22 @@ const getTermAndPolicyData = catchAsync(async (req, res) => {
 });
 
 const graphData = catchAsync(async (req, res) => {
+
+  const filePath = '/home/fto_blackalgo/ftp/trade.csv';
+
+  const results = [];
+
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on('data', (data) => results.push(data))
+    .on('end', () => {
+      console.log(results,"---------------");
+      //res.json(results);
+    })
+    .on('error', (err) => {
+      console.error('Error parsing CSV:', err);
+     // res.status(500).send('Error parsing CSV');
+    });
  await processFileData()
     .then((data) => {
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
