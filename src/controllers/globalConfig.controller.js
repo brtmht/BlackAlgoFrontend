@@ -19,7 +19,7 @@ const getTermAndPolicyData = catchAsync(async (req, res) => {
 
 const graphData = catchAsync(async (req, res) => {
 
-  const filePath = '/home/fto_blackalgo/ftp/trade.csv';
+  const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
 
   const results = [];
 
