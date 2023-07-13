@@ -34,6 +34,21 @@ const graphData = catchAsync(async (req, res) => {
   //     console.error('Error parsing CSV:', err);
   //     // res.status(500).send('Error parsing CSV');
   //   });
+
+  const filePath = '/home/ftp_blackalgo/ftp/test.txt';
+const absoluteFilePath = path.join(__dirname, '../..', filePath);
+
+fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
+  if (err) {
+    console.error('Error reading file:', err);
+    // Handle the error appropriately, e.g., return an error response
+    return res.status(500).send('Error reading file');
+  }
+
+  // Process the file data
+  console.log(data);
+
+});
  await processFileData()
     .then((data) => {
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
