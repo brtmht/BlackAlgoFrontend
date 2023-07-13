@@ -38,7 +38,7 @@ const saveBinacePaymentDetails = async (userId,paymentData,reqData) => {
       amount: reqData.orderAmount,
       portfolioAmount: reqData?.portfolioAmount? reqData?.portfolioAmount:'',
       paymentToken: paymentData.data.prepayId,
-      paymentStatus: paymentData.data.status === 'SUCCESS' ? "success":"incomplete",
+      paymentStatus: paymentData.status === 'SUCCESS' ? "success":"incomplete",
     });
   
     if (!paymentCreated) {
