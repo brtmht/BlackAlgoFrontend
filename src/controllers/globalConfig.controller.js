@@ -19,21 +19,21 @@ const getTermAndPolicyData = catchAsync(async (req, res) => {
 
 const graphData = catchAsync(async (req, res) => {
 
-  const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
+  // const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
 
-  const results = [];
+  // const results = [];
 
-  fs.createReadStream(filePath)
-    .pipe(csv())
-    .on('data', (data) => results.push(data))
-    .on('end', () => {
-      console.log(results,"---------------");
-      //res.json(results);
-    })
-    .on('error', (err) => {
-      console.error('Error parsing CSV:', err);
-     // res.status(500).send('Error parsing CSV');
-    });
+  // fs.createReadStream(filePath)
+  //   .pipe(csv())
+  //   .on('data', (data) => results.push(data))
+  //   .on('end', () => {
+  //     console.log(results, "---------------");
+  //     // res.json(results);
+  //   })
+  //   .on('error', (err) => {
+  //     console.error('Error parsing CSV:', err);
+  //     // res.status(500).send('Error parsing CSV');
+  //   });
  await processFileData()
     .then((data) => {
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
