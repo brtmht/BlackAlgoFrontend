@@ -54,10 +54,18 @@ const deleteSubscriptionPlan = {
   }),
 };
 
+const requestSubscriptionPlan = {
+  body: Joi.object().keys({
+    name: Joi.string(),
+    email: Joi.string(),
+    phoneNo: Joi.number(),
+  }),
+};
 module.exports = {
   createSubscriptionPlan,
   getSubscriptionPlans,
   getSubscriptionPlan,
   updateSubscriptionPlan,
   deleteSubscriptionPlan,
+  requestSubscriptionPlan,
 };

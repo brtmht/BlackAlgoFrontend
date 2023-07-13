@@ -15,31 +15,31 @@ const getUser = catchAsync(async (req, res) => {
       title: `User Found`,
       message: `You got to ${user.name} logged in as ${user.email}`,
     };
-   // sendNotification(notification, user);
+    // sendNotification(notification, user);
   }
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  res.send({"success":true, code:201 , "message":"User data fetch Successfully", "data":user});
+  res.send({ success: true, code: 201, message: 'User data fetch Successfully', data: user });
 });
 // 2FA API
 const get2FactorAuthentication = catchAsync(async (req, res) => {
   const result = await userService.generate2faSecret(req.user);
-  res.send({"success":true, code:201 , "message":"Generated 2fa code  Successfully", "data":result});
+  res.send({ success: true, code: 201, message: 'Generated 2fa code  Successfully', data: result });
 });
 const get2FactorVerified = catchAsync(async (req, res) => {
   const result = await userService.verify2faSecret(req);
-  res.send({"success":true, code:201 , "message":"2fa verify Successfully", "data":result});
+  res.send({ success: true, code: 201, message: '2fa verify Successfully', data: result });
 });
 
 const turnOff2fa = catchAsync(async (req, res) => {
   const result = await userService.turnOff2fa(req.user);
-  res.send({"success":true, code:201 , "message":"Turn off 2fa Successfully", "data":result});
+  res.send({ success: true, code: 201, message: 'Turn off 2fa Successfully', data: result });
 });
 
 const disabled2faBySecret = catchAsync(async (req, res) => {
   const result = await userService.getUserDataBy2faSecret(req.body.backupKey);
-  res.send({"success":true, code:200 , "message":"Two factor authentication disabled successfully"});
+  res.send({ success: true, code: 200, message: 'Two factor authentication disabled successfully' });
 });
 
 const turnOn2fa = catchAsync(async (req, res) => {
@@ -47,7 +47,7 @@ const turnOn2fa = catchAsync(async (req, res) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'token not found');
   }
-  res.send({"success":true, code:201 , "message":"Turn on 2fa Successfully", "data":result});
+  res.send({ success: true, code: 201, message: 'Turn on 2fa Successfully', data: result });
 });
 
 const getBackUpSecretKey = catchAsync(async (req, res) => {
@@ -65,14 +65,14 @@ const activate2faSecret = catchAsync(async (req, res) => {
 const updateUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserDataById(userId, req);
-  const updatedData =  await userService.getUserById(req.user._id);
-  res.send({"success":true, code:201 , "message":"User data updated successfully", "data":updatedData});
+  const updatedData = await userService.getUserById(req.user._id);
+  res.send({ success: true, code: 201, message: 'User data updated successfully', data: updatedData });
 });
 
 const changePassword = catchAsync(async (req, res) => {
   const userId = req.user._id;
   await userService.updateUserPasword(userId, req.body);
-  res.send({"success":true, code:200 , "message":"User password updated successfully"});
+  res.send({ success: true, code: 200, message: 'User password updated successfully' });
 });
 
 // admin Get all user
@@ -101,8 +101,11 @@ const deleteUser = catchAsync(async (req, res) => {
 });
 const clearUserToken = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  await userService.clearUserTokenById(userId);
-  res.status(httpStatus.NO_CONTENT).send();
+  const user = await userService.clearUserTokenById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.METHOD_NOT_ALLOWED, 'User not found');
+  }
+  res.send({ success: true, code: 200, message: 'Notification token cleared' });
 });
 const getUserWalletAmount = catchAsync(async (req, res) => {
   const userId = req.user._id;
@@ -110,13 +113,13 @@ const getUserWalletAmount = catchAsync(async (req, res) => {
   res.send(amount);
 });
 
-const checkEmail = catchAsync(async (req,res) =>{
-    const data = await userService.getUserByEmail(req.body.email);
-    if(data){
-      res.send({"success":false, code:409 , "message":"Email already exist"});
-    }
-    res.send({"success":true, code:200 , "message":"Email not exist"});
-})
+const checkEmail = catchAsync(async (req, res) => {
+  const data = await userService.getUserByEmail(req.body.email);
+  if (data) {
+    res.send({ success: false, code: 409, message: 'Email already exist' });
+  }
+  res.send({ success: true, code: 200, message: 'Email not exist' });
+});
 
 module.exports = {
   createUser,

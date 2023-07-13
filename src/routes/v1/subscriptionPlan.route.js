@@ -47,7 +47,13 @@ router
     validate(subscriptionPlanValidation.getSubscriptionPlan),
     subscriptionPlanController.resumeStripeSubscription
   );
-router.route('/requestForSubscription').post(auth(), subscriptionPlanController.requestForSubscription);
+router
+  .route('/requestForSubscription')
+  .post(
+    auth(),
+    validate(subscriptionPlanValidation.requestSubscriptionPlan),
+    subscriptionPlanController.requestForSubscription
+  );
 
 module.exports = router;
 

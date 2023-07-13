@@ -78,16 +78,13 @@ const allRoles = {
   manager: [
     'getUser',
     'getUsers',
-    'updateUserEmail',
     'getAllUserStrategies',
-    'createUsers',
     'allNotification',
-    'blockUser',
     'getUserById',
-    'deleteUsers',
     'monthlyUsers',
     'getExchanges',
     'getAllConnectedUser',
+    'binancePayment',
   ],
 
   admin: [
@@ -105,6 +102,7 @@ const allRoles = {
     'monthlyUsers',
     'getAllConnectedUser',
     'getExchanges',
+    'binancePayment',
   ],
 };
 
