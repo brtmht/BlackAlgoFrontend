@@ -6,6 +6,7 @@ const { globalConfig } = require('../services');
 const { processFileData } = require('../middlewares/ftpData');
 const fs = require('fs');
 const csv = require('csv-parser');
+const path = require('path');
 
 const getConfigData = catchAsync(async (req, res) => {
   const result = await globalConfig.getGlobalConfig();
