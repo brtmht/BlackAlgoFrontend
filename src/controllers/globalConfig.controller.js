@@ -42,14 +42,19 @@ const absoluteFilePath = path.join(__dirname, '../..', filePath);
 fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
-    // Handle the error appropriately, e.g., return an error response
     return res.status(500).send('Error reading file');
   }
 
-  // Process the file data
-  console.log(data);
+  try {
+    // Process the file data
+    console.log(data);
 
-});
+    // Send the file data as a response
+    // res.send(data);
+  } catch (error) {
+    console.error('Error processing file data:', error);
+    //return res.status(500).send('Error processing file data');
+  }
  await processFileData()
     .then((data) => {
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
