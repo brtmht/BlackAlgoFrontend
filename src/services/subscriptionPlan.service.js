@@ -190,6 +190,17 @@ const sendSubscriptionMail = async (userDetails) => {
 
   await emailService.sendEmail(contact, contentData, constants.SUBSCRIPTION_EMAIL_OPTIONS);
 };
+
+const upgradeSubscriptionPlan = async (subscriptionPlanId) => {
+  const subscriptionPlan = await findSubscriptionPlanById(subscriptionPlanId);
+  if (!subscriptionPlan) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
+  }
+  const subscriptionDeleted = await SubscriptionPlan.findByIdAndUpdate(subscriptionPlanId, { isDeleted: true });
+  return subscriptionDeleted;
+};
+
+
 module.exports = {
   createSubscription,
   retrieveStripeSubsPlan,
@@ -202,4 +213,5 @@ module.exports = {
   deleteSubscriptionPlanById,
   deleteStripeSubscription,
   sendSubscriptionMail,
+  upgradeSubscriptionPlan,
 };

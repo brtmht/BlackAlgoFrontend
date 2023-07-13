@@ -36,6 +36,7 @@ const saveTransactionHistory = async (paymentData, reqData) => {
 
 const saveBinanceTransactionHistory = async (paymentData) => {
   const PaymentDetails = await getPaymentByToken(paymentData.bizIdStr);
+  const payData = JSON.parse(paymentData.data);
   if (PaymentDetails) {
     const TransactionDetails = await TransactionHistory.findOne({ paymentDetailId: PaymentDetails.id });
     if (!TransactionDetails) {
@@ -43,9 +44,9 @@ const saveBinanceTransactionHistory = async (paymentData) => {
         userId: PaymentDetails.userId,
         paymentDetailId: PaymentDetails.id,
         paymentStatus: paymentData.bizStatus === 'PAY_SUCCESS' ? 'success' : 'incomplete',
-        transactionId: paymentData.data.transactionId,
-        payerId: paymentData.data.paymentInfo.payerId,
-        merchantTradeNo: paymentData.data.merchantTradeNo,
+        transactionId: payData.transactionId,
+        payerId: payData.paymentInfo.payerId,
+        merchantTradeNo: payData.merchantTradeNo,
       });
 
       const userData = await getUserStrategyByUser(PaymentDetails.userId);
