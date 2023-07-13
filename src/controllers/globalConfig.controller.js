@@ -36,25 +36,27 @@ const graphData = catchAsync(async (req, res) => {
   //     // res.status(500).send('Error parsing CSV');
   //   });
 
-  const filePath = '/home/ftp_blackalgo/ftp/test.txt';
-const absoluteFilePath = path.join(__dirname, '../..', filePath);
+//   const filePath = '/home/ftp_blackalgo/ftp/test.txt';
+// const absoluteFilePath = path.join(__dirname, '../..', filePath);
 
-fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
-  if (err) {
-    console.error('Error reading file:', err);
-    return res.status(500).send('Error reading file');
-  }
+// fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
+//   if (err) {
+//     console.error('Error reading file:', err);
+//     return res.status(500).send('Error reading file');
+//   }
 
-  try {
-    // Process the file data
-    console.log(data);
+//   try {
+//     // Process the file data
+//     console.log(data);
 
-    // Send the file data as a response
-    // res.send(data);
-  } catch (error) {
-    console.error('Error processing file data:', error);
-    //return res.status(500).send('Error processing file data');
-  }
+//     // Send the file data as a response
+//     // res.send(data);
+//   } catch (error) {
+//     console.error('Error processing file data:', error);
+//     //return res.status(500).send('Error processing file data');
+//   }
+// });
+
  await processFileData()
     .then((data) => {
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
