@@ -29,47 +29,29 @@ const graphData = catchAsync(async (req, res) => {
     .on('data', (data) => results.push(data))
     .on('end', () => {
       console.log(results, "---------------");
-      // res.json(results);
+      res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: results } });
     })
     .on('error', (err) => {
       console.error('Error parsing CSV:', err);
-      // res.status(500).send('Error parsing CSV');
-    });
-
-
-
- await processFileData()
-    .then((data) => {
-      res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
-      // Use the data or pass it to another API as needed
-    })
-    .catch((error) => {
       throw new ApiError(httpStatus.NOT_FOUND, 'Error in processing file data');
     });
+
+
+
+//  await processFileData()
+//     .then((data) => {
+//       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
+//       // Use the data or pass it to another API as needed
+//     })
+//     .catch((error) => {
+//       throw new ApiError(httpStatus.NOT_FOUND, 'Error in processing file data');
+//     });
 });
 
-const graphData1 = catchAsync(async (req, res) => {
 
-  const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
-
-  const results = [];
-
-  fs.createReadStream(filePath)
-    .pipe(csv())
-    .on('data', (data) => results.push(data))
-    .on('end', () => {
-      console.log(results, "---------------");
-      res.json(results);
-    })
-    .on('error', (err) => {
-      console.error('Error parsing CSV:', err);
-      res.status(500).send('Error parsing CSV');
-    });
-});
 
 module.exports = {
   getConfigData,
   getTermAndPolicyData,
   graphData,
-  graphData1,
 };
