@@ -159,6 +159,15 @@ const getConnectedUser = async () => {
   return UserExchangeConfig.find({ connected: true, subscriptionStatus:true });
 };
 
+const getActiveUser = async () => {
+  return UserExchangeConfig.findOne({ connected: true });
+};
+
+const getConnectedAccountUser = async () => {
+  return UserExchangeConfig.find({ connected: true,config: { $exists: true, $ne: {} } });
+};
+
+
 /**
  * update mt4 connection
  * @returns {Promise<UserExchangeConfig>}
@@ -288,4 +297,7 @@ module.exports = {
   disconnectConnectionSubscription,
   updateStripeSubscription,
   disconnectConnection,
+  getActiveUser,
+  getConnectedAccountUser,
+
 };

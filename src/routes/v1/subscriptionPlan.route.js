@@ -54,6 +54,14 @@ router
     validate(subscriptionPlanValidation.requestSubscriptionPlan),
     subscriptionPlanController.requestForSubscription
   );
+  router
+  .route('/upgradeSubscriptionPlan')
+  .post(
+    auth(),
+    validate(subscriptionPlanValidation.upgradeSubscriptionPlan),
+    subscriptionPlanController.upgradeSubscriptionPlan
+  );
+  
 
 module.exports = router;
 

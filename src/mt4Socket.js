@@ -56,7 +56,7 @@ const mtSocket = () => {
               break;
           }
 
-          const connectedUsers = await userExchangeConfig.getConnectedUser();
+          const connectedUsers = await userExchangeConfig.getConnectedAccountUser();
           // Create an array of promises for sending order data to each user
           const sendOrderPromises = connectedUsers.map((user) => {
             return new Promise(async (resolve, reject) => {
