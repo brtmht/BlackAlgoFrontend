@@ -2,8 +2,8 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { subscriptionPlanService } = require('../services');
-const {getActiveUser} = require('../services/userExchangeConfig.service');
-const {getUserStrategyByUser} = require('../services/userStrategy.service');
+const { getActiveUser } = require('../services/userExchangeConfig.service');
+const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
 
 // Create subscription plans with stripe
@@ -94,31 +94,29 @@ const requestForSubscription = catchAsync(async (req, res) => {
 });
 
 const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
- 
-  const user = await getActiveUser(req.user._id);
-      try {
-      const userSubscription = await getUserStrategyByUser(user.userId);
-      if(userSubscription){
-        const subscription =  await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
-        const userPortfolio = await mt4Server.accountSummary(user.serverToken);
-        if(subscription.name === "Monthly"){
-          if(subscription.max_portfolio_size === userPortfolio.balance && subscription.max_portfolio_size < userPortfolio.balance){
-            res.send({"success": false,"error_code": 403,"message": "Upgrade your subscription plan"});
-          }
-          res.send({ success: true, code: 200, message: 'No need to change subscription'});
-        }  
+  try {
+    const user = await getActiveUser(req.user._id);
+    const userSubscription = await getUserStrategyByUser(user.userId);
+    if (userSubscription) {
+      const subscription = await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
+      const userPortfolio = await mt4Server.accountSummary(user.serverToken);
+      if (subscription.name === 'Monthly') {
+        if (
+          subscription.max_portfolio_size === userPortfolio.balance &&
+          subscription.max_portfolio_size < userPortfolio.balance
+        ) {
+          res.send({ success: false, error_code: 403, message: 'Upgrade your subscription plan' });
+        }
+        res.send({ success: true, code: 200, message: 'No need to change subscription' });
       }
-      } catch (error) {
-        reject(error);
-      }
-    
-  // Wait for all promises to resolve
-  await Promise.all(sendPromises).catch(err => {
-    console.log("Error in Promise.all", err);
-    logger.error(err)
-  });
-
+    }
+  } catch (error) {
+    // Handle the error
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 });
+
 
 module.exports = {
   createSubscriptionPlan,
