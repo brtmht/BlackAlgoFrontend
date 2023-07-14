@@ -93,27 +93,65 @@ const requestForSubscription = catchAsync(async (req, res) => {
   }
 });
 
-const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
+ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
   try {
     const user = await getActiveUser(req.user._id);
     const userSubscription = await getUserStrategyByUser(user.userId);
+    
     if (userSubscription) {
       const subscription = await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
-      const userPortfolio = await mt4Server.accountSummary(user.serverToken);
-      if (subscription.name === 'Monthly') {
-        if (
-          subscription.max_portfolio_size === userPortfolio.balance &&
-          subscription.max_portfolio_size < userPortfolio.balance
-        ) {
-          res.send({ success: false, error_code: 403, message: 'Upgrade your subscription plan' });
+      let BrokerToken;
+      const checkConnection = await mt4Server.checkConnection(user.serverToken);
+      let connectionAttempts = 0;
+
+      if (checkConnection?.message) {
+        const maxAttempts = 3;
+        const ipList = await mt4Server.getServerDataForIps(user.config.server);
+
+        for (const ip of ipList) {
+          if (connectionAttempts >= maxAttempts) {
+            break;
+          }
+
+          let IP;
+          let PORT;
+          const [address, port] = ip.split(':');
+
+          if (port) {
+            IP = address;
+            PORT = port;
+          } else {
+            IP = ip;
+            PORT = '443';
+          }
+
+          const response = await mt4Server.connect(user, IP, PORT);
+          console.log("action: new mt4 token generated");
+          if (!response.message) {
+            await updateServerTokenById(user.id, response);
+            BrokerToken = response;
+            break;
+          } else {
+            connectionAttempts++;
+          }
         }
-        res.send({ success: true, code: 200, message: 'No need to change subscription' });
+      } else {
+        BrokerToken = user.serverToken;
       }
+      const userPortfolio = await mt4Server.accountSummary(BrokerToken);
+      if (subscription.name === "Monthly") {
+        if (subscription.max_portfolio_size === userPortfolio.balance || subscription.max_portfolio_size < userPortfolio.balance) {
+          res.send({ success: false, error_code: 403, message: "Upgrade your subscription plan" });
+        } else if (subscription.max_portfolio_size > userPortfolio.balance) {
+          res.send({ success: true, code: 200, message: "No need to change subscription" });
+        }
+      }
+    } else {
+      res.send({ success: false, error_code: 404, message: "User subscription not found" });
     }
   } catch (error) {
-    // Handle the error
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send({ success: false, error_code: 500, message: "Internal server error" });
   }
 });
 
