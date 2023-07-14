@@ -54,14 +54,13 @@ router
     validate(subscriptionPlanValidation.requestSubscriptionPlan),
     subscriptionPlanController.requestForSubscription
   );
-  router
+router
   .route('/upgradeSubscriptionPlan')
   .post(
     auth(),
     validate(subscriptionPlanValidation.upgradeSubscriptionPlan),
     subscriptionPlanController.upgradeSubscriptionPlan
   );
-  
 
 module.exports = router;
 
@@ -366,4 +365,29 @@ module.exports = router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /subscriptionPlans/upgradeSubscriptionPlan:
+ *   get:
+ *     summary: Get uprade to user's subscription plan
+ *     description: User can get a upgarde on subscriptionPlan.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SubscriptionPlan'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */

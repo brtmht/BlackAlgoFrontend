@@ -2,8 +2,8 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { subscriptionPlanService } = require('../services');
-const {getActiveUser} = require('../services/userExchangeConfig.service');
-const {getUserStrategyByUser} = require('../services/userStrategy.service');
+const { getActiveUser,updateServerTokenById } = require('../services/userExchangeConfig.service');
+const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
 
 // Create subscription plans with stripe
@@ -93,32 +93,68 @@ const requestForSubscription = catchAsync(async (req, res) => {
   }
 });
 
-const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
- 
-  const user = await getActiveUser(req.user._id);
-      try {
-      const userSubscription = await getUserStrategyByUser(user.userId);
-      if(userSubscription){
-        const subscription =  await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
-        const userPortfolio = await mt4Server.accountSummary(user.serverToken);
-        if(subscription.name === "Monthly"){
-          if(subscription.max_portfolio_size === userPortfolio.balance && subscription.max_portfolio_size < userPortfolio.balance){
-            res.send({"success": false,"error_code": 403,"message": "Upgrade your subscription plan"});
-          }
-          res.send({ success: true, code: 200, message: 'No need to change subscription'});
-        }  
-      }
-      } catch (error) {
-        reject(error);
-      }
+ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
+  try {
+    const user = await getActiveUser(req.user._id);
+    const userSubscription = await getUserStrategyByUser(user.userId);
     
-  // Wait for all promises to resolve
-  await Promise.all(sendPromises).catch(err => {
-    console.log("Error in Promise.all", err);
-    logger.error(err)
-  });
+    if (userSubscription) {
+      const subscription = await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
+      let BrokerToken;
+      const checkConnection = await mt4Server.checkConnection(user.serverToken);
+      let connectionAttempts = 0;
 
+      if (checkConnection?.message) {
+        const maxAttempts = 3;
+        const ipList = await mt4Server.getServerDataForIps(user.config.server);
+
+        for (const ip of ipList) {
+          if (connectionAttempts >= maxAttempts) {
+            break;
+          }
+
+          let IP;
+          let PORT;
+          const [address, port] = ip.split(':');
+
+          if (port) {
+            IP = address;
+            PORT = port;
+          } else {
+            IP = ip;
+            PORT = '443';
+          }
+
+          const response = await mt4Server.connect(user, IP, PORT);
+          console.log("action: new mt4 token generated");
+          if (!response.message) {
+            await updateServerTokenById(user.id, response);
+            BrokerToken = response;
+            break;
+          } else {
+            connectionAttempts++;
+          }
+        }
+      } else {
+        BrokerToken = user.serverToken;
+      }
+      const userPortfolio = await mt4Server.accountSummary(BrokerToken);
+      if (subscription.name === "Monthly") {
+        if (subscription.max_portfolio_size === userPortfolio.balance || subscription.max_portfolio_size < userPortfolio.balance) {
+          res.send({ success: false, error_code: 403, message: "Upgrade your subscription plan" });
+        } else if (subscription.max_portfolio_size > userPortfolio.balance) {
+          res.send({ success: true, code: 200, message: "No need to change subscription" });
+        }
+      }
+    } else {
+      res.send({ success: false, error_code: 404, message: "User subscription not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ success: false, error_code: 500, message: "Internal server error" });
+  }
 });
+
 
 module.exports = {
   createSubscriptionPlan,
