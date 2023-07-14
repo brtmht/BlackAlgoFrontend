@@ -2,6 +2,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
+const { emitData } = require('../socket');
 const {
   paymentDetailService,
   stripeAccountService,
@@ -30,9 +31,14 @@ const binanceWebhook = catchAsync(async (req, res) => {
     if (req.body.bizType === 'PAY') {
       if (req.body.bizStatus === 'PAY_SUCCESS') {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
+        const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
+        emitData('BinancePayResponse', { success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
+
       }
       if (req.body.bizStatus === 'PAY_CLOSED') {
         await paymentDetailService.updateBinancePaymentDetails(req.body);
+        const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
+        emitData('BinancePayResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: PaymentDetails });
       }
       res.send({
         returnCode: 'SUCCESS',

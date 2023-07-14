@@ -126,7 +126,7 @@ const mtSocket = () => {
                           title: `Order sent  successfully`,
                           message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
                         }, createdTradeOrder.userId);
-                        emitData('MT4TradeUpdated', createdTradeOrder);
+                        emitData('MT4TradeUpdated', { success: true, code: 201, message: 'Order created Successfully', data: createdTradeOrder });
                       }
 
                       // Additional logic to send the order data to the user
@@ -166,7 +166,7 @@ const mtSocket = () => {
                         title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
                         message: `The order for ${updatedData.lots} lots has been successfully closed.`,
                       }, updatedData.userId);
-                      emitData('MT4TradeUpdated', updatedData);
+                      emitData('MT4TradeUpdated', { success: true, code: 201, message: 'Order closed Successfully', data: updatedData });
                     } else {
                       updatedData = await tradingOrder.updateTradeOrderType(
                         order.Ticket,
@@ -174,8 +174,7 @@ const mtSocket = () => {
                         'closeOrder'
                       );
                     }
-                    break;
-                
+                    break;              
                   default:
                     break;
                 }

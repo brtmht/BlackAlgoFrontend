@@ -13,7 +13,7 @@ const sendNotification = async (notificationData, user) => {
     message: notificationData.message,
     type: notificationData.type,
   });
-  emitData('Notification',notificationCreated);
+  emitData('Notification', { success: true, code: 201, message: 'Notification Successfully', data: notificationCreated });
   user.notificationToken.forEach(async function (token) {
     const message = {
       notification: {
