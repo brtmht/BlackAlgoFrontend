@@ -24,6 +24,7 @@ router.route('/activate2Fa').post(auth('activate2Fa'), userController.activate2f
 router.route('/getSecretKey').get(auth('getBackUpSecretKey'), userController.getBackUpSecretKey);
 router.route('/getUserWallet').get(auth('getUserWallet'), userController.getUserWalletAmount);
 router.route('/clearFirebaseToken').patch(auth('clearUserToken'), userController.clearUserToken);
+router.route('/shareImage').post(imageUploadMiddleware('sharingMt4files'), userController.sharingImageUpload);
 router
   .route('/changePassword')
   .patch(auth('changePassword'), validate(userValidation.updateUser), userController.changePassword);
@@ -709,6 +710,45 @@ module.exports = router;
  *                $ref: '#/components/schemas/SucessResponse'
  *       "400":
  *         $ref: '#/components/responses/DuplicateName'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /shareImage:
+ *   post:
+ *     summary: share a image
+ *     description: Users can share a image with this api.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - image
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *             example:
+ *               image: choose a image
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateEmail'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *       "404":

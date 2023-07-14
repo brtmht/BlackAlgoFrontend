@@ -264,7 +264,7 @@ const clearUserTokenById = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const userCleared = await User.findByIdAndUpdate(userId, { notificationToken: null });
+  const userCleared = await User.findByIdAndUpdate(userId, { notificationToken: [] });
   return userCleared;
 };
 /**
@@ -298,7 +298,19 @@ const getUserWalletAmount = async (userId) => {
   const userWallet = await UserWallet.findOne({ userId });
   return userWallet;
 };
-
+/**
+ * Delete user by id
+ * @param {Object} reqData
+ * @returns {Promise<User>}
+ */
+const uploadShareImage = async (reqData) => {
+  if(!reqData.file){
+    throw new ApiError(httpStatus.NOT_FOUND,'Image not found');
+  }
+  const { file } = reqData;
+  const updatedFilePath =  reqData?.file?.path?.replace(/\\/g, '/').replace('public/', '');
+  return updatedFilePath;
+}
 module.exports = {
   createUser,
   queryUsers,
@@ -320,4 +332,5 @@ module.exports = {
   getUserWalletAmount,
   clearUserTokenById,
   getUserDataBy2faSecret,
+  uploadShareImage,
 };

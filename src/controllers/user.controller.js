@@ -120,7 +120,13 @@ const checkEmail = catchAsync(async (req, res) => {
   }
   res.send({ success: true, code: 200, message: 'Email not exist' });
 });
-
+const sharingImageUpload = catchAsync(async (req, res) => {
+  const filePath = await userService.uploadShareImage(req);
+  if (!filePath) {
+    throw new ApiError(httpStatus.NOT_ACCEPTABLE);
+  }
+  res.send({ success: true, code: 200, message: 'image uploaded successfully', data: { imagePath: `${filePath}` } });
+});
 module.exports = {
   createUser,
   getUsers,
@@ -142,4 +148,5 @@ module.exports = {
   getUserWalletAmount,
   disabled2faBySecret,
   checkEmail,
+  sharingImageUpload,
 };
