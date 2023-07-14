@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { subscriptionPlanService } = require('../services');
-const { getActiveUser } = require('../services/userExchangeConfig.service');
+const { getActiveUser,updateServerTokenById } = require('../services/userExchangeConfig.service');
 const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
 
