@@ -15,6 +15,10 @@ router
   router
   .route('/graphData')
   .get(globalConfigController.graphData);
+  router
+  .route('/graphData1')
+  .get(globalConfigController.graphData1);
+  
   
   
 module.exports = router;
