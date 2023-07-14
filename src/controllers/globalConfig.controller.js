@@ -20,42 +20,23 @@ const getTermAndPolicyData = catchAsync(async (req, res) => {
 
 const graphData = catchAsync(async (req, res) => {
 
-  // const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
+  const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
 
-  // const results = [];
+  const results = [];
 
-  // fs.createReadStream(filePath)
-  //   .pipe(csv())
-  //   .on('data', (data) => results.push(data))
-  //   .on('end', () => {
-  //     console.log(results, "---------------");
-  //     // res.json(results);
-  //   })
-  //   .on('error', (err) => {
-  //     console.error('Error parsing CSV:', err);
-  //     // res.status(500).send('Error parsing CSV');
-  //   });
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on('data', (data) => results.push(data))
+    .on('end', () => {
+      console.log(results, "---------------");
+      // res.json(results);
+    })
+    .on('error', (err) => {
+      console.error('Error parsing CSV:', err);
+      // res.status(500).send('Error parsing CSV');
+    });
 
-//   const filePath = '/home/ftp_blackalgo/ftp/test.txt';
-// const absoluteFilePath = path.join(__dirname, '../..', filePath);
 
-// fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
-//   if (err) {
-//     console.error('Error reading file:', err);
-//     return res.status(500).send('Error reading file');
-//   }
-
-//   try {
-//     // Process the file data
-//     console.log(data);
-
-//     // Send the file data as a response
-//     // res.send(data);
-//   } catch (error) {
-//     console.error('Error processing file data:', error);
-//     //return res.status(500).send('Error processing file data');
-//   }
-// });
 
  await processFileData()
     .then((data) => {
@@ -67,8 +48,28 @@ const graphData = catchAsync(async (req, res) => {
     });
 });
 
+const graphData1 = catchAsync(async (req, res) => {
+
+  const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
+
+  const results = [];
+
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on('data', (data) => results.push(data))
+    .on('end', () => {
+      console.log(results, "---------------");
+      res.json(results);
+    })
+    .on('error', (err) => {
+      console.error('Error parsing CSV:', err);
+      res.status(500).send('Error parsing CSV');
+    });
+});
+
 module.exports = {
   getConfigData,
   getTermAndPolicyData,
   graphData,
+  graphData1,
 };
