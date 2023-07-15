@@ -159,8 +159,8 @@ const getConnectedUser = async () => {
   return UserExchangeConfig.find({ connected: true, subscriptionStatus:true });
 };
 
-const getActiveUser = async () => {
-  return UserExchangeConfig.findOne({ connected: true });
+const getActiveUser = async (user_id) => {
+  return UserExchangeConfig.findOne({ userId: user_id });
 };
 
 const getConnectedAccountUser = async () => {
