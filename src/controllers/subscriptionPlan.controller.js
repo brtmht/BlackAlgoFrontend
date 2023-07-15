@@ -96,7 +96,7 @@ const requestForSubscription = catchAsync(async (req, res) => {
 const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
   try {
     const user = await getActiveUser(req.user._id);
-    if (user) {
+    if (user && user?.serverToken) {
       const userSubscription = await getUserStrategyByUser(user.userId);
 
       if (userSubscription) {
