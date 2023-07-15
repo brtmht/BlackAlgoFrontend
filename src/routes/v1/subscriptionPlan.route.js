@@ -56,7 +56,7 @@ router
   );
 router
   .route('/upgradeSubscriptionPlan')
-  .get(
+  .post(
     auth(),
     validate(subscriptionPlanValidation.upgradeSubscriptionPlan),
     subscriptionPlanController.upgradeSubscriptionPlan
@@ -369,7 +369,7 @@ module.exports = router;
 /**
  * @swagger
  * /subscriptionPlans/upgradeSubscriptionPlan:
- *   get:
+ *   post:
  *     summary: Get uprade to user's subscription plan
  *     description: User can get a upgarde on subscriptionPlan.
  *     tags: [SubscriptionPlans]
