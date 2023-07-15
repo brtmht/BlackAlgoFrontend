@@ -56,7 +56,7 @@ router
   );
 router
   .route('/upgradeSubscriptionPlan')
-  .post(
+  .get(
     auth(),
     validate(subscriptionPlanValidation.upgradeSubscriptionPlan),
     subscriptionPlanController.upgradeSubscriptionPlan
