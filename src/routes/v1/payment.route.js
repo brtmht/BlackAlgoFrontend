@@ -18,6 +18,11 @@ router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
 router.route('/binanceWebhook').post(paymentController.binanceWebhook);
+
+router
+  .route('/upgradeSubscriptionPlanPayment')
+  .post(auth('upgradeSubscriptionPlanPayment'), paymentController.upgradeSubscriptionPlanPayment);
+
 module.exports = router;
 
 /**
