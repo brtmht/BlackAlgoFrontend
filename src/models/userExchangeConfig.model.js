@@ -34,7 +34,6 @@ const userExchangeConfigSchema = mongoose.Schema(
     },
     walletAmount: {
       type: Number,
-      default: 0,
     },
     tokenExpiry: {
       type: Date,

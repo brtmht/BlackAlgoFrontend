@@ -25,7 +25,7 @@ const createUserExchangeConfig = async (reqData, userId, serverToken) => {
     serverToken: serverToken,
     connected: false,
     subscriptionStatus: false,
-    walletAmount: wallet_amount,
+    walletAmount: wallet_amount.balance,
   });
 };
 
@@ -106,6 +106,7 @@ const getConnectedUserExchangeConfig = async (id) => {
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
   const wallet_amount = await mt4Server.accountSummary(serverToken);
+  console.log(wallet_amount);
   const exchangeConfig = await UserExchangeConfig.findOne({ userId: user_id });
   if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
@@ -122,7 +123,7 @@ const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) =>
       },
       serverToken: serverToken,
       connected: true,
-      walletAmount: wallet_amount,
+      walletAmount: wallet_amount.balance,
     }
   );
 
