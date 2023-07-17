@@ -1,23 +1,6 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
-const createSubscriptionPlan = {
-  body: Joi.object().keys({
-    name: Joi.string(),
-    planName: Joi.string(),
-    email: Joi.string().email(),
-    address: Joi.string(),
-    description: Joi.string(),
-    amount: Joi.number(),
-    phone: Joi.string(),
-    currency: Joi.string(),
-    paymentType: Joi.string(),
-    min_portfolio_size: Joi.number(),
-    max_portfolio_size: Joi.number(),
-    plan: Joi.string(),
-  }),
-};
-
 const getSubscriptionPlans = {
   query: Joi.object().keys({
     subscriptionPlanId: Joi.string(),
@@ -62,7 +45,6 @@ const requestSubscriptionPlan = {
   }),
 };
 module.exports = {
-  createSubscriptionPlan,
   getSubscriptionPlans,
   getSubscriptionPlan,
   updateSubscriptionPlan,

@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
+const sendNotification = require('../middlewares/firebaseNotification');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -52,7 +53,7 @@ const turnOn2fa = catchAsync(async (req, res) => {
 
 const getBackUpSecretKey = catchAsync(async (req, res) => {
   const result = await userService.getBackUpSecretKey(req);
-  res.send(result);
+  res.send({ success: true, code: 201, message: '2fa returned Successfully', '2FA': result });
 });
 const regenerate2faSecret = catchAsync(async (req, res) => {
   const result = await userService.regenerate2faSecret(req);

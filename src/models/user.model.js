@@ -55,6 +55,7 @@ const userSchema = mongoose.Schema(
     google_2fa_secret: {
       type: String,
       default: '',
+      select: false,
     },
     google_2fa_status: {
       type: Boolean,

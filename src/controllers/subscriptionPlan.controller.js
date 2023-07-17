@@ -6,14 +6,6 @@ const { getActiveUser,updateServerTokenById } = require('../services/userExchang
 const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
 
-// Create subscription plans with stripe
-const createSubscriptionPlan = catchAsync(async (req, res) => {
-  const subscriptionPlan = await subscriptionPlanService.createSubscription(req.body);
-  if (!subscriptionPlan) {
-    throw new ApiError(httpStatus['402_MESSAGE']);
-  }
-  res.status(httpStatus.CREATED).send(subscriptionPlan);
-});
 
 // Stripe Apis
 const getSubscriptionPlans = catchAsync(async (req, res) => {
@@ -96,9 +88,11 @@ const requestForSubscription = catchAsync(async (req, res) => {
  const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
   try {
     const user = await getActiveUser(req.user._id);
+    console.log(user.userId);
     const userSubscription = await getUserStrategyByUser(user.userId);
     
     if (userSubscription) {
+      console.log(userSubscription.subscriptionPlanId);
       const subscription = await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
       let BrokerToken;
       const checkConnection = await mt4Server.checkConnection(user.serverToken);
@@ -157,7 +151,6 @@ const requestForSubscription = catchAsync(async (req, res) => {
 
 
 module.exports = {
-  createSubscriptionPlan,
   getSubscriptionPlans,
   retrieveSubscriptionPlan,
   resumeStripeSubscription,

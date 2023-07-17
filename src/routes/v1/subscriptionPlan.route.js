@@ -7,11 +7,6 @@ const { subscriptionPlanController } = require('../../controllers');
 const router = express.Router();
 router
   .route('/')
-  .post(
-    auth('postSubscriptionPlans'),
-    validate(subscriptionPlanValidation.createSubscriptionPlan),
-    subscriptionPlanController.createSubscriptionPlan
-  )
   .get(
     auth(),
     validate(subscriptionPlanValidation.getSubscriptionPlans),
@@ -74,54 +69,6 @@ module.exports = router;
 /**
  * @swagger
  * /subscriptionPlans:
- *   post:
- *     summary: Create a subscriptionPlan
- *     description: Only admins can create other subscriptionPlans.
- *     tags: [SubscriptionPlans]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - amount
- *               - min_portfolio_size
- *               - max_portfolio_size
- *             properties:
- *               planName:
- *                 type: string
- *               description:
- *                 type: string
- *               amount:
- *                 type: number
- *               min_portfolio_size:
- *                 type: number
- *               max_portfolio_size:
- *                 type: number
- *             example:
- *               name: fake plan
- *               description: fake description
- *               amount: 100
- *               min_portfolio_size: 1000
- *               max_portfolio_size: 10000
- *     responses:
- *       "201":
- *         description: Created
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/SubscriptionPlan'
- *       "400":
- *         $ref: '#/components/responses/DuplicateName'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *
  *   get:
  *     summary: Get all subscriptionPlans
  *     description: Only admins can retrieve all subscriptionPlans.

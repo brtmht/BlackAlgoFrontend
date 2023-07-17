@@ -97,37 +97,11 @@ const getCryptoTransactionHistory = async () => {
   }
   return cryptoHistory;
 };
-const getLast24HrTransactionHistory = async (id) => {
-  const history24Hr = await PaymentDetail.find({
-    userId: id,
-    createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-  }).exec();
-  if (history24Hr.length === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND);
-  }
-  return history24Hr;
-};
-const getLast1WeekTransactionHistory = async (id) => {
-  const history24Hr = await PaymentDetail.find({
-    userId: id,
-    createdAt: { $gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-  }).exec();
-  return history24Hr;
-};
-const getLast30DaysTransactionHistory = async (id) => {
-  const history24Hr = await PaymentDetail.find({
-    userId: id,
-    createdAt: { $gt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-  }).exec();
-  return history24Hr;
-};
+
 module.exports = {
   saveTransactionHistory,
   getPaymentsById,
   getStripeTransactionHistory,
   getCryptoTransactionHistory,
-  getLast24HrTransactionHistory,
-  getLast1WeekTransactionHistory,
-  getLast30DaysTransactionHistory,
   saveBinanceTransactionHistory,
 };

@@ -219,7 +219,10 @@ const activateNew2faSecret = async (req) => {
 };
 
 const getBackUpSecretKey = async (req) => {
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).select('+google_2fa_secret');
+  if(user.google_2fa_secret===''){
+    throw new ApiError(httpStatus.NOT_FOUND,"No 2FA found");
+  }
   return user.google_2fa_secret;
 };
 
