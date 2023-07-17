@@ -10,6 +10,7 @@ const {
   cryptoAccountService,
   binanceService,
   userExchangeConfig,
+  subscriptionPlanService,
 } = require('../services');
 const PaymentDetail = require('../models/paymentDetail.model');
 const mt4Server = require('../middlewares/mt4Server');
@@ -38,7 +39,8 @@ const binanceWebhook = catchAsync(async (req, res) => {
           throw new ApiError(httpStatus.NOT_FOUND, 'no history found');
         }
         if(payment && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
-      
+         await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
+
           const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
           if(userConfig){
               await userExchangeConfig.activeConnection(PaymentDetails.userId);
