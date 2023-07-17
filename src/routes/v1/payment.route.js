@@ -18,6 +18,11 @@ router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
 router.route('/binanceWebhook').post(paymentController.binanceWebhook);
+
+router
+  .route('/upgradeSubscriptionPlanPayment')
+  .post(auth('upgradeSubscriptionPlanPayment'), paymentController.upgradeSubscriptionPlanPayment);
+
 module.exports = router;
 
 /**
@@ -244,4 +249,54 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *
+ */
+/**
+ * @swagger
+ * /payment/upgradeSubscriptionPlanPayment:
+ *   post:
+ *     summary: Create a payment using crypto to upgrade your subscription plan.
+ *     description: User can make mayment to upgrade their plan.
+ *     tags: [Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paymentType:
+ *                 type: string
+ *                 enum: [crypto]
+ *               terminalType:
+ *                 type: string
+ *               orderAmount:
+ *                 type: number
+ *               currency:
+ *                 type: string
+ *               portfolioAmount:
+ *                 type: number
+ *               type:
+ *                 type: string
+ *             example:
+ *               paymentType: crypto
+ *               terminalType: "WEB"
+ *               orderAmount: 1
+ *               currency: USDT
+ *               portfolioAmount: 20
+ *               type: year
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/StripeAccount'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */

@@ -316,7 +316,7 @@ module.exports = router;
 /**
  * @swagger
  * /subscriptionPlans/upgradeSubscriptionPlan:
- *   get:
+ *   post:
  *     summary: Get uprade to user's subscription plan
  *     description: User can get a upgarde on subscriptionPlan.
  *     tags: [SubscriptionPlans]

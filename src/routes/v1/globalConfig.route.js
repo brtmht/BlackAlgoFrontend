@@ -17,6 +17,7 @@ router
   .get(globalConfigController.graphData);
   
   
+  
 module.exports = router;
 
 /**
