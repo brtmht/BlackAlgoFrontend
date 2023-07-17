@@ -13,3 +13,4 @@ module.exports.tradingController = require('./tradingOrder.controller');
 module.exports.transactionHistoryController = require('./transactrionHistory.controller');
 module.exports.userExchangeConfigController = require('./userExchangeConfig.controller');
 module.exports.globalConfigController = require('./globalConfig.controller');
+module.exports.mtaccountController = require('./mtaccount.controller');
