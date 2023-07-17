@@ -12,6 +12,7 @@ const {
   userExchangeConfig,
 } = require('../services');
 const PaymentDetail = require('../models/paymentDetail.model');
+const mt4Server = require('../middlewares/mt4Server');
 
 // binanace API
 const getBinance = catchAsync(async (req, res) => {
@@ -38,9 +39,10 @@ const binanceWebhook = catchAsync(async (req, res) => {
         }
         if(payment && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
       
-          const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(user);
+          const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
           if(userConfig){
-              await userExchangeConfig.disconnectConnectionSubscription(user);
+              await userExchangeConfig.activeConnection(PaymentDetails.userId);
+              await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
           }
       
         }

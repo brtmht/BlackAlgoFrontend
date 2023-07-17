@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { encryptData, decryptData } = require('../middlewares/common');
 const { getExchangeById } = require('./exchange.service');
 const { userStrategyService, exchangeService } = require('.');
+const mt4Server = require('../middlewares/mt4Server');
 
 /**
  * Create a UserExchangeConfig
@@ -11,6 +12,7 @@ const { userStrategyService, exchangeService } = require('.');
  * @returns {Promise<Exchange>}
  */
 const createUserExchangeConfig = async (reqData, userId, serverToken) => {
+  const wallet_amount = await mt4Server.accountSummary(serverToken);
   return UserExchangeConfig.create({
     userId: userId._id,
     exchangeId: reqData.exchangeId,
@@ -22,7 +24,8 @@ const createUserExchangeConfig = async (reqData, userId, serverToken) => {
     },
     serverToken: serverToken,
     connected: false,
-    subscriptionStatus: false
+    subscriptionStatus: false,
+    walletAmount: wallet_amount,
   });
 };
 
@@ -102,6 +105,7 @@ const getConnectedUserExchangeConfig = async (id) => {
 };
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
+  const wallet_amount = await mt4Server.accountSummary(serverToken);
   const exchangeConfig = await UserExchangeConfig.findOne({ userId: user_id });
   if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
@@ -118,6 +122,7 @@ const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) =>
       },
       serverToken: serverToken,
       connected: true,
+      walletAmount: wallet_amount,
     }
   );
 
@@ -282,6 +287,21 @@ const disconnectConnection = async (id) => {
   }
 };
 
+
+const activeConnection = async (id) => {
+  const data = UserExchangeConfig.findOne({ userId: id });
+  if (data) {
+   return UserExchangeConfig.findOneAndUpdate(
+      { userId: id },
+      {
+        $set: {
+          connected: true,
+        },
+      }
+    );
+  }
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -299,5 +319,6 @@ module.exports = {
   disconnectConnection,
   getActiveUser,
   getConnectedAccountUser,
+  activeConnection,
 
 };
