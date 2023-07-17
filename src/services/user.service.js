@@ -181,8 +181,13 @@ const turnOff2fa = async (user) => {
 
 const verify2faSecret = async (req) => {
   const authCode = req.body.secret;
-  const user = await User.findById(req.user._id);
+  
+  const user = await User.findById(req.user._id).select('+google_2fa_secret');
+
   const googleSecret = user.google_2fa_secret;
+  console.log('====================================');
+  console.log(user.google_2fa_secret);
+  console.log('====================================');
   const isValid = authenticator.verify({ token: authCode, secret: googleSecret });
   if (!isValid) {
     throw new ApiError(httpStatus.BAD_REQUEST,"Invalid 2fa code");
