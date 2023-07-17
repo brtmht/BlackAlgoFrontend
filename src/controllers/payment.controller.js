@@ -32,6 +32,18 @@ const binanceWebhook = catchAsync(async (req, res) => {
       if (req.body.bizStatus === 'PAY_SUCCESS') {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
+        const payment = await paymentDetailService.getPayments(PaymentDetails.userId);
+        if (!payment) {
+          throw new ApiError(httpStatus.NOT_FOUND, 'no history found');
+        }
+        if(payment && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
+      
+          const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(user);
+          if(userConfig){
+              await userExchangeConfig.disconnectConnectionSubscription(user);
+          }
+      
+        }
         emitData('BinancePayResponse', { success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
 
       }
@@ -128,6 +140,24 @@ const getPaymentHistory = catchAsync(async (req, res) => {
   res.send(history);
 });
 
+const upgradeSubscriptionPlanPayment = catchAsync(async (req, res) => {
+  if (req.body.paymentType === 'crypto') {
+    const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+    if (binanceData.status === 'SUCCESS') {
+      res.send({
+        success: true,
+        code: 201,
+        message: 'stripe token created Successfully',
+        data: { BinanceData: binanceData },
+      });
+    } else {
+      res.send({ success: false, error_code: 400, message: 'Something wrong' });
+    }
+  }
+});
+
+
+
 module.exports = {
   stripeWebhook,
   getStripeConfig,
@@ -138,4 +168,5 @@ module.exports = {
   getPayment,
   getPaymentHistory,
   savePaymentDetails,
+  upgradeSubscriptionPlanPayment,
 };
