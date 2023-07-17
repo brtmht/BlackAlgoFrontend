@@ -137,10 +137,17 @@ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
             subscription.max_portfolio_size < userPortfolio.balance
           ) {
             await disconnectConnection(user.userId);
+            const portfolioAmount = userPortfolio.balance;
+            const percentage = 5;
+
+            const orderAmount = (portfolioAmount * percentage) / 100;
+            const allPlans = await subscriptionPlanService.getAllSubscriptionPlans();
+      
             res.send({
               success: false,
               error_code: 403,
               message: 'Please upgrade your subscription plan to start your trading',
+              data: {portfolioAmount, orderAmount, subscriptionId:allPlans[1] }
             });
           } else if (subscription.max_portfolio_size > userPortfolio.balance) {
             res.send({ success: true, code: 200, message: 'No need to change subscription' });
