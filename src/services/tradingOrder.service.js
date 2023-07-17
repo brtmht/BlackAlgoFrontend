@@ -17,7 +17,7 @@ const createTradingOrder = async (tradingOrderBody, userId, masterData, orderTyp
       userId,
       masterTicketId: masterData.Ticket,
       ticketId: tradingOrderBody.ticket,
-      copiedTo: "MT4",
+      copiedTo: 'MT4',
       openTime: tradingOrderBody.openTime,
       closeTime: tradingOrderBody.closeTime,
       expiration: tradingOrderBody.expiration,
@@ -80,8 +80,8 @@ const queryTradingOrderHistory = async (filter, options) => {
  * Check if MasterTicket id is exist
  * @param {string} masterTicketId - The trading Master Ticket id
  */
-const checkMasterTradingId = async (masterTicketId,user_id) => {
-  const data = await TradingOrder.findOne({ masterTicketId, userId:user_id});
+const checkMasterTradingId = async (masterTicketId, user_id) => {
+  const data = await TradingOrder.findOne({ masterTicketId, userId: user_id });
   return data;
 };
 
@@ -90,20 +90,20 @@ const checkMasterTradingId = async (masterTicketId,user_id) => {
  * @param {string} masterTicketId - The trading Master Ticket id
  */
 const getTradeOrderCount = async (user_id) => {
-  const count = await TradingOrder.countDocuments({userId:user_id});
+  const count = await TradingOrder.countDocuments({ userId: user_id });
   return count;
 };
 
 /**
  * Get Trading orders with pagination by userId
-*/
+ */
 const getAllTradingOrderWithPagination = async (userId, options) => {
   const skipCount = (options.page - 1) * options.limit;
   const tradingOrderCount = await TradingOrder.find({ userId });
   const tradeCount = await getTradeOrderCount(userId);
   const tradingOrders = await TradingOrder.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (tradingOrders.length === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
   return {
     tradingOrders,
@@ -114,20 +114,18 @@ const getAllTradingOrderWithPagination = async (userId, options) => {
   };
 };
 
-
 /**
  * Update trade oder data on the bases of ticket id
  * @param {string} masterTicketId - The trading masterTicketId
  */
-const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
-
+const updateTradeOrderByMasterTicket = async (ticketId, data, orderType) => {
   const updateOrder = await TradingOrder.findOneAndUpdate(
     { ticketId: data.ticket },
     {
       $set: {
         masterTicketId: ticketId,
         ticketId: data.ticket,
-        copiedTo: "MT4",
+        copiedTo: 'MT4',
         openTime: data.openTime,
         closeTime: data.closeTime,
         expiration: data.expiration,
@@ -153,7 +151,7 @@ const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
         taxes: data.taxes,
         activation: data.activation,
         marginRate: data.rateMargin,
-        orderType:orderType,
+        orderType: orderType,
       },
     }
   );
@@ -164,15 +162,13 @@ const updateTradeOrderByMasterTicket = async(ticketId,data,orderType) =>{
   const updatedTradingOrder = await TradingOrder.findOne({ ticketId: data.ticket });
 
   return updatedTradingOrder;
-
-}
+};
 
 /**
  * Update trade order lots data on the bases of ticket id
  * @param {string} masterTicketId - The trading masterTicketId
  */
-const updateTradeOrderLots = async(ticketId,lots) =>{
-
+const updateTradeOrderLots = async (ticketId, lots) => {
   const updateOrder = await TradingOrder.findOneAndUpdate(
     { ticketId: ticketId },
     {
@@ -186,20 +182,18 @@ const updateTradeOrderLots = async(ticketId,lots) =>{
   }
 
   return updateOrder;
-
-}
+};
 
 /**
  * Update trade order comment data on the bases of ticket id
  * @param {string} masterTicketId - The trading masterTicketId
  */
-const updateTradeOrderType = async(ticketId, user_id, orderType) =>{
-
+const updateTradeOrderType = async (ticketId, userId, orderType) => {
   const updateOrder = await TradingOrder.findOneAndUpdate(
-    { masterTicketId: ticketId, userId: user_id },
+    { masterTicketId: ticketId, userId },
     {
       $set: {
-        orderType: orderType,
+        orderType,
       },
     }
   );
@@ -208,8 +202,7 @@ const updateTradeOrderType = async(ticketId, user_id, orderType) =>{
   }
 
   return updateOrder;
-
-}
+};
 
 /**
  * Create a TradingOrder
@@ -288,18 +281,18 @@ const getGraphTradeOrder = async (orderData, id) => {
         createdAt: { $gte: ninetyDaysAgo },
       }).exec();
       break;
-      case '1year':
-        const oneYearAgo = new Date(orderData.timestamp - 365 * 24 * 60 * 60 * 1000);
-        ordersList = await TradingOrder.find({
-          userId: id,
-          createdAt: { $gte: oneYearAgo },
-        }).exec();
-        break;
-      case 'all':
-        ordersList = await TradingOrder.find({
-          userId: id,
-        }).exec();
-        break;
+    case '1year':
+      const oneYearAgo = new Date(orderData.timestamp - 365 * 24 * 60 * 60 * 1000);
+      ordersList = await TradingOrder.find({
+        userId: id,
+        createdAt: { $gte: oneYearAgo },
+      }).exec();
+      break;
+    case 'all':
+      ordersList = await TradingOrder.find({
+        userId: id,
+      }).exec();
+      break;
     default:
       ordersList;
       break;
@@ -310,7 +303,7 @@ const getGraphTradeOrder = async (orderData, id) => {
 const getPortfolioValue = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
-  
+
     if (userConfig) {
       const portfolioSize = await mt4Server.accountSummary(userConfig.config.serverToken);
       return portfolioSize;
@@ -324,7 +317,7 @@ const getPortfolioValue = async (userId) => {
 const calculateProfitLoss = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
-  
+
     if (userConfig) {
       const portfolioSize = await mt4Server.accountSummary(userConfig.config.serverToken);
       return portfolioSize;
@@ -335,10 +328,8 @@ const calculateProfitLoss = async (userId) => {
   }
 };
 
-
-const getLast24HrTardingOrders = async (id,timestamp, step) => {
-  if(step){
-
+const getLast24HrTardingOrders = async (id, timestamp, step) => {
+  if (step) {
   }
   const orders24Hr = TradingOrder.find({
     userId: id,

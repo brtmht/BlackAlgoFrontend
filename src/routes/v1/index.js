@@ -8,7 +8,6 @@ const subscriptionPlanRoute = require('./subscriptionPlan.route');
 const userStrategyRoute = require('./userStrategy.route');
 const docsRoute = require('./docs.route');
 const paymentRoute = require('./payment.route');
-const mtRoute = require('./mt.route');
 const config = require('../../config/config');
 const notificationRoute = require('./notification.route');
 const supportRoute = require('./support.route');
@@ -16,7 +15,7 @@ const adminRoute = require('./admin.route');
 const tradinOrderRoute = require('./tradingOrder.route');
 const historyRoute = require('./transactionHistory.route');
 const userExchangeConfig = require('./userExchangeConfig.route');
-const globalConfig = require('./globalConfig.route')
+const globalConfig = require('./globalConfig.route');
 
 const router = express.Router();
 
@@ -60,10 +59,6 @@ const defaultRoutes = [
   {
     path: '/userStrategies',
     route: userStrategyRoute,
-  },
-  {
-    path: '',
-    route: mtRoute,
   },
   {
     path: '',
