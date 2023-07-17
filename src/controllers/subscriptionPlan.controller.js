@@ -147,7 +147,7 @@ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
               success: false,
               error_code: 403,
               message: 'Please upgrade your subscription plan to start your trading',
-              data: {portfolioAmount, orderAmount, subscriptionId:allPlans[1] }
+              data: {portfolioAmount:portfolioAmount.toFixed(2), orderAmount:orderAmount.toFixed(2), subscriptionId:allPlans[1] }
             });
           } else if (subscription.max_portfolio_size > userPortfolio.balance) {
             res.send({ success: true, code: 200, message: 'No need to change subscription' });
