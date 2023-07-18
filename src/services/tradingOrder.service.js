@@ -10,7 +10,7 @@ const { getUserExchangeConfigByUserId } = require('./userExchangeConfig.service'
  * @param {Object} tradingOrderBody
  * @returns {Promise<TradingOrder>}
  */
-const createTradingOrder = async (tradingOrderBody, userId, masterData, orderType) => {
+const createTradingOrder = async (tradingOrderBody, userId, masterData, orderType, walletBalance) => {
   let tradingData;
   if (tradingOrderBody) {
     tradingData = {
@@ -44,6 +44,7 @@ const createTradingOrder = async (tradingOrderBody, userId, masterData, orderTyp
       activation: tradingOrderBody.ex.activation,
       marginRate: tradingOrderBody.rateMargin,
       orderType: orderType,
+      balance: walletBalance,
     };
   }
   return TradingOrder.create(tradingData);
@@ -305,12 +306,50 @@ const getPortfolioValue = async (userId) => {
     const userConfig = await getUserExchangeConfigByUserId(userId);
 
     if (userConfig) {
-      const portfolioSize = await mt4Server.accountSummary(userConfig.config.serverToken);
-      return portfolioSize;
+      let BrokerToken;
+      const checkConnection = await mt4Server.checkConnection(userConfig.serverToken);
+      let connectionAttempts = 0;
+
+      if (checkConnection?.message) {
+        const maxAttempts = 3;
+        const ipList = await mt4Server.getServerDataForIps(userConfig.config.server);
+
+        for (const ip of ipList) {
+          if (connectionAttempts >= maxAttempts) {
+            break;
+          }
+
+          let IP;
+          let PORT;
+          const [address, port] = ip.split(':');
+
+          if (port) {
+            IP = address;
+            PORT = port;
+          } else {
+            IP = ip;
+            PORT = '443';
+          }
+
+          const response = await mt4Server.connect(userConfig, IP, PORT);
+          console.log('action: new mt4 token generated');
+          if (!response.message) {
+            await updateServerTokenById(userConfig.id, response);
+            BrokerToken = response;
+            break;
+          } else {
+            connectionAttempts++;
+          }
+        }
+      } else {
+        BrokerToken = userConfig.config.serverToken;
+      }
+      const portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
+      return portfolioSize.balance;
     }
   } catch (error) {
     console.error('Error in getPortfolioValue:', error);
-    throw new ApiError(httpStatus.NOT_FOUND, 'Error in getPortfolioValue');
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error in getPortfolioValue');
   }
 };
 
@@ -319,14 +358,201 @@ const calculateProfitLoss = async (userId) => {
     const userConfig = await getUserExchangeConfigByUserId(userId);
 
     if (userConfig) {
-      const portfolioSize = await mt4Server.accountSummary(userConfig.config.serverToken);
-      return portfolioSize;
+      // Fetch all trading orders for the user using Promise.all
+      const tradingOrders = await TradingOrder.find({ userId });
+      if (tradingOrders.length === 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No trading orders found for the user');
+      }
+
+      // Calculate the cumulative profit or loss concurrently
+      const cumulativeProfitLoss = await Promise.all(tradingOrders.map(order => order.profit))
+        .then(profits => profits.reduce((sum, profit) => sum + profit, 0));
+
+      // Determine if it's a profit or loss
+      const isProfit = cumulativeProfitLoss >= 0;
+      const sign = isProfit ? '+' : '-';
+
+      // Calculate the profit or loss percentage
+      const initialBalance = userConfig.walletAmount;
+      const currentBalance = userConfig.balance;
+      const totalProfitLoss = currentBalance - initialBalance;
+      const profitLossPercentage = (totalProfitLoss / initialBalance) * 100;
+
+      const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2) + '%';
+
+      return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss };
     }
   } catch (error) {
-    console.error('Error in getPortfolioValue:', error);
-    throw new ApiError(httpStatus.NOT_FOUND, 'Error in getPortfolioValue');
+    console.error('Error in calculateCumulativeProfitLoss:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating cumulative profit/loss');
   }
 };
+
+
+
+
+
+const calculateTodayPerformance = async (userId) => {
+  try {
+    const userConfig = await getUserExchangeConfigByUserId(userId);
+
+    if (userConfig) {
+      let BrokerToken;
+      const checkConnection = await mt4Server.checkConnection(userConfig.serverToken);
+      let connectionAttempts = 0;
+
+      if (checkConnection?.message) {
+        const maxAttempts = 3;
+        const ipList = await mt4Server.getServerDataForIps(userConfig.config.server);
+
+        for (const ip of ipList) {
+          if (connectionAttempts >= maxAttempts) {
+            break;
+          }
+
+          let IP;
+          let PORT;
+          const [address, port] = ip.split(':');
+
+          if (port) {
+            IP = address;
+            PORT = port;
+          } else {
+            IP = ip;
+            PORT = '443';
+          }
+
+          const response = await mt4Server.connect(userConfig, IP, PORT);
+          console.log('action: new mt4 token generated');
+          if (!response.message) {
+            await updateServerTokenById(userConfig.id, response);
+            BrokerToken = response;
+            break;
+          } else {
+            connectionAttempts++;
+          }
+        }
+      } else {
+        BrokerToken = userConfig.config.serverToken;
+      }
+
+      // Get today's date and yesterday's date
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      // Get the latest trading order for today
+      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } }).sort({ createdAt: -1 }).exec();
+
+      // Get the latest trading order for yesterday
+      const yesterdayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: yesterday, $lt: today } }).sort({ createdAt: -1 }).exec();
+
+      const portfolioSize = await mt4Server.accountSummary(BrokerToken);
+      const lastTradingOrder = await TradingOrder.findOne({ userId: userId }).sort({ createdAt: -1 }).exec();
+      const todayPerformance = todayTradingOrder ? todayTradingOrder.balance : portfolioSize - yesterdayTradingOrder ? yesterdayTradingOrder.balance : lastTradingOrder.balance;
+
+      // Calculate the percentage
+      const initialBalance = yesterdayTradingOrder.balance;
+      const todayPerformancePercentage = (todayPerformance / initialBalance) * 100;
+
+      // Determine if it's a profit or loss
+      const isProfit = todayPerformancePercentage >= 0;
+      const sign = isProfit ? '+' : '-';
+
+      // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
+      const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2) + '%';
+
+      return { todayPerformance: todayPerformance, todayPerformancePercentage: todayPerformancePercentageString };
+    }
+  } catch (error) {
+    console.error('Error in calculateTodayPerformance:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating today performance');
+  }
+};
+
+
+const calculateLifetimePerformance = async (userId) => {
+  try {
+    const userConfig = await getUserExchangeConfigByUserId(userId);
+
+    if (userConfig) {
+      // Get the user's trading orders
+      const tradingOrders = await TradingOrder.find({ userId });
+
+      if (tradingOrders.length === 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No trading orders found for the user');
+      }
+
+      // Calculate the initial and current balance
+      const initialBalance = userConfig.walletAmount;
+      const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
+      const currentBalance = lastTradingOrder.currentBalance;
+
+      // Calculate  percentage
+      const lifetimePerformancePercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
+
+      // Determine profit or loss
+      const isProfit = lifetimePerformancePercentage >= 0;
+      const sign = isProfit ? '+' : '-';
+
+      // Convert the percentage (e.g., '+25.23%' or '-10.12%')
+      const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2) + '%';
+
+      return {
+        lifetimePerformancePercentage: lifetimePerformancePercentageString,
+        lifetimePerformance: (currentBalance - initialBalance),
+      };
+    }
+  } catch (error) {
+    console.error('Error in calculateLifetimePerformance:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating lifetime performance');
+  }
+};
+
+const calculateLastMonthPerformance = async (userId) => {
+  try {
+    const userConfig = await getUserExchangeConfigByUserId(userId);
+
+    if (userConfig) {
+      // Get the user's trading orders for the last 30 days
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const tradingOrders = await TradingOrder.find({
+        userId,
+        createdAt: { $gte: thirtyDaysAgo },
+      });
+
+      if (tradingOrders.length === 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No trading orders found for the user in the last 30 days');
+      }
+
+      // Calculate the initial and current balance
+      const initialBalance = tradingOrders[0].balance;
+      const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
+      const currentBalance = lastTradingOrder.currentBalance;
+
+      // Calculate last 30 days
+      const lifetimePerformancePercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
+
+      // Determine profit or loss
+      const isProfit = lifetimePerformancePercentage >= 0;
+      const sign = isProfit ? '+' : '-';
+
+      // Convert the percentage (e.g., '+25.23%' or '-10.12%')
+      const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2) + '%';
+
+      return {
+        lifetimePerformancePercentage: lifetimePerformancePercentageString,
+        lifetimePerformance: currentBalance - initialBalance,
+      };
+    }
+  } catch (error) {
+    console.error('Error in calculateLifetimePerformance:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating lifetime performance');
+  }
+};
+
 
 const getLast24HrTardingOrders = async (id, timestamp, step) => {
   if (step) {
@@ -369,4 +595,8 @@ module.exports = {
   updateTradeOrderType,
   getGraphTradeOrder,
   getPortfolioValue,
+  calculateTodayPerformance,
+  calculateLifetimePerformance,
+  calculateProfitLoss,
+  calculateLastMonthPerformance,
 };
