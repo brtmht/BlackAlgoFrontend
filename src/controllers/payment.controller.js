@@ -34,7 +34,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
       if (req.body.bizStatus === 'PAY_SUCCESS') {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
-        const payment = await paymentDetailService.getPayments(PaymentDetails.userId);
+        const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
         if (!payment) {
           throw new ApiError(httpStatus.NOT_FOUND, 'no history found');
         }
