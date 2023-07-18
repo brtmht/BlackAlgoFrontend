@@ -93,7 +93,7 @@ const createPayment = catchAsync(async (req, res) => {
       success: true,
       code: 201,
       message: 'crypto order created Successfully',
-      data: { stripe_token: paymentData.paymentIntent.client_secret },
+      data: { stripe_token: paymentData.paymentIntent.client_secret, paymnet_intent_id: paymentData.paymentIntent.id },
     });
   }
   if (req.body.paymentType === 'crypto') {
