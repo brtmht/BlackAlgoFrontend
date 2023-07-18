@@ -3,7 +3,7 @@ const { TradingOrder } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { symbol } = require('joi');
 const mt4Server = require('../middlewares/mt4Server');
-const { getUserExchangeConfigByUserId } = require('./userExchangeConfig.service');
+const { getUserExchangeConfigByUserId, updateServerTokenById } = require('./userExchangeConfig.service');
 
 /**
  * Create a TradingOrder
@@ -331,7 +331,7 @@ const getPortfolioValue = async (userId) => {
         BrokerToken = userConfig.config.serverToken;
       }
       const portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
-      return portfolioSize.balance;
+      return {portfolioSize:portfolioSize?.balance? portfolioSize?.balance: 0};
     }
   } catch (error) {
     console.error('Error in getPortfolioValue:', error);
@@ -448,10 +448,10 @@ const calculateTodayPerformance = async (userId) => {
         ? todayTradingOrder.balance
         : portfolioSize - yesterdayTradingOrder
         ? yesterdayTradingOrder.balance
-        : lastTradingOrder.balance;
+        :lastTradingOrder ? lastTradingOrder.balance : 0;
 
       // Calculate the percentage
-      const initialBalance = yesterdayTradingOrder.balance;
+      const initialBalance = yesterdayTradingOrder?.balance;
       const todayPerformancePercentage = (todayPerformance / initialBalance) * 100;
 
       // Determine if it's a profit or loss
@@ -461,7 +461,7 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2) + '%';
 
-      return { todayPerformance: todayPerformance, todayPerformancePercentage: todayPerformancePercentageString };
+      return { todayPerformance: todayPerformance, todayPerformancePercentage: lastTradingOrder && yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
@@ -477,29 +477,32 @@ const calculateLifetimePerformance = async (userId) => {
       // Get the user's trading orders
       const tradingOrders = await TradingOrder.find({ userId });
 
-      if (tradingOrders.length === 0) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'No trading orders found for the user');
+      if (tradingOrders.length > 0) {
+        // Calculate the initial and current balance
+        const initialBalance = userConfig.walletAmount;
+        const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
+        const currentBalance = lastTradingOrder.balance;
+
+        // Calculate  percentage
+        const lifetimePerformancePercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
+
+        // Determine profit or loss
+        const isProfit = lifetimePerformancePercentage >= 0;
+        const sign = isProfit ? '+' : '-';
+
+        // Convert the percentage (e.g., '+25.23%' or '-10.12%')
+        const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2) + '%';
+
+        return {
+          lifetimePerformancePercentage: lifetimePerformancePercentageString,
+          lifetimePerformance: currentBalance - initialBalance,
+        };
+      }else{
+        return {
+          lifetimePerformancePercentage: 0,
+          lifetimePerformance: userConfig?.walletAmount?userConfig?.walletAmount:0,
+        };
       }
-
-      // Calculate the initial and current balance
-      const initialBalance = userConfig.walletAmount;
-      const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
-      const currentBalance = lastTradingOrder.balance;
-
-      // Calculate  percentage
-      const lifetimePerformancePercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
-
-      // Determine profit or loss
-      const isProfit = lifetimePerformancePercentage >= 0;
-      const sign = isProfit ? '+' : '-';
-
-      // Convert the percentage (e.g., '+25.23%' or '-10.12%')
-      const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2) + '%';
-
-      return {
-        lifetimePerformancePercentage: lifetimePerformancePercentageString,
-        lifetimePerformance: currentBalance - initialBalance,
-      };
     }
   } catch (error) {
     console.error('Error in calculateLifetimePerformance:', error);
@@ -521,29 +524,32 @@ const calculateLastMonthPerformance = async (userId) => {
         createdAt: { $gte: thirtyDaysAgo },
       });
 
-      if (tradingOrders.length === 0) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'No trading orders found for the user in the last 30 days');
+      if (tradingOrders.length > 0) {
+        // Calculate the initial and current balance
+        const initialBalance = tradingOrders[0].balance;
+        const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
+        const currentBalance = lastTradingOrder.currentBalance;
+
+        // Calculate last 30 days
+        const lastMonthPercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
+
+        // Determine profit or loss
+        const isProfit = lastMonthPercentage >= 0;
+        const sign = isProfit ? '+' : '-';
+
+        // Convert the percentage (e.g., '+25.23%' or '-10.12%')
+        const lastMonthPercentageString = sign + Math.abs(lastMonthPercentage).toFixed(2) + '%';
+
+        return {
+          lastMonthPercentage: lastMonthPercentageString,
+          lastMonth: currentBalance - initialBalance,
+        };
+      } else {
+        return {
+          lastMonthPercentage: 0,
+          lastMonth: userConfig?.walletAmount ?userConfig?.walletAmount:0,
+        };
       }
-
-      // Calculate the initial and current balance
-      const initialBalance = tradingOrders[0].balance;
-      const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
-      const currentBalance = lastTradingOrder.currentBalance;
-
-      // Calculate last 30 days
-      const lifetimePerformancePercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
-
-      // Determine profit or loss
-      const isProfit = lifetimePerformancePercentage >= 0;
-      const sign = isProfit ? '+' : '-';
-
-      // Convert the percentage (e.g., '+25.23%' or '-10.12%')
-      const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2) + '%';
-
-      return {
-        lifetimePerformancePercentage: lifetimePerformancePercentageString,
-        lifetimePerformance: currentBalance - initialBalance,
-      };
     }
   } catch (error) {
     console.error('Error in calculateLifetimePerformance:', error);
