@@ -64,20 +64,6 @@ const getTradingOderByID = async (_id) => {
 };
 
 /**
- * Query for strategies
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
- */
-const queryTradingOrderHistory = async (filter, options) => {
-  const tradingOrder = await TradingOrder.paginate(filter, options);
-  return tradingOrder;
-};
-
-/**
  * Check if MasterTicket id is exist
  * @param {string} masterTicketId - The trading Master Ticket id
  */
@@ -365,8 +351,9 @@ const calculateProfitLoss = async (userId) => {
       }
 
       // Calculate the cumulative profit or loss concurrently
-      const cumulativeProfitLoss = await Promise.all(tradingOrders.map(order => order.profit))
-        .then(profits => profits.reduce((sum, profit) => sum + profit, 0));
+      const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
+        profits.reduce((sum, profit) => sum + profit, 0)
+      );
 
       // Determine if it's a profit or loss
       const isProfit = cumulativeProfitLoss >= 0;
@@ -387,10 +374,6 @@ const calculateProfitLoss = async (userId) => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating cumulative profit/loss');
   }
 };
-
-
-
-
 
 const calculateTodayPerformance = async (userId) => {
   try {
@@ -442,14 +425,25 @@ const calculateTodayPerformance = async (userId) => {
       yesterday.setDate(yesterday.getDate() - 1);
 
       // Get the latest trading order for today
-      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } }).sort({ createdAt: -1 }).exec();
+      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } })
+        .sort({ createdAt: -1 })
+        .exec();
 
       // Get the latest trading order for yesterday
-      const yesterdayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: yesterday, $lt: today } }).sort({ createdAt: -1 }).exec();
+      const yesterdayTradingOrder = await TradingOrder.findOne({
+        userId: userId,
+        createdAt: { $gte: yesterday, $lt: today },
+      })
+        .sort({ createdAt: -1 })
+        .exec();
 
       const portfolioSize = await mt4Server.accountSummary(BrokerToken);
       const lastTradingOrder = await TradingOrder.findOne({ userId: userId }).sort({ createdAt: -1 }).exec();
-      const todayPerformance = todayTradingOrder ? todayTradingOrder.balance : portfolioSize - yesterdayTradingOrder ? yesterdayTradingOrder.balance : lastTradingOrder.balance;
+      const todayPerformance = todayTradingOrder
+        ? todayTradingOrder.balance
+        : portfolioSize - yesterdayTradingOrder
+        ? yesterdayTradingOrder.balance
+        : lastTradingOrder.balance;
 
       // Calculate the percentage
       const initialBalance = yesterdayTradingOrder.balance;
@@ -469,7 +463,6 @@ const calculateTodayPerformance = async (userId) => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating today performance');
   }
 };
-
 
 const calculateLifetimePerformance = async (userId) => {
   try {
@@ -500,7 +493,7 @@ const calculateLifetimePerformance = async (userId) => {
 
       return {
         lifetimePerformancePercentage: lifetimePerformancePercentageString,
-        lifetimePerformance: (currentBalance - initialBalance),
+        lifetimePerformance: currentBalance - initialBalance,
       };
     }
   } catch (error) {
@@ -553,42 +546,13 @@ const calculateLastMonthPerformance = async (userId) => {
   }
 };
 
-
-const getLast24HrTardingOrders = async (id, timestamp, step) => {
-  if (step) {
-  }
-  const orders24Hr = TradingOrder.find({
-    userId: id,
-    createdAt: { $gt: new Date(timestamp - 24 * 60 * 60 * 1000) },
-  }).exec();
-
-  return orders24Hr;
-};
-const getLast1HrTardingOrders = async (id) => {
-  const orders24Hr = TradingOrder.find({
-    userId: id,
-    createdAt: { $gt: new Date(timestamp - 1 * 60 * 60 * 1000) },
-  }).exec();
-  return orders24Hr;
-};
-const getLast1WeekTardingOrders = async (id) => {
-  const orders24Hr = TradingOrder.find({
-    userId: id,
-    createdAt: { $gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-  }).exec();
-  return orders24Hr;
-};
 module.exports = {
   createTradingOrder,
   getTradeOrderCount,
   getTradingOderByID,
   updateTradeOrderLots,
-  queryTradingOrderHistory,
   updateTradingOrder,
   deleteTradingOrderById,
-  getLast24HrTardingOrders,
-  getLast1HrTardingOrders,
-  getLast1WeekTardingOrders,
   getAllTradingOrderWithPagination,
   checkMasterTradingId,
   updateTradeOrderByMasterTicket,
