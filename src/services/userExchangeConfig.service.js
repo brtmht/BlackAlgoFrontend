@@ -206,7 +206,7 @@ const updateStripeSubscription = async (user) => {
   if (exchangeConfig) {
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user.userId },
-      { $set: { subscriptionStatus: true } },
+      { $set: { connected: true, subscriptionStatus: true } },
     );
   }
 
@@ -215,6 +215,7 @@ const updateStripeSubscription = async (user) => {
     exchangeId: user.exchangeId,
     strategyId: user.strategyId,
     subscriptionStatus: true,
+    connected: true,
   });
 };
 
@@ -296,7 +297,7 @@ const activeConnection = async (id) => {
       { userId: id },
       {
         $set: {
-          connected: true,
+          connected:true,
         },
       }
     );
