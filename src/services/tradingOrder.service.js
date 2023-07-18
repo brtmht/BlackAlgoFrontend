@@ -328,7 +328,7 @@ const getPortfolioValue = async (userId) => {
           }
         }
       } else {
-        BrokerToken = userConfig.config.serverToken;
+        BrokerToken = userConfig.serverToken;
       }
       const portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
       return {portfolioSize:portfolioSize.balance};
@@ -421,7 +421,7 @@ const calculateTodayPerformance = async (userId) => {
           }
         }
       } else {
-        BrokerToken = userConfig.config.serverToken;
+        BrokerToken = userConfig.serverToken;
       }
 
       // Get today's date and yesterday's date
