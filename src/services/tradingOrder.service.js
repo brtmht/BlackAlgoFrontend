@@ -361,36 +361,38 @@ const calculateProfitLoss = async (userId) => {
       // Fetch all trading orders for the user using Promise.all
       const tradingOrders = await TradingOrder.find({ userId });
       if (tradingOrders.length === 0) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'No trading orders found for the user');
+        return { cumulativeProfitLoss: 0, profitLoss: 0 };
       }
 
       // Calculate the cumulative profit or loss concurrently
-      const cumulativeProfitLoss = await Promise.all(tradingOrders.map(order => order.profit))
-        .then(profits => profits.reduce((sum, profit) => sum + profit, 0));
+      const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
+        profits.reduce((sum, profit) => sum + profit, 0)
+      );
 
-      // Determine if it's a profit or loss
-      const isProfit = cumulativeProfitLoss >= 0;
-      const sign = isProfit ? '+' : '-';
+      if (cumulativeProfitLoss) {
+        // Determine if it's a profit or loss
+        const isProfit = cumulativeProfitLoss >= 0;
+        const sign = isProfit ? '+' : '-';
 
-      // Calculate the profit or loss percentage
-      const initialBalance = userConfig.walletAmount;
-      const currentBalance = userConfig.balance;
-      const totalProfitLoss = currentBalance - initialBalance;
-      const profitLossPercentage = (totalProfitLoss / initialBalance) * 100;
+        // Calculate the profit or loss percentage
+        const initialBalance = userConfig.walletAmount;
+        const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
+        const currentBalance = lastTradingOrder.balance;
+        const totalProfitLoss = currentBalance - initialBalance;
+        const profitLossPercentage = (totalProfitLoss / initialBalance) * 100;
 
-      const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2) + '%';
+        const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2) + '%';
 
-      return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss };
+        return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss };
+      } else {
+        return { cumulativeProfitLoss: 0, profitLoss: 0 };
+      }
     }
   } catch (error) {
     console.error('Error in calculateCumulativeProfitLoss:', error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating cumulative profit/loss');
   }
 };
-
-
-
-
 
 const calculateTodayPerformance = async (userId) => {
   try {
@@ -442,14 +444,25 @@ const calculateTodayPerformance = async (userId) => {
       yesterday.setDate(yesterday.getDate() - 1);
 
       // Get the latest trading order for today
-      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } }).sort({ createdAt: -1 }).exec();
+      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } })
+        .sort({ createdAt: -1 })
+        .exec();
 
       // Get the latest trading order for yesterday
-      const yesterdayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: yesterday, $lt: today } }).sort({ createdAt: -1 }).exec();
+      const yesterdayTradingOrder = await TradingOrder.findOne({
+        userId: userId,
+        createdAt: { $gte: yesterday, $lt: today },
+      })
+        .sort({ createdAt: -1 })
+        .exec();
 
       const portfolioSize = await mt4Server.accountSummary(BrokerToken);
       const lastTradingOrder = await TradingOrder.findOne({ userId: userId }).sort({ createdAt: -1 }).exec();
-      const todayPerformance = todayTradingOrder ? todayTradingOrder.balance : portfolioSize - yesterdayTradingOrder ? yesterdayTradingOrder.balance : lastTradingOrder.balance;
+      const todayPerformance = todayTradingOrder
+        ? todayTradingOrder.balance
+        : portfolioSize - yesterdayTradingOrder
+        ? yesterdayTradingOrder.balance
+        : lastTradingOrder.balance;
 
       // Calculate the percentage
       const initialBalance = yesterdayTradingOrder.balance;
@@ -470,7 +483,6 @@ const calculateTodayPerformance = async (userId) => {
   }
 };
 
-
 const calculateLifetimePerformance = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
@@ -486,7 +498,7 @@ const calculateLifetimePerformance = async (userId) => {
       // Calculate the initial and current balance
       const initialBalance = userConfig.walletAmount;
       const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
-      const currentBalance = lastTradingOrder.currentBalance;
+      const currentBalance = lastTradingOrder.balance;
 
       // Calculate  percentage
       const lifetimePerformancePercentage = ((currentBalance - initialBalance) / initialBalance) * 100;
@@ -500,7 +512,7 @@ const calculateLifetimePerformance = async (userId) => {
 
       return {
         lifetimePerformancePercentage: lifetimePerformancePercentageString,
-        lifetimePerformance: (currentBalance - initialBalance),
+        lifetimePerformance: currentBalance - initialBalance,
       };
     }
   } catch (error) {
@@ -552,7 +564,6 @@ const calculateLastMonthPerformance = async (userId) => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating lifetime performance');
   }
 };
-
 
 const getLast24HrTardingOrders = async (id, timestamp, step) => {
   if (step) {
