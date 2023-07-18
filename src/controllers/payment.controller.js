@@ -120,7 +120,6 @@ const savePaymentDetails = catchAsync(async (req, res) => {
   if (PaymentDetails) {
     await transactionHistoryService.saveTransactionHistory(PaymentDetails, req);
     // await stripeAccountService.updateStripeAccount(PaymentDetails.stripeAccountId, req.body.customerCardId);
-    await userExchangeConfig.activeConnection(user);
   }
   res.send({ success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
 });
