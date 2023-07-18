@@ -170,6 +170,11 @@ const getPayments = async (id) => {
   return PaymentDetail.findById(id);
 };
 
+const getStripePayment = async (id,token) => {
+  return PaymentDetail.findOne({paymentToken: { $ne: token },
+  userId: id});
+};
+
 const getPaymentByToken = async (token) => {
   return PaymentDetail.findOne({paymentToken:token});
 };
@@ -206,4 +211,5 @@ module.exports = {
   saveBinacePaymentDetails,
   getPaymentByToken,
   updateBinancePaymentDetails,
+  getStripePayment,
 };
