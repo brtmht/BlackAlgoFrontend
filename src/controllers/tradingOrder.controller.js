@@ -63,11 +63,11 @@ const performanceCalculation = catchAsync(async (req, res) => {
       code: 201,
       message: 'Data listed',
       data: {
-        portfolioValue,
-        profitLoss,
-        lastMonthPerformance,
-        lifeTimePerformance,
-        todayPerformance,
+        portfolio:portfolioValue,
+        profitLoss: profitLoss,
+        lastMonthPerformance:lastMonthPerformance,
+        lifeTimePerformance:lifeTimePerformance,
+        todayPerformance:todayPerformance,
       },
     });
   } catch (error) {
