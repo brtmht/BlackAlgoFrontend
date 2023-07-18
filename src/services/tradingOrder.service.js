@@ -331,7 +331,7 @@ const getPortfolioValue = async (userId) => {
         BrokerToken = userConfig.config.serverToken;
       }
       const portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
-      return {portfolioSize:portfolioSize?.balance? portfolioSize?.balance: 0};
+      return {portfolioSize:portfolioSize.balance};
     }
   } catch (error) {
     console.error('Error in getPortfolioValue:', error);
