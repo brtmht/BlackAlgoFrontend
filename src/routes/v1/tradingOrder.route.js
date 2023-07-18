@@ -14,12 +14,8 @@ router
     tradingController.createTradingOrder
   )
   .get(auth('tradingOrderWithPagination'), tradingController.tradingOrderWithPagination);
-  // .get(auth(), validate(tradingOrderValidation.getTradingOrder), tradingController.getTradingOrder);
-// router.route('/getOrderLast24Hr').get(auth(), tradingController.getLast24HrTardingOrders);
-// router.route('/getOrderLast1Hr').get(auth(), tradingController.getLast1HrTardingOrders);
-// router.route('/getOrderLast1Week').get(auth(), tradingController.getLast1WeekTardingOrders);
 router.route('/graphTradeOrders').post(auth(), tradingController.graphTradeOrders);
-
+router.route('/getPerformanceData').get(auth(), tradingController.performanceCalculation);
 
 router
   .route('/tradingOrder/:orderId')
@@ -341,6 +337,29 @@ module.exports = router;
  *             example:
  *               timestamp: 1687763820659
  *               step: 24hr
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /getPerformanceData:
+ *   get:
+ *     summary: Get trade performance data
+ *     description: Get trade performance for last month and today.
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       "201":
  *         description: Created

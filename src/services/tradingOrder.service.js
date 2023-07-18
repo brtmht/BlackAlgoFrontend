@@ -64,20 +64,6 @@ const getTradingOderByID = async (_id) => {
 };
 
 /**
- * Query for strategies
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
- */
-const queryTradingOrderHistory = async (filter, options) => {
-  const tradingOrder = await TradingOrder.paginate(filter, options);
-  return tradingOrder;
-};
-
-/**
  * Check if MasterTicket id is exist
  * @param {string} masterTicketId - The trading Master Ticket id
  */
@@ -564,42 +550,13 @@ const calculateLastMonthPerformance = async (userId) => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating lifetime performance');
   }
 };
-
-const getLast24HrTardingOrders = async (id, timestamp, step) => {
-  if (step) {
-  }
-  const orders24Hr = TradingOrder.find({
-    userId: id,
-    createdAt: { $gt: new Date(timestamp - 24 * 60 * 60 * 1000) },
-  }).exec();
-
-  return orders24Hr;
-};
-const getLast1HrTardingOrders = async (id) => {
-  const orders24Hr = TradingOrder.find({
-    userId: id,
-    createdAt: { $gt: new Date(timestamp - 1 * 60 * 60 * 1000) },
-  }).exec();
-  return orders24Hr;
-};
-const getLast1WeekTardingOrders = async (id) => {
-  const orders24Hr = TradingOrder.find({
-    userId: id,
-    createdAt: { $gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-  }).exec();
-  return orders24Hr;
-};
 module.exports = {
   createTradingOrder,
   getTradeOrderCount,
   getTradingOderByID,
   updateTradeOrderLots,
-  queryTradingOrderHistory,
   updateTradingOrder,
   deleteTradingOrderById,
-  getLast24HrTardingOrders,
-  getLast1HrTardingOrders,
-  getLast1WeekTardingOrders,
   getAllTradingOrderWithPagination,
   checkMasterTradingId,
   updateTradeOrderByMasterTicket,

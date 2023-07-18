@@ -74,6 +74,7 @@ const allRoles = {
     'getTermAndPolicyData',
     'manuallyDisconnectAccount',
     'binancePayment',
+    'upgradeSubscriptionPlanPayment',
   ],
   manager: [
     'getUser',
