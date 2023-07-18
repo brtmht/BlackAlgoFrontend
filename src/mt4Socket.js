@@ -114,12 +114,14 @@ const mtSocket = () => {
                       const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots, exchangeData.name);
 
                       if (!tradeData.message) {
+
                         console.log('created broker order');
                         const createdTradeOrder = await tradingOrder.createTradingOrder(
                           tradeData,
                           user.userId,
                           order,
-                          'orderSend'
+                          'orderSend',
+                          userLots.walletAmount,
                         );
                         console.log('created broker order data store in DB');
                         await generateNotification({
@@ -215,7 +217,7 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => 
       finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
     }
 
-    return { lots: finalLots };
+    return { lots: finalLots, walletAmount: userBalance.balance };
   } else {
     return { error: 'Data not found' };
   }
