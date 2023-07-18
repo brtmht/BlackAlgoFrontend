@@ -369,7 +369,7 @@ const calculateProfitLoss = async (userId) => {
 
         const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2) + '%';
 
-        return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss };
+        return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss.toFixed(2) };
       } else {
         return { cumulativeProfitLoss: 0, profitLoss: 0 };
       }
@@ -461,7 +461,7 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2) + '%';
 
-      return { todayPerformance: todayPerformance, todayPerformancePercentage: lastTradingOrder && yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
+      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: lastTradingOrder && yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
@@ -495,7 +495,7 @@ const calculateLifetimePerformance = async (userId) => {
 
         return {
           lifetimePerformancePercentage: lifetimePerformancePercentageString,
-          lifetimePerformance: currentBalance - initialBalance,
+          lifetimePerformance: (currentBalance - initialBalance).toFixed(2),
         };
       }else{
         return {
