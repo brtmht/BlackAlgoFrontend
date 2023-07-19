@@ -53,7 +53,7 @@ const saveBinanceTransactionHistory = async (paymentData) => {
 
       if (userData) {
         await createUserStrategy(
-          { paymentDetailId: paymentData.data.transactionId, step: 'payment' },
+          { paymentDetailId: payData.transactionId, step: 'payment' },
           PaymentDetails.userId
         );
       }
