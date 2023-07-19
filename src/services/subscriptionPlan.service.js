@@ -37,9 +37,7 @@ const resumeStripeSubscription = async (subsPlanId) => {
 };
 
 const deactivateStripeSubscription = async (subsPlanId) => {
-  const subscription = await Stripe.subscriptions.update(subsPlanId, {
-    cancel_at_period_end: true,
-  });
+  const subscription = await Stripe.subscriptions.cancel(subsPlanId);
   if (!subscription) {
     throw new ApiError(httpStatus.NOT_FOUND, 'SubscriptionPlan not found');
   }
