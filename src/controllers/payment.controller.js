@@ -35,19 +35,24 @@ const binanceWebhook = catchAsync(async (req, res) => {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
-        if (!payment) {
-          throw new ApiError(httpStatus.NOT_FOUND, 'no history found');
-        }
-        if(payment && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
-         await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
-
+        if (payment) {
+          if(payment && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
+            await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
+   
+             const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
+             if(userConfig){
+                 await userExchangeConfig.activeConnection(PaymentDetails.userId);
+                 await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
+             }
+         
+           }
+        }else{ 
           const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
           if(userConfig){
               await userExchangeConfig.activeConnection(PaymentDetails.userId);
-              await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
           }
-      
         }
+       
         emitData('BinancePayResponse', { success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
 
       }
