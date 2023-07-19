@@ -152,6 +152,8 @@ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
           } else if (subscription.max_portfolio_size > userPortfolio.balance) {
             res.send({ success: true, code: 200, message: 'No need to change subscription' });
           }
+        }else if (subscription.max_portfolio_size > userPortfolio.balance) {
+          res.send({ success: true, code: 200, message: 'No need to change subscription' });
         }
       } else {
         res.send({ success: true, code: 200, message: 'User subscription not found' });
