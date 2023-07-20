@@ -219,6 +219,22 @@ const updateStripeSubscription = async (user) => {
   });
 };
 
+const updateBinanceSubscription = async (userId) => {
+ const user = await userStrategyService.getUserStrategyByUser(userId);
+  if (user) {
+
+    return UserExchangeConfig.create({
+      userId: user.userId,
+      exchangeId: user.exchangeId,
+      strategyId: user.strategyId,
+      subscriptionStatus: false,
+      connected: true,
+    });
+  }
+
+  
+};
+
 
 /**
  * update mt4 connection
@@ -322,5 +338,6 @@ module.exports = {
   getActiveUser,
   getConnectedAccountUser,
   activeConnection,
+  updateBinanceSubscription,
 
 };
