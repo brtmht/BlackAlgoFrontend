@@ -35,16 +35,17 @@ const binanceWebhook = catchAsync(async (req, res) => {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
+        const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
+        if(!userConfig){
+            await userExchangeConfig.updateBinanceSubscription(PaymentDetails.userId);  
+        }
         if (payment) {
           if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
             await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
-   
-             const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
              if(userConfig){
                  await userExchangeConfig.activeConnection(PaymentDetails.userId);
                  await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
              }
-         
            }
         }else{ 
           const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
