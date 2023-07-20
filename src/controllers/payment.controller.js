@@ -36,7 +36,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
         if (payment) {
-          if(payment && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
+          if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
             await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
    
              const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
