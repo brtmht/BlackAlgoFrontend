@@ -172,7 +172,8 @@ const getPayments = async (id) => {
 
 const getStripePayment = async (id,token) => {
   return PaymentDetail.findOne({paymentToken: { $ne: token },
-  userId: id});
+  userId: id}).sort({ createdAt: -1 })
+  .exec();
 };
 
 const getPaymentByToken = async (token) => {
