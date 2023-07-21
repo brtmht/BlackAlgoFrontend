@@ -367,7 +367,7 @@ const calculateProfitLoss = async (userId) => {
         const totalProfitLoss = currentBalance - initialBalance;
         const profitLossPercentage = (totalProfitLoss / initialBalance) * 100;
 
-        const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2) + '%';
+        const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2);
 
         return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss.toFixed(2) };
       } else {
@@ -459,7 +459,7 @@ const calculateTodayPerformance = async (userId) => {
       const sign = isProfit ? '+' : '-';
 
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
-      const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2) + '%';
+      const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2);
 
       return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: lastTradingOrder && yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
     }
@@ -491,7 +491,7 @@ const calculateLifetimePerformance = async (userId) => {
         const sign = isProfit ? '+' : '-';
 
         // Convert the percentage (e.g., '+25.23%' or '-10.12%')
-        const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2) + '%';
+        const lifetimePerformancePercentageString = sign + Math.abs(lifetimePerformancePercentage).toFixed(2);
 
         return {
           lifetimePerformancePercentage: lifetimePerformancePercentageString,
@@ -538,7 +538,7 @@ const calculateLastMonthPerformance = async (userId) => {
         const sign = isProfit ? '+' : '-';
 
         // Convert the percentage (e.g., '+25.23%' or '-10.12%')
-        const lastMonthPercentageString = sign + Math.abs(lastMonthPercentage).toFixed(2) + '%';
+        const lastMonthPercentageString = sign + Math.abs(lastMonthPercentage).toFixed(2);
 
         return {
           lastMonthPercentage: lastMonthPercentageString,
