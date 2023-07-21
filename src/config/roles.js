@@ -75,6 +75,7 @@ const allRoles = {
     'manuallyDisconnectAccount',
     'binancePayment',
     'upgradeSubscriptionPlanPayment',
+    'getPaymentById',
   ],
   manager: [
     'getUser',
