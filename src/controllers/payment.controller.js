@@ -16,9 +16,12 @@ const PaymentDetail = require('../models/paymentDetail.model');
 const mt4Server = require('../middlewares/mt4Server');
 
 // binanace API
-const getBinance = catchAsync(async (req, res) => {
-  // const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
-  res.send();
+const getPaymentById = catchAsync(async (req, res) => {
+  const PaymentDetails = await paymentDetailService.getPayments(req.user._id, req.body.paymentDetailId);
+  if(PaymentDetails){
+    res.send({ success: true, code: 201, message: 'data get Successfully', data: PaymentDetails });
+  }
+  throw new ApiError(httpStatus.NOT_FOUND, 'data not found');
 });
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
@@ -170,7 +173,6 @@ const upgradeSubscriptionPlanPayment = catchAsync(async (req, res) => {
 module.exports = {
   stripeWebhook,
   getStripeConfig,
-  getBinance,
   postBinance,
   binanceWebhook,
   createPayment,
@@ -178,4 +180,5 @@ module.exports = {
   getPaymentHistory,
   savePaymentDetails,
   upgradeSubscriptionPlanPayment,
+  getPaymentById,
 };

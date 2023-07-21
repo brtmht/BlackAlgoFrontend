@@ -12,8 +12,8 @@ router
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
 router
   .route('/binance')
-  .post(auth('binancePayment'), paymentController.postBinance)
-  .get(auth('binancePayment'), paymentController.getBinance);
+  .post(auth('binancePayment'), paymentController.postBinance);
+  // .get(auth('binancePayment'), paymentController.getBinance);
 router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
@@ -22,6 +22,12 @@ router.route('/binanceWebhook').post(paymentController.binanceWebhook);
 router
   .route('/upgradeSubscriptionPlanPayment')
   .post(auth('upgradeSubscriptionPlanPayment'), paymentController.upgradeSubscriptionPlanPayment);
+
+
+  router
+  .route('/getPaymentById')
+  .get(auth('getPaymentById'), paymentController.getPaymentById);
+  
 
 module.exports = router;
 
