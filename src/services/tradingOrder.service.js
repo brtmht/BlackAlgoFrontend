@@ -541,7 +541,7 @@ const calculateLastMonthPerformance = async (userId) => {
         const lastMonthPercentageString = sign + Math.abs(lastMonthPercentage).toFixed(2);
 
         return {
-          lastMonthPercentage: lastMonthPercentageString,
+          lastMonthPercentage: lastMonthPercentageString >= 0?lastMonthPercentageString:0 ,
           lastMonth: currentBalance - initialBalance,
         };
       } else {
