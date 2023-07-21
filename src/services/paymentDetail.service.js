@@ -170,6 +170,11 @@ const getPayments = async (id) => {
   return PaymentDetail.findById(id);
 };
 
+const getPaymentByuserID = async (userID,id) => {
+  console.log(userID,id);
+  return PaymentDetail.findOne({userId:userID,_id:id});
+};
+
 const getStripePayment = async (id,token) => {
   return PaymentDetail.findOne({paymentToken: { $ne: token },
   userId: id}).sort({ createdAt: -1 })
@@ -213,4 +218,5 @@ module.exports = {
   getPaymentByToken,
   updateBinancePaymentDetails,
   getStripePayment,
+  getPaymentByuserID,
 };

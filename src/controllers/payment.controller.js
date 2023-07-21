@@ -17,7 +17,7 @@ const mt4Server = require('../middlewares/mt4Server');
 
 // binanace API
 const getPaymentById = catchAsync(async (req, res) => {
-  const PaymentDetails = await paymentDetailService.getPayments(req.user._id, req.body.paymentDetailId);
+  const PaymentDetails = await paymentDetailService.getPaymentByuserID(req.user._id, req.body.paymentDetailId);
   if(PaymentDetails){
     res.send({ success: true, code: 201, message: 'data get Successfully', data: PaymentDetails });
   }
