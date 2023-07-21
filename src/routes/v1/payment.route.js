@@ -26,7 +26,7 @@ router
 
   router
   .route('/getPaymentById')
-  .get(auth('getPaymentById'), paymentController.getPaymentById);
+  .post(auth('getPaymentById'), paymentController.getPaymentById);
   
 
 module.exports = router;
