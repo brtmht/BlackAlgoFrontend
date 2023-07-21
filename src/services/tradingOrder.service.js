@@ -542,7 +542,7 @@ const calculateLastMonthPerformance = async (userId) => {
 
         return {
           lastMonthPercentage: lastMonthPercentageString >= 0?lastMonthPercentageString:0 ,
-          lastMonth: currentBalance - initialBalance,
+          lastMonth: (currentBalance - initialBalance)>= 0 ?currentBalance - initialBalance :0
         };
       } else {
         return {
