@@ -42,7 +42,7 @@ const getUserExchangeConfigByLogin = async (reqData) => {
   try {
     const { login, server } = reqData.config;
     const userExchangeConfig = await UserExchangeConfig.findOne({
-      'config.login': login,
+      'config.login': login.toString(),
       'config.server': server,
       'connected': true,
     });
