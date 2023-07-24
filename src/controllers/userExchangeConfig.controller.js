@@ -103,7 +103,6 @@ const getUserExchangeConfig = catchAsync(async (req, res) => {
 
 const updateUserExchangeConfig = catchAsync(async (req, res) => {
   const existConfig = await userExchangeConfig.getUserExchangeConfigByLogin(req.body);
-
   if (existConfig) {
     res.status(406).send({
       success: false,
@@ -111,6 +110,7 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
       message: 'MT4 account already exists',
     });
   }
+  if (!existConfig) {
   if (req.body.config.server) {
     const maxAttempts = 3;
     let currentAttempt = 0;
@@ -192,6 +192,8 @@ const updateUserExchangeConfig = catchAsync(async (req, res) => {
       });
     }
   }
+}
+throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Data not found');
 });
 const getAllConnectedUser = catchAsync(async (req, res) => {
   const exchangeConfig = await userExchangeConfig.getAllConnectionData(req.body);
