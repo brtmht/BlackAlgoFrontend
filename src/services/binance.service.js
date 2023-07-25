@@ -103,8 +103,8 @@ const createBinanceContract = async (user, reqData) => {
     singleUpperLimit: reqData.orderAmount,
     periodic: true,
     cycleDebitFixed: true,
-    cycleType: 'DAY',
-    cycleValue: 1,
+    cycleType: 'MONTH',
+    cycleValue: 12,
     firstDeductTime:firstDeductTime,
     merchantAccountNo: user.email,
   };
