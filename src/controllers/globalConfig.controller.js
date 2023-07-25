@@ -19,7 +19,6 @@ const getTermAndPolicyData = catchAsync(async (req, res) => {
 });
 
 const graphData = catchAsync(async (req, res) => {
-
   const filePath = '/home/ftp_blackalgo/ftp/trackrecord.csv';
 
   const results = [];
@@ -28,27 +27,34 @@ const graphData = catchAsync(async (req, res) => {
     .pipe(csv())
     .on('data', (data) => results.push(data))
     .on('end', () => {
-      console.log(results, "---------------");
+      let cumulativeProfit = 0;
+      const cumulativeResults = [];
+
+      results.forEach((transaction) => {
+        const profit = parseFloat(transaction.Profit);
+        cumulativeProfit += profit;
+        cumulativeResults.push({ cumulativeProfit, CloseTime: transaction.CloseTime });
+      });
+
+      console.log('Cumulative Results:', cumulativeResults);
+      // console.log(results, "---------------");
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: results } });
+      //res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: results } });
     })
     .on('error', (err) => {
       console.error('Error parsing CSV:', err);
       throw new ApiError(httpStatus.NOT_FOUND, 'Error in processing file data');
     });
 
-
-
-//  await processFileData()
-//     .then((data) => {
-//       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
-//       // Use the data or pass it to another API as needed
-//     })
-//     .catch((error) => {
-//       throw new ApiError(httpStatus.NOT_FOUND, 'Error in processing file data');
-//     });
+  //  await processFileData()
+  //     .then((data) => {
+  //       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });
+  //       // Use the data or pass it to another API as needed
+  //     })
+  //     .catch((error) => {
+  //       throw new ApiError(httpStatus.NOT_FOUND, 'Error in processing file data');
+  //     });
 });
-
-
 
 module.exports = {
   getConfigData,
