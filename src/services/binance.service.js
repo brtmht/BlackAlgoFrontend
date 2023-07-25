@@ -103,8 +103,8 @@ const createBinanceContract = async (user, reqData) => {
     singleUpperLimit: reqData.orderAmount,
     periodic: true,
     cycleDebitFixed: true,
-    cycleType: 'MONTH',
-    cycleValue: 12,
+    cycleType: 'DAY',
+    cycleValue: 1,
     firstDeductTime:firstDeductTime,
     merchantAccountNo: user.email,
   };
@@ -115,7 +115,7 @@ const createBinanceContract = async (user, reqData) => {
   const response = await callBinancePayAPI(endpoint, requestData);
 
   if (response) {
-   await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
+   //await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;
   }
 };
