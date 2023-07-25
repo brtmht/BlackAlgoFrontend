@@ -43,11 +43,19 @@ const deleteTradingOrder = catchAsync(async (req, res) => {
 });
 
 const graphTradeOrders = catchAsync(async (req, res) => {
-  const Orders = await tradingOrderService.getGraphTradeOrder(req.body, req.user._id);
+  const transactions = await tradingOrderService.getGraphTradeOrder(req.body, req.user._id);
+  let cumulativeProfit = 0;
+  const cumulativeResults = [];
+
+  transactions.forEach((transaction) => {
+    const profit = parseFloat(transaction.Profit);
+    cumulativeProfit += profit;
+    cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), CloseTime: transaction.CloseTime });
+  });
   if (!Orders) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
-  res.send({ success: true, code: 201, message: 'Transaction history data listed', data: Orders });
+  res.send({ success: true, code: 201, message: 'Transaction history data listed', data: cumulativeResults });
 });
 
 const performanceCalculation = catchAsync(async (req, res) => {
