@@ -29,6 +29,12 @@ router
   .route('/createBinanceContract')
   .post(auth('createBinanceContract'), paymentController.createBinanceContract); 
 
+
+  router
+  .route('/createBinanceRecurringPayment')
+  .post(auth('createBinanceRecurringPayment'), paymentController.createBinanceRecurringPayment); 
+  
+
   
 
 module.exports = router;
