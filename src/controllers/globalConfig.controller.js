@@ -33,13 +33,9 @@ const graphData = catchAsync(async (req, res) => {
       results.forEach((transaction) => {
         const profit = parseFloat(transaction.Profit);
         cumulativeProfit += profit;
-        cumulativeResults.push({ cumulativeProfit, CloseTime: transaction.CloseTime });
+        cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), CloseTime: transaction.CloseTime });
       });
-
-      console.log('Cumulative Results:', cumulativeResults);
-      // console.log(results, "---------------");
-      res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: results } });
-      //res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: results } });
+      res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: cumulativeResults } });
     })
     .on('error', (err) => {
       console.error('Error parsing CSV:', err);
