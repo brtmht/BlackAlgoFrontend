@@ -29,7 +29,7 @@ const graphData = catchAsync(async (req, res) => {
     .on('end', () => {
       let cumulativeProfit = 0;
       const cumulativeResults = [];
-
+      console.log(results,"----------------------results");
       results.forEach((transaction) => {
         const profit = parseFloat(transaction.Profit);
         cumulativeProfit += profit;
