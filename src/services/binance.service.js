@@ -156,6 +156,7 @@ const createBinancePayment = async (userId, reqData) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/pay/apply';
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
+  console.log(timestamp,"-------------------------");
   const payload = {
     // subMerchantId: 123,
     merchantRequestId: reqData.merchantId,
@@ -169,9 +170,9 @@ const createBinancePayment = async (userId, reqData) => {
   const jsonRequest = JSON.stringify(payload);
 
   const requestData = { timestamp, nonce, jsonRequest };
-
+console.log(requestData,"-------------------------");
   const response = await callBinancePayAPI(endpoint, requestData);
-
+console.log(response,"-------------------------response");
   if (response) {
    // await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;
