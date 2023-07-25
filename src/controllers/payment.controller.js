@@ -144,6 +144,30 @@ const createBinanceContract = catchAsync(async (req, res) => {
  
 });
 
+// Create Binance Contract
+const createBinanceRecurringPayment = catchAsync(async (req, res) => {
+  // let paymentData;
+  const user = req.user._id;
+  if (req.body.paymentType !== 'crypto') {
+    res.send({ success: false, error_code: 403, message: 'payment type not valid' });
+  }
+  if (req.body.paymentType === 'crypto') {
+    const binanceData = await binanceService.createBinancePayment(req.user, req.body);
+    return binanceData;
+    // if (binanceData.status === 'SUCCESS') {
+    //   res.send({
+    //     success: true,
+    //     code: 201,
+    //     message: 'stripe token created Successfully',
+    //     data: { BinanceData: binanceData },
+    //   });
+    // } else {
+    //   res.send({ success: false, error_code: 400, message: 'Something wrong' });
+    // }
+  }
+ 
+});
+
 // save data in transaction table
 const savePaymentDetails = catchAsync(async (req, res) => {
   const user = req.user._id;
@@ -205,4 +229,5 @@ module.exports = {
   upgradeSubscriptionPlanPayment,
   getPaymentById,
   createBinanceContract,
+  createBinanceRecurringPayment,
 };
