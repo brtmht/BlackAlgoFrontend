@@ -10,10 +10,8 @@ router
   .route('/stripePayment')
   .post(auth('createPayment'), paymentController.createPayment)
   .get(auth('history'), validate(paymentValidation.getPaymentHistory), paymentController.getPaymentHistory);
-router
-  .route('/binance')
-  .post(auth('binancePayment'), paymentController.postBinance);
-  // .get(auth('binancePayment'), paymentController.getBinance);
+router.route('/binance').post(auth('binancePayment'), paymentController.postBinance);
+// .get(auth('binancePayment'), paymentController.getBinance);
 router
   .route('/stripe')
   .patch(auth('webhookResponse'), validate(paymentValidation.postPaymentDetails), paymentController.savePaymentDetails);
@@ -23,11 +21,9 @@ router
   .route('/upgradeSubscriptionPlanPayment')
   .post(auth('upgradeSubscriptionPlanPayment'), paymentController.upgradeSubscriptionPlanPayment);
 
-
-  router
+router
   .route('/getPaymentById')
-  .post(auth('getPaymentById'), paymentController.getPaymentById);
-  
+  .post(auth('getPaymentById'), validate(paymentValidation.getPayment), paymentController.getPaymentById);
 
 module.exports = router;
 
@@ -207,7 +203,6 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *
  */
-
 /**
  * @swagger
  * /payment/binance:
@@ -295,6 +290,42 @@ module.exports = router;
  *     responses:
  *       "201":
  *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/StripeAccount'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /payment/getPaymentById:
+ *   post:
+ *     summary: Create a payment using card and crypto
+ *     description: User can see their past payment with their paymentDeatilsId.
+ *     tags: [Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - paymentDeatilsId
+ *             properties:
+ *               paymentDeatilsId:
+ *                  type: string
+ *             example:
+ *               paymentDeatilsId: 642c5224d1ad6a54f0407072
+ *     responses:
+ *       "201":
+ *         description: Fetched
  *         content:
  *           application/json:
  *             schema:
