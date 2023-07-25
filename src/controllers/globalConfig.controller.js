@@ -29,11 +29,11 @@ const graphData = catchAsync(async (req, res) => {
     .on('end', () => {
       let cumulativeProfit = 0;
       const cumulativeResults = [];
-
+      console.log(results,"----------------------results");
       results.forEach((transaction) => {
         const profit = parseFloat(transaction.Profit);
         cumulativeProfit += profit;
-        cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), CloseTime: transaction.CloseTime });
+        cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), closeTime: transaction.CloseTime, symbol:transaction.Symbol });
       });
       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: cumulativeResults } });
     })
