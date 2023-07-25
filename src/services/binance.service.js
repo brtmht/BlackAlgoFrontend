@@ -173,7 +173,7 @@ const createBinancePayment = async (userId, reqData) => {
   const response = await callBinancePayAPI(endpoint, requestData);
 
   if (response) {
-    await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
+   // await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;
   }
 };
