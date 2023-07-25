@@ -160,7 +160,7 @@ const createBinancePayment = async (userId, reqData) => {
     // subMerchantId: 123,
     merchantRequestId: reqData.merchantId,
     tradeMode: 'DIRECT_DEBIT',
-    bizId: 123,
+    bizId: reqData.contractId,
     productName: 'test payment',
     amount: reqData.orderAmount,
     currency: 'USDT',
