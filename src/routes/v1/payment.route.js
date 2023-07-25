@@ -27,7 +27,10 @@ router
   router
   .route('/getPaymentById')
   .post(auth('getPaymentById'), paymentController.getPaymentById);
-  
+
+  router
+  .route('/createBinanceContract')
+  .post(auth('createBinanceContract'), paymentController.createBinanceContract); 
 
 module.exports = router;
 

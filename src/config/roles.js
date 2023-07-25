@@ -76,6 +76,7 @@ const allRoles = {
     'binancePayment',
     'upgradeSubscriptionPlanPayment',
     'getPaymentById',
+    'createBinanceContract',
   ],
   manager: [
     'getUser',
