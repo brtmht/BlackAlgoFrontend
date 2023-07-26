@@ -41,7 +41,7 @@ const mtSocket = () => {
         if (order) {
           switch (orderType) {
             case "PositionOpen":
-              masterTradingOrder.createMasterTradingOrder(order, 'orderSend').catch(logger.error);
+              masterTradingOrder.createMasterTradingOrder(order, 'orderSend',masterBalance).catch(logger.error);
               break;
 
             case "PositionModify":

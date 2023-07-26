@@ -7,7 +7,7 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} masterTradingOrderBody
  * @returns {Promise<MasterTradingOrder>}
  */
-const createMasterTradingOrder = async (masterTradingOrderBody, orderType) => {
+const createMasterTradingOrder = async (masterTradingOrderBody, orderType, masterBalance) => {
   let tradingData;
   if (masterTradingOrderBody) {
     tradingData = {
@@ -39,6 +39,7 @@ const createMasterTradingOrder = async (masterTradingOrderBody, orderType) => {
       activation: masterTradingOrderBody.Ex.activation,
       marginRate: masterTradingOrderBody.RateMargin,
       orderType:orderType,
+      balance: masterBalance,
     };
   }
   return MasterTradingOrder.create(tradingData);
