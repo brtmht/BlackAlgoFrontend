@@ -106,7 +106,7 @@ const createPayment = catchAsync(async (req, res) => {
     });
   }
   if (req.body.paymentType === 'crypto') {
-    const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+    const binanceData = await binanceService.createBinancePayOrder(req.user, req.body);
     if (binanceData.status === 'SUCCESS') {
       res.send({
         success: true,
@@ -117,53 +117,6 @@ const createPayment = catchAsync(async (req, res) => {
     } else {
       res.send({ success: false, error_code: 400, message: 'Something wrong' });
     }
-  }
- 
-});
-
-// Create Binance Contract
-const createBinanceContract = catchAsync(async (req, res) => {
-  // let paymentData;
-  const user = req.user._id;
-  if (req.body.paymentType !== 'crypto') {
-    res.send({ success: false, error_code: 403, message: 'payment type not valid' });
-  }
-  if (req.body.paymentType === 'crypto') {
-    const binanceData = await binanceService.createBinanceContract(req.user, req.body);
-    if (binanceData.status === 'SUCCESS') {
-      res.send({
-        success: true,
-        code: 201,
-        message: 'stripe token created Successfully',
-        data: { BinanceData: binanceData },
-      });
-    } else {
-      res.send({ success: false, error_code: 400, message: 'Something wrong' });
-    }
-  }
- 
-});
-
-// Create Binance Contract
-const createBinanceRecurringPayment = catchAsync(async (req, res) => {
-  // let paymentData;
-  const user = req.user._id;
-  if (req.body.paymentType !== 'crypto') {
-    res.send({ success: false, error_code: 403, message: 'payment type not valid' });
-  }
-  if (req.body.paymentType === 'crypto') {
-    const binanceData = await binanceService.createBinancePayment(req.user, req.body);
-    return binanceData;
-    // if (binanceData.status === 'SUCCESS') {
-    //   res.send({
-    //     success: true,
-    //     code: 201,
-    //     message: 'stripe token created Successfully',
-    //     data: { BinanceData: binanceData },
-    //   });
-    // } else {
-    //   res.send({ success: false, error_code: 400, message: 'Something wrong' });
-    // }
   }
  
 });
@@ -228,6 +181,4 @@ module.exports = {
   savePaymentDetails,
   upgradeSubscriptionPlanPayment,
   getPaymentById,
-  createBinanceContract,
-  createBinanceRecurringPayment,
 };

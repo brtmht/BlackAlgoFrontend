@@ -46,11 +46,10 @@ const graphTradeOrders = catchAsync(async (req, res) => {
   const transactions = await tradingOrderService.getGraphTradeOrder(req.body, req.user._id);
   let cumulativeProfit = 0;
   const cumulativeResults = [];
-
   transactions.forEach((transaction) => {
-    const profit = parseFloat(transaction.Profit);
+    const profit = parseFloat(transaction.profit);
     cumulativeProfit += profit;
-    cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), closeTime: transaction.CloseTime, symbol:transaction.symbol });
+    cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), closeTime: transaction.closePrice, symbol:transaction.symbol });
   });
   if (!transactions) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
