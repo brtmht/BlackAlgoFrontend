@@ -116,6 +116,10 @@ const masterTradingOrderSchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    balance: {
+      type: Number,
+      default: 0,
+    },
     isDeleted: {
       type: Boolean,
       default: false,
