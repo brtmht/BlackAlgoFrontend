@@ -213,7 +213,7 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => 
       finalLots = lots;
     }
     if (strategyName === 'Dynamic' && userBalance.balance > configData.dynamic_min_amount) {
-      const volume = lots / priceRatio / configData.dynamic_check_amount;
+      const volume = lots / priceRatio * configData.dynamic_check_amount;
       finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
     }
 
