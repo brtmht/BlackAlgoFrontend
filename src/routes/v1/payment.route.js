@@ -23,16 +23,7 @@ router
 
 router
   .route('/getPaymentById')
-  .post(auth('getPaymentById'), validate(paymentValidation.getPayment), paymentController.getPaymentById);
-
-  router
-  .route('/createBinanceContract')
-  .post(auth('createBinanceContract'), paymentController.createBinanceContract); 
-
-
-  router
-  .route('/createBinanceRecurringPayment')
-  .post(auth('createBinanceRecurringPayment'), paymentController.createBinanceRecurringPayment); 
+  .post(auth('getPaymentById'), validate(paymentValidation.getPayment), paymentController.getPaymentById); 
   
 
   
@@ -329,12 +320,12 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - paymentDeatilsId
+ *               - paymentDetailId
  *             properties:
- *               paymentDeatilsId:
+ *               paymentDetailId:
  *                  type: string
  *             example:
- *               paymentDeatilsId: 642c5224d1ad6a54f0407072
+ *               paymentDetailId: 642c5224d1ad6a54f0407072
  *     responses:
  *       "201":
  *         description: Fetched
