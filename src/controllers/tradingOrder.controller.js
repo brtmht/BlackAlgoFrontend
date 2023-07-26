@@ -52,7 +52,7 @@ const graphTradeOrders = catchAsync(async (req, res) => {
     cumulativeProfit += profit;
     cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), closeTime: transaction.CloseTime, symbol:transaction.symbol });
   });
-  if (!Orders) {
+  if (!transactions) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
   res.send({ success: true, code: 201, message: 'Transaction history data listed', data: cumulativeResults });
