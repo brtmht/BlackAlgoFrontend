@@ -35,7 +35,7 @@ const createSubscription = {
 
 const getPayment = {
   body: Joi.object().keys({
-    paymentDeatilsId: Joi.string().required(),
+    paymentDetailId: Joi.string().required(),
   }),
 };
 
