@@ -18,11 +18,12 @@ function generateNonce(length) {
   return nonce;
 }
 
-const createBinancePayOrder = async (userId,reqData) => {
+const createBinancePayOrder = async (user,reqData) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/v2/order';
 
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
+  const firstDeductTime = timestamp + 10 * 24 * 60 * 60 * 1000;
   const payload = {
     env: {
       terminalType: reqData.terminalType,
@@ -33,8 +34,20 @@ const createBinancePayOrder = async (userId,reqData) => {
     goods: {
       goodsType: '02',
       goodsCategory: 'Z000',
-      referenceGoodsId: userId,
+      referenceGoodsId: user._id,
       goodsName: reqData.type,
+    },
+    directDebitContract: {
+      merchantContractCode: nonce,
+      serviceName: 'Tra Direct Debit',
+      scenarioCode: 'Membership',
+      singleUpperLimit: reqData.orderAmount,
+      periodic: true,
+      cycleDebitFixed: true,
+      cycleType: 'MONTH',
+      cycleValue: 12,
+      firstDeductTime:firstDeductTime,
+      merchantAccountNo: user.email,
     },
   };
 
@@ -59,7 +72,7 @@ const createBinancePayOrder = async (userId,reqData) => {
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
     if(response.data){
-      await paymentDetailService.saveBinacePaymentDetails(userId,response.data,reqData);
+      await paymentDetailService.saveBinacePaymentDetails(user._id,response.data,reqData);
       return response.data;
     }
     
