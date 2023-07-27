@@ -82,7 +82,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
            await userExchangeConfig.activeSubscription(transactionDetails.userId); 
            await  paymentDetailService.updateBinanceSubscription(transactionDetails,req.body.bizIdStr);  
         }
-        emitData('BinanceContractResponse', { success: true, code: 201, message: 'contract created Successfully', data: transactionDetails });
+       emitData('BinanceContractResponse', { success: true, code: 201, message: 'contract created Successfully', data: transactionDetails });
 
       }
       if (req.body.bizStatus === 'CONTRACT_TERMINATED') {
@@ -90,7 +90,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
         await cryptoAccountService.UpdatedTerminatedContract(req.body);
         const transactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
         await userExchangeConfig.disconnectConnectionSubscription(transactionDetails.userId);
-        emitData('BinancePayResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: transactionDetails });
+       emitData('BinanceContractResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: transactionDetails });
       }
       res.send({
         returnCode: 'SUCCESS',
