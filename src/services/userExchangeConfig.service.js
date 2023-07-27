@@ -320,6 +320,20 @@ const activeConnection = async (id) => {
   }
 };
 
+const activeSubscription = async (id) => {
+  const data = UserExchangeConfig.findOne({ userId: id });
+  if (data) {
+   return UserExchangeConfig.findOneAndUpdate(
+      { userId: id },
+      {
+        $set: {
+          subscriptionStatus:true,
+        },
+      }
+    );
+  }
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -339,5 +353,6 @@ module.exports = {
   getConnectedAccountUser,
   activeConnection,
   updateBinanceSubscription,
+  activeSubscription,
 
 };

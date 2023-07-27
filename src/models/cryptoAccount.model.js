@@ -7,30 +7,32 @@ const cryptoAccountSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
     },
-    name: {
-      type: String,
-
-      trim: true,
-    },
-    exchangeName: {
-      type: String,
-
-      unique: true,
-      trim: true,
-    },
-    cryptoAddress: {
-      type: String,
-
-      unique: true,
-      trim: true,
-    },
-    amount: {
+    contractId: {
       type: Number,
-      default: 0,
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
+    merchantContractCode: {
+      type: String,
+    },
+    openUserId: {
+      type: String,
+    },
+    merchantAccountNo: {
+      type: String,
+    },
+    singleUpperLimit: {
+      type: Number,
+    },
+    bizId: {
+      type: Number,
+    },
+    bizStatus: {
+      type: String,
+    },
+    paymentMethod: {
+      type: String,
+    },
+    period: {
+      type: String,
     },
   },
   {
