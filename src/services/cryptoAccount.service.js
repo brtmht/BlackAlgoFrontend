@@ -87,7 +87,7 @@ const UpdatedTerminatedContract = async (paymentData) => {
       );
       return cryptoHistory;
     }
-    if (!cryptoHistory) {
+    if (!cryptoDetails) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'There is no contract in history');
     }
 };
