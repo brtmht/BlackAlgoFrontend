@@ -26,12 +26,10 @@ const getPaymentById = catchAsync(async (req, res) => {
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
   const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
-  console.log(binanceData, '==============binanceData');
   res.send(binanceData);
 });
 // // log in binance
 const binanceWebhook = catchAsync(async (req, res) => {
-  console.log(req.body, '===========req.body');
   if (req.body) {
     if (req.body.bizType === 'PAY') {
       if (req.body.bizStatus === 'PAY_SUCCESS') {
