@@ -450,7 +450,7 @@ const calculateTodayPerformance = async (userId) => {
       // Calculate the percentage
       const initialBalance = lastTradingOrder?.balance;
       const todayPerformancePercentage = (todayPerformance / initialBalance) * 100;
-
+      console.log(portfolioSize.balance ,lastTradingOrder.balance, initialBalance, todayPerformance);
       // Determine if it's a profit or loss
       const isProfit = todayPerformancePercentage >= 0;
       const sign = isProfit ? '+' : '-';
