@@ -13,6 +13,12 @@ const saveBinancePayment = async (paymentData) => {
     const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantTradeNo });
     console.log(cryptoDetails,"-----------------cryptoDetails");
     if (!cryptoDetails) {
+      console.log({
+        userId: TransactionDetails.userId,
+        period: payData.productName,
+        paymentMethod: payData.paymentInfo.payMethod,
+        merchantAccountNo: payData.merchantTradeNo,
+      });
       const history = await CryptoAccount.create({
         userId: TransactionDetails.userId,
         period: payData.productName,
