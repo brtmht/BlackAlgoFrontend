@@ -85,7 +85,7 @@ const getPaymentsById = async (id) => {
 };
 
 const getPaymentsByMerchantTrade = async (id) => {
-  const History = await TransactionHistory.find({ merchantTradeNo: id });
+  const History = await TransactionHistory.findOne({ merchantTradeNo: id });
   if (!History) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
   }
