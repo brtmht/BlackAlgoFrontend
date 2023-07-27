@@ -46,7 +46,7 @@ const createBinancePayOrder = async (user,reqData) => {
       terminalType: reqData.terminalType,
     },
     merchantTradeNo: merchantdata,
-    orderAmount: reqData.orderAmount,
+    orderAmount: reqData.orderAmount.toString(),
     currency: reqData.currency,
     goods: {
       goodsType: '02',
@@ -58,7 +58,7 @@ const createBinancePayOrder = async (user,reqData) => {
       merchantContractCode: nonce,
       serviceName: 'Tra Direct Debit',
       scenarioCode: 'Membership',
-      singleUpperLimit: reqData.orderAmount,
+      singleUpperLimit: reqData.orderAmount.toString(),
       periodic: true,
       cycleDebitFixed: true,
       cycleType: 'MONTH',
