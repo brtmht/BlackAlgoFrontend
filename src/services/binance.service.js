@@ -95,7 +95,7 @@ const createBinancePayOrder = async (user,reqData) => {
     }
     
   } catch (error) {
-    console.error(error.message);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
 };
 
