@@ -38,7 +38,6 @@ const createBinancePayOrder = async (user,reqData) => {
     const currentDate = new Date();
     const nextYear = currentDate.getFullYear() + 1;
     firstDeductTime.setYear(nextYear);
-    console.log('Current Date:', firstDeductTime);
     firstDeductTime = Math.round(new Date(firstDeductTime));
     intervalType = 12;
   }
@@ -90,7 +89,6 @@ const createBinancePayOrder = async (user,reqData) => {
 
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
-    console.log(response,"-------------------------");
     if(response.data){
       await paymentDetailService.saveBinacePaymentDetails(user._id,response.data,reqData);
       return response.data;
@@ -189,7 +187,6 @@ const createBinancePayment = async (userId, reqData) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/pay/apply';
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
-  console.log(timestamp,"-------------------------");
   const payload = {
     // subMerchantId: 123,
     merchantRequestId: reqData.merchantId,
@@ -203,9 +200,7 @@ const createBinancePayment = async (userId, reqData) => {
   const jsonRequest = JSON.stringify(payload);
 
   const requestData = { timestamp, nonce, jsonRequest };
-console.log(requestData,"-------------------------");
   const response = await callBinancePayAPI(endpoint, requestData);
-console.log(response,"-------------------------response");
   if (response) {
    // await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;

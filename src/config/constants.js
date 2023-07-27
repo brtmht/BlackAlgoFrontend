@@ -1,4 +1,5 @@
 module.exports = {
+  YEARLYPERCENTAGE:7,
   PAYMENT_STATUS: {
     INCOMLETE: 'incomplete',
     PENDING: 'pending',

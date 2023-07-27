@@ -2,11 +2,11 @@ const httpStatus = require('http-status');
 const Binance = require('node-binance-api');
 const { CryptoAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { transactionHistoryService } = require('.');
+const { getPaymentsByMerchantTrade } = require('../services/transactionHistory.service');
 
 const saveBinancePayment = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
-  const TransactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantTradeNo);
+  const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantTradeNo);
   if (TransactionDetails) {
     const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantTradeNo });
     if (!cryptoDetails) {
@@ -14,6 +14,7 @@ const saveBinancePayment = async (paymentData) => {
         userId: TransactionDetails.userId,
         period: payData.productName,
         paymentMethod: payData.paymentInfo.payMethod,
+        merchantAccountNo: payData.merchantTradeNo,
       });
       if (!history) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
@@ -35,9 +36,9 @@ const saveBinancePayment = async (paymentData) => {
 
 const saveBinanceContract = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
-  const TransactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
+  const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantAccountNo);
   if (TransactionDetails) {
-    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.paymentData });
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantAccountNo });
     if (!cryptoDetails) {
       const history = await CryptoAccount.create({
         userId: TransactionDetails.userId,
@@ -75,7 +76,7 @@ const saveBinanceContract = async (paymentData) => {
 
 const UpdatedTerminatedContract = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
-    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.paymentData });
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantAccountNo });
     if (cryptoDetails) {
       const cryptoHistory = await CryptoAccount.updateOne(
         { merchantAccountNo: payData.merchantAccountNo },

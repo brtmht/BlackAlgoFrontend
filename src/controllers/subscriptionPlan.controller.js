@@ -5,6 +5,7 @@ const { subscriptionPlanService } = require('../services');
 const { getActiveUser, updateServerTokenById, disconnectConnection } = require('../services/userExchangeConfig.service');
 const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
+const constants = require('../config/constants');
 
 // Stripe Apis
 const getSubscriptionPlans = catchAsync(async (req, res) => {
@@ -138,7 +139,7 @@ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
           ) {
             await disconnectConnection(user.userId);
             const portfolioAmount = userPortfolio.balance;
-            const percentage = 5;
+            const percentage = constants.YEARLYPERCENTAGE;
 
             const orderAmount = (portfolioAmount * percentage) / 100;
             const allPlans = await subscriptionPlanService.getAllSubscriptionPlans();
