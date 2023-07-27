@@ -14,6 +14,7 @@ const saveBinancePayment = async (paymentData) => {
         userId: TransactionDetails.userId,
         period: payData.productName,
         paymentMethod: payData.paymentInfo.payMethod,
+        merchantAccountNo: payData.merchantTradeNo,
       });
       if (!history) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
