@@ -423,34 +423,27 @@ const calculateTodayPerformance = async (userId) => {
       } else {
         BrokerToken = userConfig.serverToken;
       }
+      const currentDate = new Date();
+      const startDay = moment(currentDate).subtract(1, 'days').startOf('day').toDate();
+      const endOfDay = moment(currentDate).subtract(1, 'days').endOf('day').toDate();
 
-      // Get today's date and yesterday's date
-      const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-
-      // Get the latest trading order for today
-      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } })
-        .sort({ createdAt: -1 })
-        .exec();
+     
 
       // Get the latest trading order for yesterday
       const yesterdayTradingOrder = await TradingOrder.findOne({
         userId: userId,
-        createdAt: { $gte: yesterday, $lt: today },
+        createdAt: { $gte: startDay, $lte: endOfDay },
       })
         .sort({ createdAt: -1 })
         .exec();
 
       const portfolioSize = await mt4Server.accountSummary(BrokerToken);
-      const lastTradingOrder = await TradingOrder.findOne({ userId: userId }).sort({ createdAt: -1 }).exec();
 
-      const todayPerformance = lastTradingOrder ? portfolioSize.balance - lastTradingOrder.balance : 0;
+      const todayPerformance = yesterdayTradingOrder ? portfolioSize.balance - yesterdayTradingOrder.balance : 0;
 
       // Calculate the percentage
-      const initialBalance = lastTradingOrder?.balance;
+      const initialBalance = portfolioSize.balance;
       const todayPerformancePercentage = (todayPerformance / initialBalance) * 100;
-      console.log(portfolioSize.balance ,lastTradingOrder.balance, initialBalance, todayPerformance);
       // Determine if it's a profit or loss
       const isProfit = todayPerformancePercentage >= 0;
       const sign = isProfit ? '+' : '-';
@@ -458,7 +451,7 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2);
 
-      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: lastTradingOrder ? todayPerformancePercentageString : 0 };
+      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
