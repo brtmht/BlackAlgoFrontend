@@ -12,7 +12,7 @@ module.exports = {
     CRYPTO: 'crypto',
   },
   VERIFY_EMAIL_OPTIONS: {
-    subject: 'Please verify your blackalgo email',
+    subject: 'Please verify your email',
     template_name: 'verifyEmail.ejs',
   },
   SUBSCRIPTION_EMAIL_OPTIONS: {
