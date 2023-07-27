@@ -88,6 +88,7 @@ const createBinancePayOrder = async (user,reqData) => {
 
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
+    console.log(response,"---------------");
     if(response.data){
       await paymentDetailService.saveBinacePaymentDetails(user._id,response.data,reqData);
       return response.data;
