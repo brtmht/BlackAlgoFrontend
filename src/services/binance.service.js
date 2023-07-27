@@ -2,6 +2,8 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const { paymentDetailService } = require('.');
+const ApiError = require('../utils/ApiError');
+const httpStatus = require('http-status');
 const binancePayKey = process.env.BINANCE_PAY_KEY;
 const binancePaySecret = process.env.BINANCE_PAY_SECRET_KEY;
 
@@ -88,6 +90,7 @@ const createBinancePayOrder = async (user,reqData) => {
 
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
+    console.log(response,"-------------------------");
     if(response.data){
       await paymentDetailService.saveBinacePaymentDetails(user._id,response.data,reqData);
       return response.data;
