@@ -497,7 +497,7 @@ const calculateLifetimePerformance = async (userId) => {
       }else{
         return {
           lifetimePerformancePercentage: 0,
-          lifetimePerformance: userConfig?.walletAmount?userConfig?.walletAmount:0,
+          lifetimePerformance: 0,
         };
       }
     }
@@ -544,7 +544,7 @@ const calculateLastMonthPerformance = async (userId) => {
       } else {
         return {
           lastMonthPercentage: 0,
-          lastMonth: userConfig?.walletAmount ?userConfig?.walletAmount:0,
+          lastMonth: 0,
         };
       }
     }
