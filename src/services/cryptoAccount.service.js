@@ -2,11 +2,11 @@ const httpStatus = require('http-status');
 const Binance = require('node-binance-api');
 const { CryptoAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { transactionHistoryService } = require('.');
+const { getPaymentsByMerchantTrade } = require('../services/transactionHistory.service');
 
 const saveBinancePayment = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
-  const TransactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantTradeNo);
+  const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantTradeNo);
   if (TransactionDetails) {
     const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantTradeNo });
     if (!cryptoDetails) {
@@ -35,7 +35,7 @@ const saveBinancePayment = async (paymentData) => {
 
 const saveBinanceContract = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
-  const TransactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
+  const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantAccountNo);
   if (TransactionDetails) {
     const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.paymentData });
     if (!cryptoDetails) {
