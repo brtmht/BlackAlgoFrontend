@@ -206,7 +206,22 @@ const updateBinancePaymentDetails = async (paymentData) => {
     );
     return updatedPaymentDetail;
   }
+};
 
+
+  const updateBinanceSubscription = async (paymentData, subscription) => {
+    const PaymentDetails = await PaymentDetail.findOne({_id:paymentData.paymentDetailId, userId:paymentData.userId});
+    if(PaymentDetails){
+      const updatedPaymentDetail = await PaymentDetail.updateOne(
+        { _id:paymentData.paymentDetailId },
+        {
+          $set: {
+            subscriptionPlanId: subscription,
+          },
+        }
+      );
+      return updatedPaymentDetail;
+    }
 };
 
 
@@ -220,4 +235,5 @@ module.exports = {
   updateBinancePaymentDetails,
   getStripePayment,
   getPaymentByuserID,
+  updateBinanceSubscription,
 };

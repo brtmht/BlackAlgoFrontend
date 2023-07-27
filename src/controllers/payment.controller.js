@@ -11,6 +11,7 @@ const {
   binanceService,
   userExchangeConfig,
   subscriptionPlanService,
+  cryptoAccountService
 } = require('../services');
 const PaymentDetail = require('../models/paymentDetail.model');
 const mt4Server = require('../middlewares/mt4Server');
@@ -38,6 +39,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
+        const cryptoAccount = await cryptoAccountService.saveBinancePayment(req.body);
         const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
         if(!userConfig){
             await userExchangeConfig.updateBinanceSubscription(PaymentDetails.userId);  
@@ -64,6 +66,32 @@ const binanceWebhook = catchAsync(async (req, res) => {
         await paymentDetailService.updateBinancePaymentDetails(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         emitData('BinancePayResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: PaymentDetails });
+      }
+      res.send({
+        returnCode: 'SUCCESS',
+        returnMessage: null,
+      });
+    }
+
+    if (req.body.bizType === 'DIRECT_DEBIT_CT') {
+      if (req.body.bizStatus === 'CONTRACT_SIGNED') {
+        const payData = JSON.parse(req.body.data);
+        await cryptoAccountService.saveBinanceContract(req.body);
+        const transactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
+        
+        if (transactionDetails) {
+           await userExchangeConfig.activeSubscription(transactionDetails.userId); 
+           await  paymentDetailService.updateBinanceSubscription(transactionDetails,payData.contractId);  
+        }
+        emitData('BinanceContractResponse', { success: true, code: 201, message: 'contract created Successfully', data: transactionDetails });
+
+      }
+      if (req.body.bizStatus === 'CONTRACT_TERMINATED') {
+        const payData = JSON.parse(req.body.data);
+        await cryptoAccountService.UpdatedTerminatedContract(req.body);
+        const transactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
+        await userExchangeConfig.disconnectConnectionSubscription(transactionDetails.userId);
+        emitData('BinancePayResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: transactionDetails });
       }
       res.send({
         returnCode: 'SUCCESS',

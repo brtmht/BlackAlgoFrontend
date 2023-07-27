@@ -83,6 +83,14 @@ const getPaymentsById = async (id) => {
   }
   return paymentHistory;
 };
+
+const getPaymentsByMerchantTrade = async (id) => {
+  const History = await TransactionHistory.find({ merchantTradeNo: id });
+  if (!History) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
+  }
+  return History;
+};
 const getStripeTransactionHistory = async () => {
   const stripeHistory = await PaymentDetail.find({ cryptoId: null });
   if (!stripeHistory) {
@@ -104,4 +112,5 @@ module.exports = {
   getStripeTransactionHistory,
   getCryptoTransactionHistory,
   saveBinanceTransactionHistory,
+  getPaymentsByMerchantTrade,
 };

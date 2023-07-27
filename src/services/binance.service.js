@@ -24,11 +24,12 @@ const createBinancePayOrder = async (user,reqData) => {
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
   const firstDeductTime = timestamp + 10 * 24 * 60 * 60 * 1000;
+  const merchantdata = Math.floor(Math.random() * (9825382937292 - 982538) + 982538);
   const payload = {
     env: {
       terminalType: reqData.terminalType,
     },
-    merchantTradeNo: Math.floor(Math.random() * (9825382937292 - 982538) + 982538),
+    merchantTradeNo: merchantdata,
     orderAmount: reqData.orderAmount,
     currency: reqData.currency,
     goods: {
@@ -45,9 +46,9 @@ const createBinancePayOrder = async (user,reqData) => {
       periodic: true,
       cycleDebitFixed: true,
       cycleType: 'MONTH',
-      cycleValue: 12,
+      cycleValue: reqData.interval,
       firstDeductTime:firstDeductTime,
-      merchantAccountNo: user.email,
+      merchantAccountNo: merchantdata,
     },
   };
 
