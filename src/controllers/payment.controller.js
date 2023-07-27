@@ -80,7 +80,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
         
         if (transactionDetails) {
            await userExchangeConfig.activeSubscription(transactionDetails.userId); 
-           await  paymentDetailService.updateBinanceSubscription(transactionDetails,payData.contractId);  
+           await  paymentDetailService.updateBinanceSubscription(transactionDetails,req.body.bizIdStr);  
         }
         emitData('BinanceContractResponse', { success: true, code: 201, message: 'contract created Successfully', data: transactionDetails });
 
