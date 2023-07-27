@@ -9,6 +9,7 @@ const saveBinancePayment = async (paymentData) => {
   console.log(payData,"-----------------payData");
   const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantTradeNo);
   if (TransactionDetails) {
+    console.log(TransactionDetails,"------------------TransactionDetails");
     const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantTradeNo });
     console.log(cryptoDetails,"-----------------cryptoDetails");
     if (!cryptoDetails) {
