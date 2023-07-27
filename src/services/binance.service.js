@@ -27,14 +27,14 @@ const createBinancePayOrder = async (user,reqData) => {
   const timestamp = Math.round(Date.now());
   let firstDeductTime = new Date();
   let intervalType;
-  if (reqData.type === 'month') {
+  if (reqData.type === 'Monthly') {
     const currentMonth = firstDeductTime.getMonth();
     const nextMonth = currentMonth + 1;
     firstDeductTime.setMonth(nextMonth);
     firstDeductTime = Math.round(new Date(firstDeductTime));
     intervalType = 1;
   }
-  if (reqData.type === 'yearly') {
+  if (reqData.type === 'Yearly') {
     const currentDate = new Date();
     const nextYear = currentDate.getFullYear() + 1;
     firstDeductTime.setYear(nextYear);

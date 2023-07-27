@@ -112,6 +112,7 @@ const stripeWebhook = catchAsync(async (req) => {
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
   // let paymentData;
+  console.log(req.body.paymentType,"--------------------------");
   const user = req.user._id;
   if (req.body.paymentType !== 'crypto' && req.body.paymentType !== 'card') {
     res.send({ success: false, error_code: 403, message: 'payment type not valid' });
