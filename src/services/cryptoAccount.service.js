@@ -87,7 +87,7 @@ const saveBinanceContract = async (paymentData) => {
 
 const UpdatedTerminatedContract = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
-    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.paymentData });
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantAccountNo });
     if (cryptoDetails) {
       const cryptoHistory = await CryptoAccount.updateOne(
         { merchantAccountNo: payData.merchantAccountNo },
