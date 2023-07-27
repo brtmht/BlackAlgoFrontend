@@ -23,7 +23,20 @@ const createBinancePayOrder = async (user,reqData) => {
 
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
-  const firstDeductTime = timestamp + 10 * 24 * 60 * 60 * 1000;
+  let firstDeductTime = new Date();
+  if (reqData.type === 'monthly') {
+    const currentMonth = firstDeductTime.getMonth();
+    const nextMonth = currentMonth + 1;
+    firstDeductTime.setMonth(nextMonth);
+    firstDeductTime = Math.round(new Date(firstDeductTime));
+  }
+  if (reqData.type === 'yearly') {
+    const currentDate = new Date();
+    const nextYear = currentDate.getFullYear() + 1;
+    firstDeductTime.setYear(nextYear);
+    console.log('Current Date:', firstDeductTime);
+    firstDeductTime = Math.round(new Date(firstDeductTime));
+  }
   const merchantdata = Math.floor(Math.random() * (9825382937292 - 982538) + 982538);
   const payload = {
     env: {
