@@ -11,7 +11,6 @@ const {
   binanceService,
   userExchangeConfig,
   subscriptionPlanService,
-  cryptoAccountService
 } = require('../services');
 const PaymentDetail = require('../models/paymentDetail.model');
 const mt4Server = require('../middlewares/mt4Server');
