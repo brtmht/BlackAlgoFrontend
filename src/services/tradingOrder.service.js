@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { symbol } = require('joi');
 const mt4Server = require('../middlewares/mt4Server');
 const { getUserExchangeConfigByUserId, updateServerTokenById } = require('./userExchangeConfig.service');
+const moment = require('moment');
 
 /**
  * Create a TradingOrder
