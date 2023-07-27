@@ -230,6 +230,11 @@ const updateBinanceSubscription = async (userId) => {
       subscriptionStatus: false,
       connected: true,
     });
+  }else{
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: user.userId },
+      { $set: { connected: true, subscriptionStatus: false } },
+    );
   }
 
   
