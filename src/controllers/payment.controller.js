@@ -39,24 +39,24 @@ const binanceWebhook = catchAsync(async (req, res) => {
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
         const cryptoAccount = await cryptoAccountService.saveBinancePayment(req.body);
-        const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
-        if(!userConfig){
+        // const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
+        // if(!userConfig){
             await userExchangeConfig.updateBinanceSubscription(PaymentDetails.userId);  
-        }
-        if (payment) {
-          if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
-            await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
-             if(userConfig){
-                 await userExchangeConfig.activeConnection(PaymentDetails.userId);
-                 await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
-             }
-           }
-        }else{ 
-          const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
-          if(userConfig){
-              await userExchangeConfig.activeConnection(PaymentDetails.userId);
-          }
-        }
+        // }
+        // if (payment) {
+        //   if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
+        //     await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
+        //      if(userConfig){
+        //          await userExchangeConfig.activeConnection(PaymentDetails.userId);
+        //          await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
+        //      }
+        //    }
+        // }else{ 
+        //   const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
+        //   if(userConfig){
+        //       await userExchangeConfig.activeConnection(PaymentDetails.userId);
+        //   }
+        // }
        
         emitData('BinancePayResponse', { success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
 

@@ -222,7 +222,7 @@ const updateStripeSubscription = async (user) => {
 const updateBinanceSubscription = async (userId) => {
  const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
-
+console.log(user,"------------------------user");
     return UserExchangeConfig.create({
       userId: user.userId,
       exchangeId: user.exchangeId,

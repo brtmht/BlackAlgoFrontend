@@ -6,9 +6,11 @@ const { getPaymentsByMerchantTrade } = require('../services/transactionHistory.s
 
 const saveBinancePayment = async (paymentData) => {
   const payData = JSON.parse(paymentData.data);
+  console.log(payData,"-----------------payData");
   const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantTradeNo);
   if (TransactionDetails) {
     const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantTradeNo });
+    console.log(cryptoDetails,"-----------------cryptoDetails");
     if (!cryptoDetails) {
       const history = await CryptoAccount.create({
         userId: TransactionDetails.userId,
@@ -16,6 +18,7 @@ const saveBinancePayment = async (paymentData) => {
         paymentMethod: payData.paymentInfo.payMethod,
         merchantAccountNo: payData.merchantTradeNo,
       });
+      console.log(history,"-----------------history");
       if (!history) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
       }
@@ -30,6 +33,7 @@ const saveBinancePayment = async (paymentData) => {
         },
       }
     );
+    console.log(cryptoHistory,"-----------------cryptoHistorycryptoHistory");
     return cryptoHistory;
   }
 };
