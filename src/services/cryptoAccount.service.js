@@ -93,6 +93,24 @@ const UpdatedTerminatedContract = async (paymentData) => {
     }
 };
 
+const manuallyUpdatedTerminatedContract = async (id) => {
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: id });
+    if (cryptoDetails) {
+      const cryptoHistory = await CryptoAccount.updateOne(
+        { merchantAccountNo: id },
+        {
+          $set: {
+            bizStatus: "CONTRACT_TERMINATED",
+          },
+        }
+      );
+      return cryptoHistory;
+    }
+    if (!cryptoDetails) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'There is no contract in history');
+    }
+};
+
 const getDataByMerchantAccountNo = async (id) => {
   const History = await CryptoAccount.findOne({ merchantAccountNo: id });
   if (!History) {
@@ -107,4 +125,5 @@ module.exports = {
   saveBinanceContract,
   UpdatedTerminatedContract,
   getDataByMerchantAccountNo,
+  manuallyUpdatedTerminatedContract,
 };

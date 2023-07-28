@@ -168,34 +168,30 @@ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
   }
 });
 const terminateSubscription = catchAsync(async (req, res) => {
-  console.log("======================");
   console.log(req.user._id);
   const userDetail = await userStrategyService.getUserStrategyByUser(req.user._id);
   if(userDetail){
-    console.log(userDetail,"---------------");
     const paymentDetail = await paymentDetailService.getPayments(userDetail.paymentDetailId);
-  console.log(paymentDetail,"---------------");
     if(paymentDetail){
      
      if(paymentDetail.subscriptionPlanId.startsWith("sub_")){
      const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
-     console.log(stripeResponse,"---------------------------stripeResponse");
      if(stripeResponse.status === 'canceled'){
      const response = await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
      res.send({ success: true, code: 200, message: 'Stripe Subscription cancelled Successfully' });
      }
      }else{
       if(paymentDetail.subscriptionPlanId){
-        console.log("------------------enter");
         const transaction = await transactionHistoryService.getPaymentsByPaymentDetailId(paymentDetail._id);
-        console.log(transaction,"-------------------transaction");
         if(transaction){
           const crypto = await cryptoAccountService.getDataByMerchantAccountNo(transaction.merchantTradeNo);
-console.log(crypto,"-------------------crypto");
           const binanceResponse = await binanceService.deactivateBinanceSubscription(paymentDetail.subscriptionPlanId,crypto.merchantContractCode);
-          console.log(binanceResponse,"---------------------------binanceResponse");
-          await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
-          res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
+          if(binanceResponse === 'true'){
+            await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
+            await cryptoAccountService.manuallyUpdatedTerminatedContract(transaction.merchantTradeNo);
+            res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
+          }
+          
         }
         
     
