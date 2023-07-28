@@ -176,15 +176,8 @@ const terminateSubscription = catchAsync(async (req, res) => {
     const paymentDetail = await paymentDetailService.getPayments(userDetail.paymentDetailId);
   console.log(paymentDetail,"---------------");
     if(paymentDetail){
-      const pattern = /^sub_/;
-      const extractSubValue = (str) => {
-        const match = str.match(pattern);
-        return match ? str.substring(match.index) : null;
-      };
-
-     const subscription = extractSubValue(paymentDetail.subscriptionPlanId);
-     console.log(subscription,"-------------------subscription");
-     if(!subscription || subscription !== null){
+     
+     if(paymentDetail.subscriptionPlanId.startsWith("sub_")){
      const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
      console.log(stripeResponse,"---------------------------stripeResponse");
      if(stripeResponse.status === 'canceled'){
