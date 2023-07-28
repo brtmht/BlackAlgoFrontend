@@ -199,11 +199,14 @@ const terminateSubscription = catchAsync(async (req, res) => {
           console.log(transaction,"-------------------tra");
           if (transaction) {
             const crypto = await cryptoAccountService.getDataByMerchantAccountNo(transaction.merchantTradeNo);
+            console.log(crypto);
             const binanceResponse = await binanceService.deactivateBinanceSubscription(
               paymentDetail.subscriptionPlanId,
               crypto.merchantContractCode
             );
+            console.log(binanceResponse);
             if (binanceResponse === 'true') {
+              console.log("===========================");
               await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
               await cryptoAccountService.manuallyUpdatedTerminatedContract(transaction.merchantTradeNo);
               res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
