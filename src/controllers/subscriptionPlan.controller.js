@@ -183,6 +183,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
       };
 
      const subscription = extractSubValue(paymentDetail.subscriptionPlanId);
+     console.log(subscription,"-------------------subscription");
      if(!subscription || subscription !== null){
      const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
      console.log(stripeResponse,"---------------------------stripeResponse");
@@ -192,10 +193,13 @@ const terminateSubscription = catchAsync(async (req, res) => {
      }
      }else{
       if(paymentDetail.subscriptionPlanId){
+        console.log("------------------enter");
         const transaction = await transactionHistoryService.getPaymentsByPaymentDetailId(paymentDetail._id);
+        console.log(transaction,"-------------------transaction");
         if(transaction){
           const crypto = await cryptoAccountService.getDataByMerchantAccountNo(transaction.merchantTradeNo);
-          const binanceResponse = await binanceService.deactivateBinanceSubscription(paymentDetail.subscriptionPlanId,transaction.merchantContractCode);
+console.log(crypto,"-------------------crypto");
+          const binanceResponse = await binanceService.deactivateBinanceSubscription(paymentDetail.subscriptionPlanId,crypto.merchantContractCode);
           console.log(binanceResponse,"---------------------------binanceResponse");
           await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
           res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
