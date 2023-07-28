@@ -41,15 +41,12 @@ const binanceWebhook = catchAsync(async (req, res) => {
         // if(!userConfig){
             await userExchangeConfig.updateBinanceSubscription(PaymentDetails.userId);  
         // }
-        // if (payment) {
-        //   if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
-        //     await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
-        //      if(userConfig){
-        //          await userExchangeConfig.activeConnection(PaymentDetails.userId);
-        //          await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
-        //      }
-        //    }
-        // }else{ 
+        if (payment) {
+          if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
+            await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
+           }
+        }
+        //else{ 
         //   const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
         //   if(userConfig){
         //       await userExchangeConfig.activeConnection(PaymentDetails.userId);
