@@ -183,10 +183,8 @@ const terminateSubscription = catchAsync(async (req, res) => {
   console.log(req.user._id);
   const userDetail = await userStrategyService.getUserStrategyByUser(req.user._id);
   if (userDetail) {
-    console.log(userDetail,"------------------------user");
     const paymentDetail = await paymentDetailService.getPayments(userDetail.paymentDetailId);
     if (paymentDetail) {
-      console.log(paymentDetail,"----------------------pay",paymentDetail.subscriptionPlanId.startsWith('sub_'));
       if (paymentDetail.subscriptionPlanId.startsWith('sub_')) {
         const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
         if (stripeResponse.status === 'canceled') {
@@ -196,7 +194,6 @@ const terminateSubscription = catchAsync(async (req, res) => {
       } else {
         if (paymentDetail.subscriptionPlanId) {
           const transaction = await transactionHistoryService.getPaymentsByPaymentDetailId(paymentDetail._id);
-          console.log(transaction,"-------------------tra");
           if (transaction) {
             const crypto = await cryptoAccountService.getDataByMerchantAccountNo(transaction.merchantTradeNo);
             console.log(crypto);
@@ -206,7 +203,6 @@ const terminateSubscription = catchAsync(async (req, res) => {
             );
             console.log(binanceResponse);
             if (binanceResponse) {
-              console.log("===========================");
               await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
               await cryptoAccountService.manuallyUpdatedTerminatedContract(transaction.merchantTradeNo);
               res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
@@ -215,8 +211,10 @@ const terminateSubscription = catchAsync(async (req, res) => {
         }
       }
     }
+  }else{
+    throw new ApiError(httpStatus.NOT_FOUND, 'Error in user data');
   }
-  throw new ApiError(httpStatus.NOT_FOUND, 'Error in user data');
+  
 });
 
 module.exports = {
