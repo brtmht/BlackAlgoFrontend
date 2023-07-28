@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { subscriptionPlanService } = require('../services');
+const { subscriptionPlanService, userStrategyService, paymentDetailService, binanceService, userExchangeConfig, transactionHistoryService, cryptoAccountService } = require('../services');
 const { getActiveUser, updateServerTokenById, disconnectConnection } = require('../services/userExchangeConfig.service');
 const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
@@ -167,6 +167,47 @@ const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
     res.status(500).send({ success: false, error_code: 500, message: 'Internal server error' });
   }
 });
+const terminateSubscription = catchAsync(async (req, res) => {
+  console.log("======================");
+  console.log(req.user._id);
+  const userDetail = await userStrategyService.getUserStrategyByUser(req.user._id);
+  if(userDetail){
+    console.log(userDetail,"---------------");
+    const paymentDetail = await paymentDetailService.getPayments(userDetail.paymentDetailId);
+  console.log(paymentDetail,"---------------");
+    if(paymentDetail){
+      const pattern = /^sub_/;
+      const extractSubValue = (str) => {
+        const match = str.match(pattern);
+        return match ? str.substring(match.index) : null;
+      };
+
+     const subscription = extractSubValue(paymentDetail.subscriptionPlanId);
+     if(!subscription || subscription !== null){
+     const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
+     console.log(stripeResponse,"---------------------------stripeResponse");
+     if(stripeResponse.status === 'canceled'){
+     const response = await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
+     res.send({ success: true, code: 200, message: 'Stripe Subscription cancelled Successfully' });
+     }
+     }else{
+      if(paymentDetail.subscriptionPlanId){
+        const transaction = await transactionHistoryService.getPaymentsByPaymentDetailId(paymentDetail._id);
+        if(transaction){
+          const crypto = await cryptoAccountService.getDataByMerchantAccountNo(transaction.merchantTradeNo);
+          const binanceResponse = await binanceService.deactivateBinanceSubscription(paymentDetail.subscriptionPlanId,transaction.merchantContractCode);
+          console.log(binanceResponse,"---------------------------binanceResponse");
+          await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
+          res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
+        }
+        
+    
+      }
+     }  
+    }
+  }
+  throw new ApiError(httpStatus.NOT_FOUND, 'Error in user data');
+});
 
 module.exports = {
   getSubscriptionPlans,
@@ -180,4 +221,5 @@ module.exports = {
   getAllSubscriptionPlans,
   requestForSubscription,
   upgradeSubscriptionPlan,
+  terminateSubscription,
 };

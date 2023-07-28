@@ -106,7 +106,6 @@ const getConnectedUserExchangeConfig = async (id) => {
 
 const updateUserExchangeConfigById = async (user_id, updateBody, serverToken) => {
   const wallet_amount = await mt4Server.accountSummary(serverToken);
-  console.log(wallet_amount);
   const exchangeConfig = await UserExchangeConfig.findOne({ userId: user_id });
   if (!exchangeConfig) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserExchangeConfig Id not found');
@@ -222,7 +221,6 @@ const updateStripeSubscription = async (user) => {
 const updateBinanceSubscription = async (userId) => {
  const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
-console.log(user,"------------------------user");
     return UserExchangeConfig.create({
       userId: user.userId,
       exchangeId: user.exchangeId,

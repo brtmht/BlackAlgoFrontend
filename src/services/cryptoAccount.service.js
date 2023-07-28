@@ -93,9 +93,18 @@ const UpdatedTerminatedContract = async (paymentData) => {
     }
 };
 
+const getDataByMerchantAccountNo = async (id) => {
+  const History = await CryptoAccount.findOne({ merchantAccountNo: id });
+  if (!History) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'There is no merchant data in history');
+  }
+  return History;
+};
+
 
 module.exports = {
   saveBinancePayment,
   saveBinanceContract,
   UpdatedTerminatedContract,
+  getDataByMerchantAccountNo,
 };

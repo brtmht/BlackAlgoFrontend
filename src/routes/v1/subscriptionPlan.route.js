@@ -55,6 +55,12 @@ router
     auth(),
     subscriptionPlanController.upgradeSubscriptionPlan
   );
+  router
+  .route('/terminateSubscription')
+  .post(
+    auth('terminateSubscription'),
+    subscriptionPlanController.terminateSubscription
+  );
 
 module.exports = router;
 
