@@ -26,36 +26,35 @@ const getPaymentById = catchAsync(async (req, res) => {
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
   const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
-  console.log(binanceData, '==============binanceData');
   res.send(binanceData);
 });
 // // log in binance
 const binanceWebhook = catchAsync(async (req, res) => {
-  console.log(req.body, '===========req.body');
   if (req.body) {
     if (req.body.bizType === 'PAY') {
       if (req.body.bizStatus === 'PAY_SUCCESS') {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         const payment = await paymentDetailService.getStripePayment(PaymentDetails.userId,req.body.bizIdStr);
-        const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
-        if(!userConfig){
+        const cryptoAccount = await cryptoAccountService.saveBinancePayment(req.body);
+        // const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
+        // if(!userConfig){
             await userExchangeConfig.updateBinanceSubscription(PaymentDetails.userId);  
-        }
-        if (payment) {
-          if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
-            await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
-             if(userConfig){
-                 await userExchangeConfig.activeConnection(PaymentDetails.userId);
-                 await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
-             }
-           }
-        }else{ 
-          const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
-          if(userConfig){
-              await userExchangeConfig.activeConnection(PaymentDetails.userId);
-          }
-        }
+        // }
+        // if (payment) {
+        //   if(payment && payment.paymentStatus === 'success' && (payment?.subscriptionPlanId !== null || payment?.subscriptionPlanId !== undefined || !empty(payment?.subscriptionPlanId))){
+        //     await subscriptionPlanService.deactivateStripeSubscription(payment.subscriptionPlanId); 
+        //      if(userConfig){
+        //          await userExchangeConfig.activeConnection(PaymentDetails.userId);
+        //          await userExchangeConfig.disconnectConnectionSubscription(PaymentDetails.userId);
+        //      }
+        //    }
+        // }else{ 
+        //   const userConfig = await userExchangeConfig.getUserExchangeConfigByUserId(PaymentDetails.userId);
+        //   if(userConfig){
+        //       await userExchangeConfig.activeConnection(PaymentDetails.userId);
+        //   }
+        // }
        
         emitData('BinancePayResponse', { success: true, code: 201, message: 'payment Successfully', data: PaymentDetails });
 
@@ -64,6 +63,32 @@ const binanceWebhook = catchAsync(async (req, res) => {
         await paymentDetailService.updateBinancePaymentDetails(req.body);
         const PaymentDetails = await paymentDetailService.getPaymentByToken(req.body.bizIdStr);
         emitData('BinancePayResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: PaymentDetails });
+      }
+      res.send({
+        returnCode: 'SUCCESS',
+        returnMessage: null,
+      });
+    }
+
+    if (req.body.bizType === 'DIRECT_DEBIT_CT') {
+      if (req.body.bizStatus === 'CONTRACT_SIGNED') {
+        const payData = JSON.parse(req.body.data);
+        await cryptoAccountService.saveBinanceContract(req.body);
+        const transactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
+        
+        if (transactionDetails) {
+           await userExchangeConfig.activeSubscription(transactionDetails.userId); 
+           await  paymentDetailService.updateBinanceSubscription(transactionDetails,req.body.bizIdStr);  
+        }
+       emitData('BinanceContractResponse', { success: true, code: 201, message: 'contract created Successfully', data: transactionDetails });
+
+      }
+      if (req.body.bizStatus === 'CONTRACT_TERMINATED') {
+        const payData = JSON.parse(req.body.data);
+        await cryptoAccountService.UpdatedTerminatedContract(req.body);
+        const transactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
+        await userExchangeConfig.disconnectConnectionSubscription(transactionDetails.userId);
+       emitData('BinanceContractResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: transactionDetails });
       }
       res.send({
         returnCode: 'SUCCESS',
@@ -85,6 +110,7 @@ const stripeWebhook = catchAsync(async (req) => {
 // create stripe payment Token
 const createPayment = catchAsync(async (req, res) => {
   // let paymentData;
+  console.log(req.body.paymentType,"--------------------------");
   const user = req.user._id;
   if (req.body.paymentType !== 'crypto' && req.body.paymentType !== 'card') {
     res.send({ success: false, error_code: 403, message: 'payment type not valid' });

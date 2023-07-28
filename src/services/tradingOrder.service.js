@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { symbol } = require('joi');
 const mt4Server = require('../middlewares/mt4Server');
 const { getUserExchangeConfigByUserId, updateServerTokenById } = require('./userExchangeConfig.service');
+const moment = require('moment');
 
 /**
  * Create a TradingOrder
@@ -423,37 +424,27 @@ const calculateTodayPerformance = async (userId) => {
       } else {
         BrokerToken = userConfig.serverToken;
       }
+      const currentDate = new Date();
+      const startDay = moment(currentDate).subtract(1, 'days').startOf('day').toDate();
+      const endOfDay = moment(currentDate).subtract(1, 'days').endOf('day').toDate();
 
-      // Get today's date and yesterday's date
-      const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-
-      // Get the latest trading order for today
-      const todayTradingOrder = await TradingOrder.findOne({ userId: userId, createdAt: { $gte: today } })
-        .sort({ createdAt: -1 })
-        .exec();
+     
 
       // Get the latest trading order for yesterday
       const yesterdayTradingOrder = await TradingOrder.findOne({
         userId: userId,
-        createdAt: { $gte: yesterday, $lt: today },
+        createdAt: { $gte: startDay, $lte: endOfDay },
       })
         .sort({ createdAt: -1 })
         .exec();
 
       const portfolioSize = await mt4Server.accountSummary(BrokerToken);
-      const lastTradingOrder = await TradingOrder.findOne({ userId: userId }).sort({ createdAt: -1 }).exec();
-      const todayPerformance = todayTradingOrder
-        ? todayTradingOrder.balance
-        : portfolioSize - yesterdayTradingOrder
-        ? yesterdayTradingOrder.balance
-        :lastTradingOrder ? lastTradingOrder.balance : 0;
+
+      const todayPerformance = yesterdayTradingOrder ? portfolioSize.balance - yesterdayTradingOrder.balance : 0;
 
       // Calculate the percentage
-      const initialBalance = yesterdayTradingOrder?.balance;
+      const initialBalance = portfolioSize.balance;
       const todayPerformancePercentage = (todayPerformance / initialBalance) * 100;
-
       // Determine if it's a profit or loss
       const isProfit = todayPerformancePercentage >= 0;
       const sign = isProfit ? '+' : '-';
@@ -461,7 +452,7 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2);
 
-      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: lastTradingOrder && yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
+      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
@@ -500,7 +491,7 @@ const calculateLifetimePerformance = async (userId) => {
       }else{
         return {
           lifetimePerformancePercentage: 0,
-          lifetimePerformance: userConfig?.walletAmount?userConfig?.walletAmount:0,
+          lifetimePerformance: 0,
         };
       }
     }
@@ -547,7 +538,7 @@ const calculateLastMonthPerformance = async (userId) => {
       } else {
         return {
           lastMonthPercentage: 0,
-          lastMonth: userConfig?.walletAmount ?userConfig?.walletAmount:0,
+          lastMonth: 0,
         };
       }
     }

@@ -222,7 +222,7 @@ const updateStripeSubscription = async (user) => {
 const updateBinanceSubscription = async (userId) => {
  const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
-
+console.log(user,"------------------------user");
     return UserExchangeConfig.create({
       userId: user.userId,
       exchangeId: user.exchangeId,
@@ -230,6 +230,11 @@ const updateBinanceSubscription = async (userId) => {
       subscriptionStatus: false,
       connected: true,
     });
+  }else{
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: user.userId },
+      { $set: { connected: true, subscriptionStatus: false } },
+    );
   }
 
   
@@ -320,6 +325,20 @@ const activeConnection = async (id) => {
   }
 };
 
+const activeSubscription = async (id) => {
+  const data = UserExchangeConfig.findOne({ userId: id });
+  if (data) {
+   return UserExchangeConfig.findOneAndUpdate(
+      { userId: id },
+      {
+        $set: {
+          subscriptionStatus:true,
+        },
+      }
+    );
+  }
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -339,5 +358,6 @@ module.exports = {
   getConnectedAccountUser,
   activeConnection,
   updateBinanceSubscription,
+  activeSubscription,
 
 };

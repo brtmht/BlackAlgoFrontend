@@ -37,7 +37,7 @@ module.exports = router;
  *     summary: Create a payment using card and crypto
  *     description: |
  *       Options for step:
- *       - Options for crypto { "paymentType" : "crypto","terminalType": "WEB","orderAmount":"0.6","currency": "USDT","portfolioAmount": "10","type": "month"}. |
+ *       - Options for crypto { "paymentType" : "crypto","terminalType": "WEB","orderAmount":0.6,"currency": "USDT","portfolioAmount": "10","type": "month"}. |
  *       - Options for card { "email": "exampl@example.com","phone": "8973655725","amount": 100,"currency": "inr","name": "john deo","paymentType": "card","subscriptionplanId": "642c5224d1ad6a54f0407072"}.
  *     tags: [Payment]
  *     security:

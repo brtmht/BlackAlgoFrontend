@@ -15,10 +15,8 @@ const createUser = async (userBody) => {
     throw new ApiError(httpStatus.CONFLICT, 'Email already taken');
   }
   const { name, email, password, role } = userBody;
-  const newName = name.toLowerCase();
-  // const newMail = email.toLowerCase()
   return User.create({
-    name: newName,
+    name,
     email,
     password,
     role,

@@ -2,6 +2,8 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const { paymentDetailService } = require('.');
+const ApiError = require('../utils/ApiError');
+const httpStatus = require('http-status');
 const binancePayKey = process.env.BINANCE_PAY_KEY;
 const binancePaySecret = process.env.BINANCE_PAY_SECRET_KEY;
 
@@ -23,13 +25,29 @@ const createBinancePayOrder = async (user,reqData) => {
 
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
-  const firstDeductTime = timestamp + 10 * 24 * 60 * 60 * 1000;
+  let firstDeductTime = new Date();
+  let intervalType;
+  if (reqData.type === 'Monthly') {
+    const currentMonth = firstDeductTime.getMonth();
+    const nextMonth = currentMonth + 1;
+    firstDeductTime.setMonth(nextMonth);
+    firstDeductTime = Math.round(new Date(firstDeductTime));
+    intervalType = 1;
+  }
+  if (reqData.type === 'Yearly') {
+    const currentDate = new Date();
+    const nextYear = currentDate.getFullYear() + 1;
+    firstDeductTime.setYear(nextYear);
+    firstDeductTime = Math.round(new Date(firstDeductTime));
+    intervalType = 12;
+  }
+  const merchantdata = Math.floor(Math.random() * (9825382937292 - 982538) + 982538);
   const payload = {
     env: {
       terminalType: reqData.terminalType,
     },
-    merchantTradeNo: Math.floor(Math.random() * (9825382937292 - 982538) + 982538),
-    orderAmount: reqData.orderAmount,
+    merchantTradeNo: merchantdata,
+    orderAmount: reqData.orderAmount.toString(),
     currency: reqData.currency,
     goods: {
       goodsType: '02',
@@ -41,13 +59,13 @@ const createBinancePayOrder = async (user,reqData) => {
       merchantContractCode: nonce,
       serviceName: 'Tra Direct Debit',
       scenarioCode: 'Membership',
-      singleUpperLimit: reqData.orderAmount,
+      singleUpperLimit: reqData.orderAmount.toString(),
       periodic: true,
       cycleDebitFixed: true,
       cycleType: 'MONTH',
-      cycleValue: 12,
+      cycleValue: intervalType,
       firstDeductTime:firstDeductTime,
-      merchantAccountNo: user.email,
+      merchantAccountNo: merchantdata,
     },
   };
 
@@ -77,7 +95,7 @@ const createBinancePayOrder = async (user,reqData) => {
     }
     
   } catch (error) {
-    console.error(error.message);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
 };
 
@@ -169,7 +187,6 @@ const createBinancePayment = async (userId, reqData) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/pay/apply';
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
-  console.log(timestamp,"-------------------------");
   const payload = {
     // subMerchantId: 123,
     merchantRequestId: reqData.merchantId,
@@ -183,9 +200,7 @@ const createBinancePayment = async (userId, reqData) => {
   const jsonRequest = JSON.stringify(payload);
 
   const requestData = { timestamp, nonce, jsonRequest };
-console.log(requestData,"-------------------------");
   const response = await callBinancePayAPI(endpoint, requestData);
-console.log(response,"-------------------------response");
   if (response) {
    // await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;

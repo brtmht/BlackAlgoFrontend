@@ -2,99 +2,100 @@ const httpStatus = require('http-status');
 const Binance = require('node-binance-api');
 const { CryptoAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
-/**
- * Create a subscriptionPlan
- * @param {Object} subscriptionPlanBody
- * @returns {Promise<CryptoAccount>}
- */
-const createCryptoAccount = async (cryptoAccountBody) => {
-  if (await CryptoAccount.isNameTaken(cryptoAccountBody.name)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
+const { getPaymentsByMerchantTrade } = require('../services/transactionHistory.service');
+
+const saveBinancePayment = async (paymentData) => {
+  const payData = JSON.parse(paymentData.data);
+  const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantTradeNo);
+  if (TransactionDetails) {
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantTradeNo });
+    if (!cryptoDetails) {
+      const history = await CryptoAccount.create({
+        userId: TransactionDetails.userId,
+        period: payData.productName,
+        paymentMethod: payData.paymentInfo.payMethod,
+        merchantAccountNo: payData.merchantTradeNo,
+      });
+      if (!history) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'There is no transactions in history');
+      }
+      return history;
+    }
+    const cryptoHistory = await CryptoAccount.updateOne(
+      { merchantAccountNo: payData.merchantTradeNo },
+      {
+        $set: {
+          period: payData.productName,
+          paymentMethod: payData.paymentInfo.payMethod,
+        },
+      }
+    );
+    return cryptoHistory;
   }
-  return CryptoAccount.create(cryptoAccountBody);
-};
-const getBinance = async () => {};
-
-const createBinanceLogIn = async () => {
-  const binance = new Binance().options({
-    APIKEY: process.env.API_BINANCE_KEY,
-    APISECRET: process.env.BINANCE_SECRET,
-  });
-  return binance;
 };
 
-/**
- * Query for subscriptionPlans
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
- */
-const queryCryptoAccount = async (filter, options) => {
-  const subscriptionPlans = await CryptoAccount.paginate(filter, options);
-  return subscriptionPlans;
-};
-
-/**
- * Get subscriptionPlan by id
- * @param {ObjectId} id
- * @returns {Promise<SubscriptionPlan>}
- */
-const getCryptoAccountById = async (id) => {
-  return CryptoAccount.findById(id);
-};
-
-/**
- * Get subscriptionPlan by name
- * @param {string} name
- * @returns {Promise<SubscriptionPlan>}
- */
-const getCryptoAccountByName = async (name) => {
-  return CryptoAccount.findOne({ name });
-};
-
-/**
- * Update subscriptionPlan by id
- * @param {ObjectId} cryptoId
- * @param {Object} updateBody
- * @returns {Promise<SubscriptionPlan>}
- */
-const updateCryptoAccountById = async (cryptoId, updateBody) => {
-  const crypto = await getCryptoAccountById(cryptoId);
-  if (!crypto) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Crypto not found');
+const saveBinanceContract = async (paymentData) => {
+  const payData = JSON.parse(paymentData.data);
+  const TransactionDetails = await getPaymentsByMerchantTrade(payData.merchantAccountNo);
+  if (TransactionDetails) {
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantAccountNo });
+    if (!cryptoDetails) {
+      const history = await CryptoAccount.create({
+        userId: TransactionDetails.userId,
+        merchantContractCode: payData.merchantContractCode,
+        contractId: payData.contractId,
+        openUserId: payData.openUserId,
+        merchantAccountNo: payData.merchantAccountNo,
+        singleUpperLimit: payData.singleUpperLimit,
+        bizId: paymentData.bizId,
+        bizStatus: paymentData.bizStatus,
+      });
+      if (!history) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'There is no contract in history');
+      }
+      return history;
+    }
+    const cryptoHistory = await CryptoAccount.updateOne(
+      { merchantAccountNo: payData.merchantAccountNo },
+      {
+        $set: {
+          merchantContractCode: payData.merchantContractCode,
+          contractId: payData.contractId,
+          openUserId: payData.openUserId,
+          merchantAccountNo: payData.merchantAccountNo,
+          singleUpperLimit: payData.singleUpperLimit,
+          bizId: paymentData.bizId,
+          bizStatus: paymentData.bizStatus,
+        },
+      }
+    );
+    return cryptoHistory;
   }
-  const updateCrypto = await CryptoAccount.findByIdAndUpdate(cryptoId, {
-    ...updateBody,
-  });
-
-  return updateCrypto;
 };
 
-/**
- * Delete exchange by id
- * @param {ObjectId} cryptoId
- * @returns {Promise<Exchange>}
- */
 
-const deleteCryptoAccountById = async (cryptoId) => {
-  const crypto = await getCryptoAccountById(cryptoId);
-  if (!crypto) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'crypto not found');
-  }
-  const cryptoDeleted = await CryptoAccount.findByIdAndUpdate(cryptoId, { isDeleted: true });
-  return cryptoDeleted;
+const UpdatedTerminatedContract = async (paymentData) => {
+  const payData = JSON.parse(paymentData.data);
+    const cryptoDetails = await CryptoAccount.findOne({ merchantAccountNo: payData.merchantAccountNo });
+    if (cryptoDetails) {
+      const cryptoHistory = await CryptoAccount.updateOne(
+        { merchantAccountNo: payData.merchantAccountNo },
+        {
+          $set: {
+            bizStatus: paymentData.bizStatus,
+          },
+        }
+      );
+      return cryptoHistory;
+    }
+    if (!cryptoDetails) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'There is no contract in history');
+    }
 };
+
 
 module.exports = {
-  getBinance,
-  createBinanceLogIn,
-  createCryptoAccount,
-  queryCryptoAccount,
-  getCryptoAccountById,
-  getCryptoAccountByName,
-  updateCryptoAccountById,
-  deleteCryptoAccountById,
+  saveBinancePayment,
+  saveBinanceContract,
+  UpdatedTerminatedContract,
 };

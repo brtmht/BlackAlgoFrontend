@@ -38,7 +38,6 @@ const saveBinacePaymentDetails = async (userId,paymentData,reqData) => {
       amount: reqData.orderAmount,
       portfolioAmount: reqData?.portfolioAmount? reqData?.portfolioAmount:'',
       paymentToken: paymentData.data.prepayId,
-      //subscriptionPlanId: paymentData.data.preContractId,
       paymentStatus: paymentData.status === 'SUCCESS' ? "success":"incomplete",
     });
   
@@ -206,7 +205,22 @@ const updateBinancePaymentDetails = async (paymentData) => {
     );
     return updatedPaymentDetail;
   }
+};
 
+
+  const updateBinanceSubscription = async (paymentData, subscription) => {
+    const PaymentDetails = await PaymentDetail.findOne({_id:paymentData.paymentDetailId, userId:paymentData.userId});
+    if(PaymentDetails){
+      const updatedPaymentDetail = await PaymentDetail.updateOne(
+        { _id:paymentData.paymentDetailId },
+        {
+          $set: {
+            subscriptionPlanId: subscription,
+          },
+        }
+      );
+      return updatedPaymentDetail;
+    }
 };
 
 
@@ -220,4 +234,5 @@ module.exports = {
   updateBinancePaymentDetails,
   getStripePayment,
   getPaymentByuserID,
+  updateBinanceSubscription,
 };
