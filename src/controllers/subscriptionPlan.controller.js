@@ -205,7 +205,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
               crypto.merchantContractCode
             );
             console.log(binanceResponse);
-            if (binanceResponse == 'true') {
+            if (binanceResponse) {
               console.log("===========================");
               await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
               await cryptoAccountService.manuallyUpdatedTerminatedContract(transaction.merchantTradeNo);
