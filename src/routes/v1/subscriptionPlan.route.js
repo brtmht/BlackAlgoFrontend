@@ -49,18 +49,8 @@ router
     validate(subscriptionPlanValidation.requestSubscriptionPlan),
     subscriptionPlanController.requestForSubscription
   );
-router
-  .route('/upgradeSubscriptionPlan')
-  .post(
-    auth(),
-    subscriptionPlanController.upgradeSubscriptionPlan
-  );
-  router
-  .route('/terminateSubscription')
-  .post(
-    auth('terminateSubscription'),
-    subscriptionPlanController.terminateSubscription
-  );
+router.route('/upgradeSubscriptionPlan').post(auth(), subscriptionPlanController.upgradeSubscriptionPlan);
+router.route('/terminateSubscription').get(auth('terminateSubscription'), subscriptionPlanController.terminateSubscription);
 
 module.exports = router;
 
@@ -324,6 +314,31 @@ module.exports = router;
  *   post:
  *     summary: Get uprade to user's subscription plan
  *     description: User can get a upgarde on subscriptionPlan.
+ *     tags: [SubscriptionPlans]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SubscriptionPlan'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /subscriptionPlans/terminateSubscription:
+ *   get:
+ *     summary: Cancel user'ssubscription plan
+ *     description: User can cancel thieir subscriptionPlan.
  *     tags: [SubscriptionPlans]
  *     security:
  *       - bearerAuth: []
