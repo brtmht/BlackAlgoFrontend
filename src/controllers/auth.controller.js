@@ -90,7 +90,7 @@ const verifyEmail = catchAsync(async (req, res) => {
         };
        // sendNotification(notification, userData);
       }
-      res.redirect(`${process.env.APP_URL}/?confirm=thankyou`);
+      res.redirect(`${process.env.APP_URL}/onboard/strategy?confirm=thankyou`);
     } else {
       res.redirect(`${process.env.APP_URL}/?confirm=error`);
     }

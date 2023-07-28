@@ -159,17 +159,12 @@ const getSubscriptionById = async (subscriptionId) => {
  * @param {ObjectId} subscriptionId
  * @returns {Promise<Subscription>}
  */
-const deactivateBinanceSubscription = async (subscriptionId, contractId) => {
-  const trade = await getSubscriptionById(subscriptionId);
-  if (!trade) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Trade not found');
-  }
+const deactivateBinanceSubscription = async (subscriptionId, merchantContractCode) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/direct-debit/contract/termination';
   const nonce = generateNonce(32);
   const timestamp = Math.round(Date.now());
   const payload = {
-    contractId,
-    terminationNotes: 'xxx',
+    merchantContractCode,
   };
 
   const jsonRequest = JSON.stringify(payload);
@@ -177,10 +172,18 @@ const deactivateBinanceSubscription = async (subscriptionId, contractId) => {
 
   const response = await callBinancePayAPI(endpoint, requestData);
 
-  if (response) {
-    await UserExchangeConfig.findByIdAndUpdate(subscriptionId, { subscriptionStatus: false });
-    return response;
+  try {
+    if(response.data){
+      return response.data;
+    }
+    
+  } catch (error) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
+  // if (response) {
+  //   await UserExchangeConfig.findByIdAndUpdate(subscriptionId, { subscriptionStatus: false });
+  //   return response;
+  // }
 };
 
 const createBinancePayment = async (userId, reqData) => {
@@ -211,4 +214,5 @@ module.exports = {
   createBinancePayOrder,
   createBinanceContract,
   createBinancePayment,
+  deactivateBinanceSubscription,
 };
