@@ -221,14 +221,6 @@ const updateStripeSubscription = async (user) => {
 const updateBinanceSubscription = async (userId) => {
  const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
-    return UserExchangeConfig.create({
-      userId: user.userId,
-      exchangeId: user.exchangeId,
-      strategyId: user.strategyId,
-      subscriptionStatus: false,
-      connected: true,
-    });
-  }else{
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user.userId },
       { $set: { connected: true, subscriptionStatus: false } },
