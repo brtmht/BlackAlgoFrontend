@@ -50,7 +50,7 @@ router
     subscriptionPlanController.requestForSubscription
   );
 router.route('/upgradeSubscriptionPlan').post(auth(), subscriptionPlanController.upgradeSubscriptionPlan);
-router.route('/terminateSubscription').get(auth('terminateSubscription'), subscriptionPlanController.terminateSubscription);
+router.route('/terminateSubscription').post(auth('terminateSubscription'), subscriptionPlanController.terminateSubscription);
 
 module.exports = router;
 
@@ -336,7 +336,7 @@ module.exports = router;
 /**
  * @swagger
  * /subscriptionPlans/terminateSubscription:
- *   get:
+ *   post:
  *     summary: Cancel user'ssubscription plan
  *     description: User can cancel thieir subscriptionPlan.
  *     tags: [SubscriptionPlans]
