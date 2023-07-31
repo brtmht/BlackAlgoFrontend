@@ -212,7 +212,7 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => 
     }
     if (strategyName === 'Balanced' && userBalance.balance > configData.balanced_min_amount) {
       console.log(lots,"---------------BALANCED--------",lots/priceRatio);
-      finalLots = (lots*priceRatio);
+      finalLots = (lots/priceRatio);
     }
     if (strategyName === 'Dynamic' && userBalance.balance > configData.dynamic_min_amount) {
       console.log(lots / priceRatio * configData.dynamic_check_amount,"-------DYNAMIC---------",lots,priceRatio, configData.dynamic_check_amount);
