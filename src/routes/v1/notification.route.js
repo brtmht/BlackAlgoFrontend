@@ -9,10 +9,8 @@ const router = express.Router();
 router
   .route('/notification')
   .post(auth(), validate(notificationValidation.createNotification), notificationController.createNotification)
-  .get(auth('firebaseToken'), notificationController.getUserNotifications)
-  router
-  .route('/ReadAllNotification')
-  .patch(auth(), notificationController.updateReadAllNotification);
+  .get(auth('firebaseToken'), notificationController.getUserNotifications);
+router.route('/ReadAllNotification').patch(auth(), notificationController.updateReadAllNotification);
 router
   .route('/saveNotificationToken')
   .post(auth(), validate(notificationValidation.createNotification), notificationController.addNotificationToken);
@@ -24,6 +22,7 @@ router
 
 router.route('/unreadNotification').get(auth('getunreadNotification'), notificationController.getUnreadNotification);
 router.route('/allNotification').get(auth('allNotification'), notificationController.getAllNotification);
+router.route('/groupedNotification').get(auth('allNotification'), notificationController.getAllNotificationInGroup);
 module.exports = router;
 
 /**
@@ -278,6 +277,29 @@ module.exports = router;
  *           application/json:
  *             schema:
  *                $ref: '#/components/schemas/ReadAllNotification'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /groupedNotification:
+ *   get:
+ *     summary: get all notification in group
+ *     description: Only user can get all notification.
+ *     tags: [Notification]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Notification'
  *       "400":
  *         $ref: '#/components/responses/DuplicateName'
  *       "401":
