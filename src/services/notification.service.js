@@ -185,10 +185,10 @@ const getAllNotificationInGroup = async (userId, options) => {
         },
       },
       {
-        $skip: options.page,
+        $skip: (Number(options.page)- 1) * Number(options.limit),
       },
       {
-        $limit: options.limit,
+        $limit: Number(options.limit),
       },
     ]);
 
