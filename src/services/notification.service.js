@@ -53,7 +53,7 @@ const getAllNotificationByUserID = async (userId, options) => {
   const notificationsCount = await Notification.find({ userId });
   const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skipCount).limit(options.limit);
   if (notifications.length === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND,"Data not found");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
   return {
     notifications,
@@ -135,7 +135,7 @@ const unreadNotificationCount = async (id) => {
     }).sort({ createdAt: -1 });
     return notifcations;
   } catch (error) {
-    throw new ApiError(httpStatus.NOT_ACCEPTABLE,"Something went wrong");
+    throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'Something went wrong');
   }
 };
 
@@ -148,6 +148,57 @@ const getAllNotification = async () => {
   const notificatinos = await Notification.find().sort({ createdAt: -1 });
   return notificatinos;
 };
+/**
+ * Get All Notifications
+ * @param {ObjectId} userId
+ * @returns {Promise<Notification>}
+ */
+const getAllNotificationInGroup = async (userId, options) => {
+  try {
+    const notifications = await Notification.aggregate([
+      {
+        $match: {
+          userId,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+            day: { $dayOfMonth: '$createdAt' },
+          },
+          notifications: {
+            $push: {
+              _id: '$_id',
+              message: '$message',
+              createdAt: '$createdAt',
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          '_id.year': -1,
+          '_id.month': -1,
+          '_id.day': -1,
+        },
+      },
+      {
+        $skip: options.page,
+      },
+      {
+        $limit: options.limit,
+      },
+    ]);
+
+    return notifications;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    return [];
+  }
+};
+
 module.exports = {
   createNotification,
   getNotificationById,
@@ -156,6 +207,7 @@ module.exports = {
   getAllNotificationByUserID,
   unreadNotificationCount,
   getAllNotification,
+  getAllNotificationInGroup,
   saveToken,
   ReadAllNotification,
 };
