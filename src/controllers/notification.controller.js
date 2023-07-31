@@ -82,8 +82,9 @@ const getAllNotification = catchAsync(async (req, res) => {
   res.send({ success: true, code: 201, message: 'Notification listed Successfully', data: notification });
 });
 const getAllNotificationInGroup = catchAsync(async (req, res) => {
+  const options = pick(req.query, ['limit', 'page']);
   const user = req.user._id;
-  const notification = await notificationService.getAllNotificationInGroup(user);
+  const notification = await notificationService.getAllNotificationInGroup(user, options);
   if (!notification) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }

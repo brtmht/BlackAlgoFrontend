@@ -153,7 +153,7 @@ const getAllNotification = async () => {
  * @param {ObjectId} userId
  * @returns {Promise<Notification>}
  */
-const getAllNotificationInGroup = async (userId) => {
+const getAllNotificationInGroup = async (userId, options) => {
   try {
     const notifications = await Notification.aggregate([
       {
@@ -183,6 +183,12 @@ const getAllNotificationInGroup = async (userId) => {
           '_id.month': -1,
           '_id.day': -1,
         },
+      },
+      {
+        $skip: options.page,
+      },
+      {
+        $limit: options.limit,
       },
     ]);
 
