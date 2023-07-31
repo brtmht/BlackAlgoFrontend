@@ -10,7 +10,7 @@ const addNotificationToken = catchAsync(async (req, res) => {
   if (!notificationToken) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
-  res.send({"success":true, code:200 , "message":"Notification token saved successfully"});
+  res.send({ success: true, code: 200, message: 'Notification token saved successfully' });
 });
 // Create Notification for testing
 const createNotification = catchAsync(async (req, res) => {
@@ -27,9 +27,9 @@ const getUserNotifications = catchAsync(async (req, res) => {
   const options = pick(req.query, ['limit', 'page']);
   const notifications = await notificationService.getAllNotificationByUserID(user, options);
   if (!notifications) {
-    throw new ApiError(httpStatus.NOT_FOUND,"Data Not Found");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data Not Found');
   }
-  res.send({"success":true, code:201 , "message":"Notification listed Successfully", "data":notifications});
+  res.send({ success: true, code: 201, message: 'Notification listed Successfully', data: notifications });
 });
 const getNotificationWithId = catchAsync(async (req, res) => {
   const notification = await notificationService.getNotificationById(req.params.notificationId);
@@ -70,17 +70,25 @@ const getUnreadNotification = catchAsync(async (req, res) => {
   if (!notifcations) {
     throw new ApiError(httpStatus.SEE_OTHER);
   }
-  res.send({"success":true, code:201 , "message":"Notification listed Successfully", "data":{ notifcations, count }});
-
+  res.send({ success: true, code: 201, message: 'Notification listed Successfully', data: { notifcations, count } });
 });
 
 // admin Api
 const getAllNotification = catchAsync(async (req, res) => {
   const notification = await notificationService.getAllNotification();
   if (!notification) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Data not found");
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
-  res.send({"success":true, code:201 , "message":"Notification listed Successfully", "data":notification});
+  res.send({ success: true, code: 201, message: 'Notification listed Successfully', data: notification });
+});
+const getAllNotificationInGroup = catchAsync(async (req, res) => {
+  const options = pick(req.query, ['limit', 'page']);
+  const user = req.user._id;
+  const notification = await notificationService.getAllNotificationInGroup(user, options);
+  if (!notification) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
+  }
+  res.send({ success: true, code: 201, message: 'Notification listed Successfully', data: notification });
 });
 module.exports = {
   addNotificationToken,
@@ -91,5 +99,6 @@ module.exports = {
   deleteNotification,
   getUnreadNotification,
   getAllNotification,
-  updateReadAllNotification
+  getAllNotificationInGroup,
+  updateReadAllNotification,
 };
