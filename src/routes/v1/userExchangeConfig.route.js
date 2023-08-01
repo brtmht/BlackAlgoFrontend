@@ -8,13 +8,18 @@ const router = express.Router();
 
 router
   .route('/UserExchangeConfig')
-  .post(auth('createUserExchangeConfig'), validate(userExchangeConfigValidation.createUserExchangeConfig), userExchangeConfigController.createUserExchangeConfig)
+  .post(
+    auth('createUserExchangeConfig'),
+    validate(userExchangeConfigValidation.createUserExchangeConfig),
+    userExchangeConfigController.createUserExchangeConfig
+  )
   .get(auth('getUserExchangeConfig'), userExchangeConfigController.getUserExchangeConfig)
   .patch(auth('updateUserExchangeConfig'), userExchangeConfigController.updateUserExchangeConfig);
 router.route('/getAllConnectedUser').post(auth('getAllConnectedUser'), userExchangeConfigController.getAllConnectedUser);
-router.route('/manuallyDisconnectAccount').post(auth('manuallyDisconnectAccount'), userExchangeConfigController.manuallyDisconnectAccount);
-    
-
+router
+  .route('/manuallyDisconnectAccount')
+  .post(auth('manuallyDisconnectAccount'), userExchangeConfigController.manuallyDisconnectAccount);
+router.route('/connectBinance').post(auth('connectBinance'), userExchangeConfigController.manuallyConnectBinance);
 module.exports = router;
 
 /**
@@ -63,7 +68,7 @@ module.exports = router;
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
- *         $ref: '#/components/responses/Forbidden' 
+ *         $ref: '#/components/responses/Forbidden'
  *   get:
  *     summary: Get user exachange config
  *     description: Logged in users can fetch exachange config.
@@ -122,7 +127,7 @@ module.exports = router;
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
- *         $ref: '#/components/responses/NotFound'             
+ *         $ref: '#/components/responses/NotFound'
  */
 /**
  * @swagger
@@ -174,6 +179,44 @@ module.exports = router;
  *     tags: [UserExchangeConfig]
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /connectBinance:
+ *   post:
+ *     summary: save api key and secret key
+ *     description: Manage user connection.
+ *     tags: [UserExchangeConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               apiKey:
+ *                 type: string
+ *               apiSecret:
+ *                 type: string
+ *             example:
+ *               apiKey: YEDRFT87645WSERXCO7RESRDTUIKBJHVCDYTUJKBUUY
+ *               apiSecret: iuytdrxgcfghvjkFDThJJFTDRJH6546789765789875E4RDTFJHKJF6FJKHXFV
  *     responses:
  *       "200":
  *         description: OK

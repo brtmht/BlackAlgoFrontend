@@ -1,11 +1,11 @@
 const httpStatus = require('http-status');
+const axios = require('axios');
+const crypto = require('crypto');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { encryptData, decryptData } = require('../middlewares/common');
-const { getExchangeById } = require('./exchange.service');
 const { userStrategyService, exchangeService } = require('.');
 const mt4Server = require('../middlewares/mt4Server');
-
 /**
  * Create a UserExchangeConfig
  * @param {Object}reqData
@@ -44,7 +44,7 @@ const getUserExchangeConfigByLogin = async (reqData) => {
     const userExchangeConfig = await UserExchangeConfig.findOne({
       'config.login': login.toString(),
       'config.server': server,
-      'connected': true,
+      connected: true,
     });
     return userExchangeConfig;
   } catch (error) {
@@ -161,7 +161,7 @@ const updateServerTokenById = async (UserExchangeConfigId, serverToken) => {
  * @returns {Promise<UserExchangeConfig>}
  */
 const getConnectedUser = async () => {
-  return UserExchangeConfig.find({ connected: true, subscriptionStatus:true });
+  return UserExchangeConfig.find({ connected: true, subscriptionStatus: true });
 };
 
 const getActiveUser = async (user_id) => {
@@ -169,17 +169,16 @@ const getActiveUser = async (user_id) => {
 };
 
 const getConnectedAccountUser = async () => {
-  return UserExchangeConfig.find({ connected: true,config: { $exists: true, $ne: {} } });
+  return UserExchangeConfig.find({ connected: true, config: { $exists: true, $ne: {} } });
 };
-
 
 /**
  * update mt4 connection
  * @returns {Promise<UserExchangeConfig>}
  */
 const updateConnectionData = async (user_id) => {
-  const notExist = await UserExchangeConfig.findOne({userId:user_id,config: { $exists: true, $ne: {} } });
-  if(notExist){
+  const notExist = await UserExchangeConfig.findOne({ userId: user_id, config: { $exists: true, $ne: {} } });
+  if (notExist) {
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user_id },
       {
@@ -197,7 +196,6 @@ const updateConnectionData = async (user_id) => {
       },
     }
   );
- 
 };
 
 const updateStripeSubscription = async (user) => {
@@ -205,7 +203,7 @@ const updateStripeSubscription = async (user) => {
   if (exchangeConfig) {
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user.userId },
-      { $set: { connected: true, subscriptionStatus: true } },
+      { $set: { connected: true, subscriptionStatus: true } }
     );
   }
 
@@ -219,17 +217,14 @@ const updateStripeSubscription = async (user) => {
 };
 
 const updateBinanceSubscription = async (userId) => {
- const user = await userStrategyService.getUserStrategyByUser(userId);
+  const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user.userId },
-      { $set: { connected: true, subscriptionStatus: false } },
+      { $set: { connected: true, subscriptionStatus: false } }
     );
   }
-
-  
 };
-
 
 /**
  * update mt4 connection
@@ -246,7 +241,7 @@ const getAllConnectionData = async (options) => {
     .limit(options.limit);
   const connectedUserCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id, connected: true });
   const totalCount = await UserExchangeConfig.countDocuments({ exchangeId: exchange.id, connected: true });
-  const disconnectedUserCount = await UserExchangeConfig.countDocuments({connected: false,exchangeId: exchange.id });
+  const disconnectedUserCount = await UserExchangeConfig.countDocuments({ connected: false, exchangeId: exchange.id });
   return {
     userList: userList,
     page: options.page,
@@ -275,7 +270,7 @@ const createAndConnectedConfig = async (reqData, userId, serverToken) => {
 const disconnectConnectionSubscription = async (id) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
-   return UserExchangeConfig.findOneAndUpdate(
+    return UserExchangeConfig.findOneAndUpdate(
       { userId: id },
       {
         $set: {
@@ -289,7 +284,7 @@ const disconnectConnectionSubscription = async (id) => {
 const disconnectConnection = async (id) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
-   return UserExchangeConfig.findOneAndUpdate(
+    return UserExchangeConfig.findOneAndUpdate(
       { userId: id },
       {
         $set: {
@@ -300,15 +295,14 @@ const disconnectConnection = async (id) => {
   }
 };
 
-
 const activeConnection = async (id) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
-   return UserExchangeConfig.findOneAndUpdate(
+    return UserExchangeConfig.findOneAndUpdate(
       { userId: id },
       {
         $set: {
-          connected:true,
+          connected: true,
         },
       }
     );
@@ -318,14 +312,57 @@ const activeConnection = async (id) => {
 const activeSubscription = async (id) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
-   return UserExchangeConfig.findOneAndUpdate(
+    return UserExchangeConfig.findOneAndUpdate(
       { userId: id },
       {
         $set: {
-          subscriptionStatus:true,
+          subscriptionStatus: true,
         },
       }
     );
+  }
+};
+
+const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
+  const API_KEY = binanaceCredentials.apiKey;
+  const API_SECRET = binanaceCredentials.apiSecret;
+  try {
+    const timestamp = Date.now();
+    const params = `timestamp=${timestamp}`;
+    const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
+
+    const response = await axios.get('https://api.binance.com/api/v3/account', {
+      headers: {
+        'X-MBX-APIKEY': API_KEY,
+      },
+      params: {
+        timestamp,
+        signature,
+      },
+    });
+
+    if (response.status === 200) {
+      const data = await UserExchangeConfig.findOne({ userId });
+      if (data) {
+        return UserExchangeConfig.findOneAndUpdate(
+          { userId },
+          {
+            $set: {
+              config: {
+                ...data.config,
+                apiKey: API_KEY,
+                apiSecret: API_SECRET,
+              },
+            },
+          }
+        );
+      }
+      return { success: true, code: 200, message: 'API key and secret are valid.' };
+    }
+    return { success: false, code: 401, message: 'API key and secret are not valid.' };
+  } catch (error) {
+    console.error('Error testing API key and secret:', error);
+    return { success: true, code: 401, message: 'API key and secret are not valid.' };
   }
 };
 
@@ -349,5 +386,5 @@ module.exports = {
   activeConnection,
   updateBinanceSubscription,
   activeSubscription,
-
+  saveBinanceApiKeyAndSecret,
 };
