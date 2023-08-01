@@ -78,6 +78,7 @@ const allRoles = {
     'getPaymentById',
     'terminateSubscription',
     'connectBinance',
+    'groupedNotification',
   ],
   manager: [
     'getUser',

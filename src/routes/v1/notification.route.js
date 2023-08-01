@@ -22,7 +22,7 @@ router
 
 router.route('/unreadNotification').get(auth('getunreadNotification'), notificationController.getUnreadNotification);
 router.route('/allNotification').get(auth('allNotification'), notificationController.getAllNotification);
-router.route('/groupedNotification').get(auth('allNotification'), notificationController.getAllNotificationInGroup);
+router.route('/groupedNotification').get(auth('groupedNotification'), notificationController.getAllNotificationInGroup);
 module.exports = router;
 
 /**

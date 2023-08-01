@@ -44,7 +44,7 @@ const getUserExchangeConfigByLogin = async (reqData) => {
     const userExchangeConfig = await UserExchangeConfig.findOne({
       'config.login': login.toString(),
       'config.server': server,
-      connected: true,
+       connected: true,
     });
     return userExchangeConfig;
   } catch (error) {
@@ -172,38 +172,19 @@ const getConnectedAccountUser = async () => {
   return UserExchangeConfig.find({ connected: true, config: { $exists: true, $ne: {} } });
 };
 
-/**
- * update mt4 connection
- * @returns {Promise<UserExchangeConfig>}
- */
-const updateConnectionData = async (user_id) => {
-  const notExist = await UserExchangeConfig.findOne({ userId: user_id, config: { $exists: true, $ne: {} } });
-  if (notExist) {
-    return UserExchangeConfig.findOneAndUpdate(
-      { userId: user_id },
-      {
-        $set: {
-          connected: true,
-        },
-      }
-    );
-  }
-  return UserExchangeConfig.findOneAndUpdate(
-    { userId: user_id },
-    {
-      $set: {
-        connected: false,
-      },
-    }
-  );
-};
-
-const updateStripeSubscription = async (user) => {
+const updateStripeSubscription = async (user, current_period_start, current_period_end) => {
   const exchangeConfig = await UserExchangeConfig.findOne({ userId: user.userId });
   if (exchangeConfig) {
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user.userId },
-      { $set: { connected: true, subscriptionStatus: true } }
+      {
+        $set: {
+          connected: true,
+          subscriptionStatus: true,
+          subscriptionStart: current_period_start,
+          subscriptionExpiry: current_period_end,
+        },
+      }
     );
   }
 
@@ -213,6 +194,8 @@ const updateStripeSubscription = async (user) => {
     strategyId: user.strategyId,
     subscriptionStatus: true,
     connected: true,
+    subscriptionStart: current_period_start,
+    subscriptionExpiry: current_period_end,
   });
 };
 
@@ -225,7 +208,35 @@ const updateBinanceSubscription = async (userId) => {
     );
   }
 };
+const updateBinanceSubscriptionData = async (userId, current_period_start, current_period_end) => {
+  const user = await userStrategyService.getUserStrategyByUser(userId);
+  if (user) {
+    const exchangeConfig = await UserExchangeConfig.findOne({ userId: user.userId });
+    if (exchangeConfig) {
+      return UserExchangeConfig.findOneAndUpdate(
+        { userId: user.userId },
+        {
+          $set: {
+            connected: true,
+            subscriptionStatus: false,
+            subscriptionStart: current_period_start,
+            subscriptionExpiry: current_period_end,
+          },
+        }
+      );
+    }
 
+    return UserExchangeConfig.create({
+      userId: user.userId,
+      exchangeId: user.exchangeId,
+      strategyId: user.strategyId,
+      subscriptionStatus: false,
+      connected: true,
+      subscriptionStart: current_period_start,
+      subscriptionExpiry: current_period_end,
+    });
+  }
+};
 /**
  * update mt4 connection
  * @returns {Promise<UserExchangeConfig>}
@@ -267,7 +278,7 @@ const createAndConnectedConfig = async (reqData, userId, serverToken) => {
   });
 };
 
-const disconnectConnectionSubscription = async (id) => {
+const disconnectConnectionSubscription = async (id, reason) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
     return UserExchangeConfig.findOneAndUpdate(
@@ -275,6 +286,7 @@ const disconnectConnectionSubscription = async (id) => {
       {
         $set: {
           subscriptionStatus: false,
+          subscriptionCancelReason: reason,
         },
       }
     );
@@ -373,7 +385,6 @@ module.exports = {
   updateServerTokenById,
   getConnectedUser,
   getUserExchangeConfigByUserId,
-  updateConnectionData,
   getConnectedUserExchangeConfig,
   getAllConnectionData,
   createAndConnectedConfig,
@@ -387,4 +398,5 @@ module.exports = {
   updateBinanceSubscription,
   activeSubscription,
   saveBinanceApiKeyAndSecret,
+  updateBinanceSubscriptionData,
 };
