@@ -215,6 +215,8 @@ const updateStripeSubscription = async (user,current_period_start,current_period
     strategyId: user.strategyId,
     subscriptionStatus: true,
     connected: true,
+    subscriptionStart:current_period_start,
+    subscriptionExpiry:current_period_end
   });
 };
 
