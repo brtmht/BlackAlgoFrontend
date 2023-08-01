@@ -156,7 +156,7 @@ const updatePaymentDetails = async (reqData) => {
   const userData = await userStrategyService.getUserStrategyByUser(userId);
 
   if (userData) {
-    await updateStripeSubscription(userData);
+    await updateStripeSubscription(userData,subscription.current_period_end,subscription.current_period_start);
   }
 
   if (updatedPaymentDetail.nModified === 0) {
