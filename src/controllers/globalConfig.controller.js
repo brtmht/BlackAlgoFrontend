@@ -40,7 +40,6 @@ const graphData = catchAsync(async (req, res) => {
       console.error('Error parsing CSV:', err);
       throw new ApiError(httpStatus.NOT_FOUND, 'Error in processing file data');
     });
-
   //  await processFileData()
   //     .then((data) => {
   //       res.send({ success: true, code: 201, message: 'get Graph Data Successfully', data: { graphData: data } });

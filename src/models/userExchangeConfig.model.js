@@ -39,6 +39,18 @@ const userExchangeConfigSchema = mongoose.Schema(
       type: Date,
       default: '',
     },
+    subscriptionStart: {
+      type: String,
+      default: '',
+    },
+    subscriptionExpiry: {
+      type: String,
+      default: '',
+    },
+    subscriptionCancelReason: {
+      type: String,
+      default: '',
+    },
     status: {
       type: Boolean,
       default: true,

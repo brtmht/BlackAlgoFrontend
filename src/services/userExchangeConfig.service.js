@@ -200,12 +200,12 @@ const updateConnectionData = async (user_id) => {
  
 };
 
-const updateStripeSubscription = async (user) => {
+const updateStripeSubscription = async (user,current_period_start,current_period_end) => {
   const exchangeConfig = await UserExchangeConfig.findOne({ userId: user.userId });
   if (exchangeConfig) {
     return UserExchangeConfig.findOneAndUpdate(
       { userId: user.userId },
-      { $set: { connected: true, subscriptionStatus: true } },
+      { $set: { connected: true, subscriptionStatus: true, subscriptionStart:current_period_start, subscriptionExpiry:current_period_end } },
     );
   }
 
@@ -226,8 +226,18 @@ const updateBinanceSubscription = async (userId) => {
       { $set: { connected: true, subscriptionStatus: false } },
     );
   }
+      
+};
 
-  
+const updateBinanceSubscriptionData = async (userId,current_period_start,current_period_end) => {
+ const user = await userStrategyService.getUserStrategyByUser(userId);
+  if (user) {
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: user.userId },
+      { $set: { connected: true, subscriptionStatus: false, subscriptionStart:current_period_start, subscriptionExpiry:current_period_end } },
+    );
+  }
+      
 };
 
 
@@ -272,7 +282,7 @@ const createAndConnectedConfig = async (reqData, userId, serverToken) => {
   });
 };
 
-const disconnectConnectionSubscription = async (id) => {
+const disconnectConnectionSubscription = async (id,reason) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
    return UserExchangeConfig.findOneAndUpdate(
@@ -280,6 +290,7 @@ const disconnectConnectionSubscription = async (id) => {
       {
         $set: {
           subscriptionStatus: false,
+          subscriptionCancelReason: reason,
         },
       }
     );
@@ -349,5 +360,6 @@ module.exports = {
   activeConnection,
   updateBinanceSubscription,
   activeSubscription,
+  updateBinanceSubscriptionData,
 
 };

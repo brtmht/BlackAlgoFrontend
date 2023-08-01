@@ -188,7 +188,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
       if (paymentDetail.subscriptionPlanId.startsWith('sub_')) {
         const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
         if (stripeResponse.status === 'canceled') {
-          const response = await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
+          const response = await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId,'user');
           res.send({ success: true, code: 200, message: 'Stripe Subscription cancelled Successfully' });
         }
       } else {
@@ -203,7 +203,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
             );
             console.log(binanceResponse);
             if (binanceResponse) {
-              await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId);
+              await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId,'user');
               await cryptoAccountService.manuallyUpdatedTerminatedContract(transaction.merchantTradeNo);
               res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
             }
