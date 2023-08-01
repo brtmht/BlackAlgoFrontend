@@ -71,6 +71,9 @@ const getConnectedUserExchangeConfig = async (id) => {
       serverToken,
       connected,
       subscriptionStatus,
+      subscriptionStart,
+      subscriptionExpiry,
+      subscriptionCancelReason,
       tokenExpiry,
       status,
       createdAt,
@@ -78,7 +81,7 @@ const getConnectedUserExchangeConfig = async (id) => {
       __v,
     } = data._doc;
     const exchangeData = await exchangeService.getExchangeById(exchangeId);
-    config.password = decryptData(data.config.password);
+    // config.password = decryptData(data.config.password);
     return (updatedResponse = {
       _id,
       userId,
@@ -88,6 +91,9 @@ const getConnectedUserExchangeConfig = async (id) => {
       serverToken,
       connected,
       subscriptionStatus,
+      subscriptionStart,
+      subscriptionExpiry,
+      subscriptionCancelReason,
       tokenExpiry,
       status,
       createdAt,
@@ -352,7 +358,7 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
         signature,
       },
     });
-
+    console.log(response.data.balances,"-------------------responseresponse");
     if (response.status === 200) {
       const data = await UserExchangeConfig.findOne({ userId });
       if (data) {
