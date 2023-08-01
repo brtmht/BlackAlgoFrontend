@@ -210,7 +210,7 @@ const disconnectConnectionSubscription = catchAsync(async (req, res) => {
     if (subscriptionData) {
       const retrieve = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
       if (retrieve.status === 'canceled') {
-        const exchangeConfig = await userExchangeConfig.disconnectConnectionSubscription(req.user._id);
+        const exchangeConfig = await userExchangeConfig.disconnectConnectionSubscription(req.user._id,'auto cancelled');
         if (exchangeConfig) {
           logger.info(userList.userId, 'Get connected user list Succesfully');
         }
