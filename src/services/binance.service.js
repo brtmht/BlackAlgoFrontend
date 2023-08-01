@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 const axios = require('axios');
 const crypto = require('crypto');
+const httpStatus = require('http-status');
 const { paymentDetailService } = require('.');
 const ApiError = require('../utils/ApiError');
-const httpStatus = require('http-status');
+
 const binancePayKey = process.env.BINANCE_PAY_KEY;
 const binancePaySecret = process.env.BINANCE_PAY_SECRET_KEY;
 
@@ -20,7 +21,7 @@ function generateNonce(length) {
   return nonce;
 }
 
-const createBinancePayOrder = async (user,reqData) => {
+const createBinancePayOrder = async (user, reqData) => {
   const endpoint = 'https://bpay.binanceapi.com/binancepay/openapi/v2/order';
 
   const nonce = generateNonce(32);
@@ -64,7 +65,7 @@ const createBinancePayOrder = async (user,reqData) => {
       cycleDebitFixed: true,
       cycleType: 'MONTH',
       cycleValue: intervalType,
-      firstDeductTime:firstDeductTime,
+      firstDeductTime: firstDeductTime,
       merchantAccountNo: merchantdata,
     },
   };
@@ -89,11 +90,10 @@ const createBinancePayOrder = async (user,reqData) => {
 
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
-    if(response.data){
-      await paymentDetailService.saveBinacePaymentDetails(user._id,response.data,reqData);
+    if (response.data) {
+      await paymentDetailService.saveBinacePaymentDetails(user._id, response.data, reqData);
       return response.data;
     }
-    
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
@@ -136,7 +136,7 @@ const createBinanceContract = async (user, reqData) => {
     cycleDebitFixed: true,
     cycleType: 'MONTH',
     cycleValue: 12,
-    firstDeductTime:firstDeductTime,
+    firstDeductTime: firstDeductTime,
     merchantAccountNo: user.email,
   };
   const jsonRequest = JSON.stringify(payload);
@@ -146,7 +146,7 @@ const createBinanceContract = async (user, reqData) => {
   const response = await callBinancePayAPI(endpoint, requestData);
 
   if (response) {
-   //await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
+    //await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;
   }
 };
@@ -173,10 +173,9 @@ const deactivateBinanceSubscription = async (subscriptionId, merchantContractCod
   const response = await callBinancePayAPI(endpoint, requestData);
 
   try {
-    if(response.data){
+    if (response.data) {
       return response.data;
     }
-    
   } catch (error) {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
@@ -205,7 +204,7 @@ const createBinancePayment = async (userId, reqData) => {
   const requestData = { timestamp, nonce, jsonRequest };
   const response = await callBinancePayAPI(endpoint, requestData);
   if (response) {
-   // await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
+    // await paymentDetailService.saveBinacePaymentDetails(userId, response, reqData);
     return response;
   }
 };

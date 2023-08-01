@@ -1,11 +1,11 @@
 const httpStatus = require('http-status');
+const axios = require('axios');
+const crypto = require('crypto');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { encryptData, decryptData } = require('../middlewares/common');
-const { getExchangeById } = require('./exchange.service');
 const { userStrategyService, exchangeService } = require('.');
 const mt4Server = require('../middlewares/mt4Server');
-
 /**
  * Create a UserExchangeConfig
  * @param {Object}reqData
@@ -208,7 +208,6 @@ const updateBinanceSubscription = async (userId) => {
     );
   }
 };
-
 const updateBinanceSubscriptionData = async (userId, current_period_start, current_period_end) => {
   const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
@@ -238,7 +237,6 @@ const updateBinanceSubscriptionData = async (userId, current_period_start, curre
     });
   }
 };
-
 /**
  * update mt4 connection
  * @returns {Promise<UserExchangeConfig>}
@@ -337,6 +335,49 @@ const activeSubscription = async (id) => {
   }
 };
 
+const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
+  const API_KEY = binanaceCredentials.apiKey;
+  const API_SECRET = binanaceCredentials.apiSecret;
+  try {
+    const timestamp = Date.now();
+    const params = `timestamp=${timestamp}`;
+    const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
+
+    const response = await axios.get('https://api.binance.com/api/v3/account', {
+      headers: {
+        'X-MBX-APIKEY': API_KEY,
+      },
+      params: {
+        timestamp,
+        signature,
+      },
+    });
+
+    if (response.status === 200) {
+      const data = await UserExchangeConfig.findOne({ userId });
+      if (data) {
+        return UserExchangeConfig.findOneAndUpdate(
+          { userId },
+          {
+            $set: {
+              config: {
+                ...data.config,
+                apiKey: API_KEY,
+                apiSecret: API_SECRET,
+              },
+            },
+          }
+        );
+      }
+      return { success: true, code: 200, message: 'API key and secret are valid.' };
+    }
+    return { success: false, code: 401, message: 'API key and secret are not valid.' };
+  } catch (error) {
+    console.error('Error testing API key and secret:', error);
+    return { success: true, code: 401, message: 'API key and secret are not valid.' };
+  }
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -356,5 +397,6 @@ module.exports = {
   activeConnection,
   updateBinanceSubscription,
   activeSubscription,
+  saveBinanceApiKeyAndSecret,
   updateBinanceSubscriptionData,
 };

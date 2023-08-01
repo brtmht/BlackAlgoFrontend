@@ -77,6 +77,7 @@ const allRoles = {
     'upgradeSubscriptionPlanPayment',
     'getPaymentById',
     'terminateSubscription',
+    'connectBinance',
     'groupedNotification',
   ],
   manager: [
