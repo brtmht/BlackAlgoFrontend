@@ -178,7 +178,7 @@ const getConnectedAccountUser = async () => {
   return UserExchangeConfig.find({ connected: true, config: { $exists: true, $ne: {} } });
 };
 
-const updateStripeSubscription = async (user, current_period_start, current_period_end) => {
+const updateStripeSubscription = async (user, current_period_end, current_period_start) => {
   const exchangeConfig = await UserExchangeConfig.findOne({ userId: user.userId });
   if (exchangeConfig) {
     return UserExchangeConfig.findOneAndUpdate(
@@ -349,7 +349,7 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
     const params = `timestamp=${timestamp}`;
     const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
 
-    const response = await axios.get('https://api.binance.com/api/v3/account', {
+    const response = await axios.get('https://api.0.com/api/v3/account', {
       headers: {
         'X-MBX-APIKEY': API_KEY,
       },
@@ -368,8 +368,8 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
             $set: {
               config: {
                 ...data.config,
-                apiKey: API_KEY,
-                apiSecret: API_SECRET,
+                apiKey: decryptData(API_KEY),
+                apiSecret: decryptData(API_SECRET),
               },
             },
           }
