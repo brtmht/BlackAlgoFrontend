@@ -239,47 +239,47 @@ const getGraphTradeOrder = async (orderData, id) => {
       ordersList = await TradingOrder.find({
         userId: id,
         createdAt: { $gte: TwentyHourAgo },
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     case '1hr':
       const oneHourAgo = new Date(orderData.timestamp - 1 * 60 * 60 * 1000);
       ordersList = await TradingOrder.find({
         userId: id,
         createdAt: { $gt: oneHourAgo },
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     case '7day':
       const sevenDaysAgo = new Date(orderData.timestamp - 7 * 24 * 60 * 60 * 1000);
       ordersList = await TradingOrder.find({
         userId: id,
         createdAt: { $gte: sevenDaysAgo },
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     case '30day':
       const thirtyDaysAgo = new Date(orderData.timestamp - 30 * 24 * 60 * 60 * 1000);
       ordersList = await TradingOrder.find({
         userId: id,
         createdAt: { $gte: thirtyDaysAgo },
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     case '90day':
       const ninetyDaysAgo = new Date(orderData.timestamp - 90 * 24 * 60 * 60 * 1000);
       ordersList = await TradingOrder.find({
         userId: id,
         createdAt: { $gte: ninetyDaysAgo },
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     case '1year':
       const oneYearAgo = new Date(orderData.timestamp - 365 * 24 * 60 * 60 * 1000);
       ordersList = await TradingOrder.find({
         userId: id,
         createdAt: { $gte: oneYearAgo },
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     case 'all':
       ordersList = await TradingOrder.find({
         userId: id,
-      }).exec();
+      }).sort({ updatedAt: 1 }).exec();
       break;
     default:
       ordersList;
