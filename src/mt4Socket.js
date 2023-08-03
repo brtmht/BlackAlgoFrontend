@@ -38,6 +38,8 @@ const mtSocket = () => {
         const orderType = ordersData?.Data?.Update?.Action;
         const masterBalance = ordersData?.Data?.Balance;
 
+        console.log(order,"-------------------order",orderType,"--------------------------orderType");
+
         if (order) {
           switch (orderType) {
             case "PositionOpen":
