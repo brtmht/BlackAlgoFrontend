@@ -57,9 +57,9 @@ const createTradingOrder = async (tradingOrderBody, userId, masterData, orderTyp
  * @returns {Promise<TradingOrder>}
  */
 const getTradingOderByID = async (_id) => {
-  const tradingOrder = await TradingOrder.find({ _id });
+  const tradingOrder = await TradingOrder.findOne({ _id });
   if (!tradingOrder) {
-    throw new ApiError(httpStatus.NOT_FOUND);
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
   return tradingOrder;
 };

@@ -26,7 +26,7 @@ const tradingOrderWithPagination = catchAsync(async (req, res) => {
 
 const getTradingOrderById = catchAsync(async (req, res) => {
   const tradingOrder = await tradingOrderService.getTradingOderByID(req.params.orderId);
-  res.send(tradingOrder);
+  res.send({ success: true, code: 201, message: 'Transaction Data fetch successfully', data: tradingOrder });
 });
 
 const updateTradingOrder = catchAsync(async (req, res) => {
