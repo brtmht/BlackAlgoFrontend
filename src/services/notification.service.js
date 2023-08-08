@@ -172,6 +172,8 @@ const getAllNotificationInGroup = async (userId, options) => {
             $push: {
               _id: '$_id',
               message: '$message',
+              title: '$title',
+              isRead: '$isRead',
               createdAt: '$createdAt',
             },
           },
