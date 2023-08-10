@@ -86,7 +86,7 @@ const binanceWebhook = catchAsync(async (req, res) => {
         const payData = JSON.parse(req.body.data);
         await cryptoAccountService.UpdatedTerminatedContract(req.body);
         const transactionDetails = await transactionHistoryService.getPaymentsByMerchantTrade(payData.merchantAccountNo);
-        await userExchangeConfig.disconnectConnectionSubscription(transactionDetails.userId,'user');
+        await userExchangeConfig.disconnectSubscription(transactionDetails.userId,'user',payData.contractTerminationTime);
        emitData('BinanceContractResponse', { success: false, error_code: 400, message: 'Transaction Failed', data: transactionDetails });
       }
       res.send({
@@ -133,7 +133,7 @@ const createPayment = catchAsync(async (req, res) => {
   if (req.body.paymentType === 'crypto') {
     const binanceData = await binanceService.createBinancePayOrder(req.user, req.body);
     if (binanceData.status === 'SUCCESS') {
-      await userExchangeConfig.updateBinanceSubscriptionData(user,Date.now(),binanceData.data.contractEndTime);
+      await userExchangeConfig.updateBinanceSubscriptionData(user,Date.now());
       res.send({
         success: true,
         code: 201,
