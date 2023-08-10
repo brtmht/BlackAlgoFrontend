@@ -238,7 +238,6 @@ const updateBinanceSubscriptionData = async (userId, current_period_start) => {
       subscriptionStatus: false,
       connected: true,
       subscriptionStart: current_period_start,
-      subscriptionExpiry: current_period_end,
     });
   }
 };
