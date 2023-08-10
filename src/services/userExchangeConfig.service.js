@@ -214,7 +214,7 @@ const updateBinanceSubscription = async (userId) => {
     );
   }
 };
-const updateBinanceSubscriptionData = async (userId, current_period_start, current_period_end) => {
+const updateBinanceSubscriptionData = async (userId, current_period_start) => {
   const user = await userStrategyService.getUserStrategyByUser(userId);
   if (user) {
     const exchangeConfig = await UserExchangeConfig.findOne({ userId: user.userId });
@@ -226,7 +226,6 @@ const updateBinanceSubscriptionData = async (userId, current_period_start, curre
             connected: true,
             subscriptionStatus: false,
             subscriptionStart: current_period_start,
-            subscriptionExpiry: current_period_end,
           },
         }
       );
@@ -299,6 +298,22 @@ const disconnectConnectionSubscription = async (id, reason) => {
   }
 };
 
+const disconnectSubscription = async (id, reason, contractTerminationTime) => {
+  const data = UserExchangeConfig.findOne({ userId: id });
+  if (data) {
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: id },
+      {
+        $set: {
+          subscriptionStatus: false,
+          subscriptionCancelReason: reason,
+          subscriptionExpiry: contractTerminationTime,
+        },
+      }
+    );
+  }
+};
+
 const disconnectConnection = async (id) => {
   const data = UserExchangeConfig.findOne({ userId: id });
   if (data) {
@@ -348,8 +363,7 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
     const timestamp = Date.now();
     const params = `timestamp=${timestamp}`;
     const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
-
-    const response = await axios.get('https://api.0.com/api/v3/account', {
+    const response = await axios.get('https://testnet.binancefuture.com/api/v3/account', {
       headers: {
         'X-MBX-APIKEY': API_KEY,
       },
@@ -358,7 +372,6 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
         signature,
       },
     });
-    console.log(response.data.balances,"-------------------responseresponse");
     if (response.status === 200) {
       const data = await UserExchangeConfig.findOne({ userId });
       if (data) {
@@ -367,9 +380,8 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
           {
             $set: {
               config: {
-                ...data.config,
-                apiKey: decryptData(API_KEY),
-                apiSecret: decryptData(API_SECRET),
+                apiKey:await encryptData(API_KEY),
+                apiSecret:await encryptData(API_SECRET),
               },
             },
           }
@@ -405,4 +417,5 @@ module.exports = {
   activeSubscription,
   saveBinanceApiKeyAndSecret,
   updateBinanceSubscriptionData,
+  disconnectSubscription,
 };
