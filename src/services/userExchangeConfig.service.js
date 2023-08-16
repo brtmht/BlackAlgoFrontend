@@ -392,7 +392,7 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
         const userBalance = await GetBinanceBalance({apiSecret:API_SECRET, apiKey:API_KEY});
         const data = await UserExchangeConfig.findOne({ userId });
         if (data) {
-          return UserExchangeConfig.findOneAndUpdate(
+           UserExchangeConfig.findOneAndUpdate(
             { userId },
             {
               $set: {
@@ -405,15 +405,16 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
               },  
             }
           );
+          return { success: true, code: 200, message: 'Binance Connected Sucessfully.'};
         }
-        return { success: true, code: 200, message: 'API key and secret are valid.'};
+        return { success: false, code: 200, message: 'Data not found'};
       }
     else{
       return { success: false, code: 401, message: 'API key and secret already exist.'};
     }
   } catch (error) {
     console.error('Error testing API key and secret:', error);
-    return { success: true, code: 401, message: 'API key and secret are not valid.'};
+    return { success: false, code: 401, message: 'API key and secret are not valid.'};
   }
 };
 
@@ -444,7 +445,7 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
         const userBalance = await GetBinanceBalance(binanaceCredentials);
         const data = await UserExchangeConfig.findOne({ userId });
         if (data) {
-          return UserExchangeConfig.findOneAndUpdate(
+           UserExchangeConfig.findOneAndUpdate(
             { userId },
             {
               $set: {
@@ -457,7 +458,7 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
             }
           );
         }
-        return { success: true, code: 200, message: 'API key and secret are valid......11111111'};
+        
       }
     }else{
       return { success: false, code: 401, message: 'API key and secret already exist.......2222222222222'};
