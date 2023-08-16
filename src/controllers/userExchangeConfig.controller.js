@@ -5,10 +5,8 @@ const catchAsync = require('../utils/catchAsync');
 const {
   userExchangeConfig,
   userStrategyService,
-  userService,
   subscriptionPlanService,
 } = require('../services');
-const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
 const {getPaymentDataByUserId} = require('../services/paymentDetail.service');
 const logger = require('../config/logger');
@@ -231,11 +229,10 @@ const manuallyDisconnectAccount = catchAsync(async (req, res) => {
 });
 const manuallyConnectBinance = catchAsync(async (req, res) => {
   const connectData = await userExchangeConfig.saveBinanceApiKeyAndSecret(req.body, req.user._id);
-  console.log(connectData,"-------------------");
   if (!connectData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
-  res.send(connectData);
+  return { success: true, code: 201, message: 'API key and secret are valid.', data:connectData}
 });
 module.exports = {
   createUserExchangeConfig,
