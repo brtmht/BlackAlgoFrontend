@@ -382,7 +382,7 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
       //   },
       // });
        const userStrategy = await userStrategyService.getUserStrategyByUser(userId);
-          if(userStrategy && userStrategy.paymentDetailId === undefined || userStrategy?.paymentDetailId !== null){
+          if(userStrategy && userStrategy.paymentDetailId === undefined || userStrategy?.paymentDetailId === null){
               connectedStatus = false;
             }else{
               connectedStatus = true;
