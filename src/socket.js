@@ -8,6 +8,7 @@ module.exports = function (server) {
       origin: process.env.APP_URL, // Replace with your React app's URL
       methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
     },
+    transports: ['websocket', 'polling'],
   });
 
   io.on('connection', (socket) => {

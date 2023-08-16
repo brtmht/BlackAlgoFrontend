@@ -21,6 +21,14 @@ const tradingOrderSchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    stopLossTicketId: {
+      type: String,
+      default: '',
+    },
+    takeProfitTicketId: {
+      type: String,
+      default: '',
+    },
     openTime: {
       type: Date,
       default: Date.now(),
@@ -38,6 +46,10 @@ const tradingOrderSchema = mongoose.Schema(
       enum: [constants.CMD_TYPE.BUY, constants.CMD_TYPE.SELL],
     },
     lots: {
+      type: Number,
+      default: 0,
+    },
+    lotPrice: {
       type: Number,
       default: 0,
     },
