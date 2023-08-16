@@ -232,7 +232,7 @@ const manuallyConnectBinance = catchAsync(async (req, res) => {
   if (!connectData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
-  return { success: true, code: 201, message: 'API key and secret are valid.', data:connectData}
+    res.send({ success: true, code: 201, message: 'API key and secret are valid.',connectData:connectData})
 });
 module.exports = {
   createUserExchangeConfig,
