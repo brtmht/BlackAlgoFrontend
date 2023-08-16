@@ -6,11 +6,11 @@ const {
   userExchangeConfig,
   userStrategyService,
   userService,
-  paymentDetailService,
   subscriptionPlanService,
 } = require('../services');
 const fs = require('fs');
 const mt4Server = require('../middlewares/mt4Server');
+const {getPaymentDataByUserId} = require('../services/paymentDetail.service');
 const logger = require('../config/logger');
 
 const createUserExchangeConfig = catchAsync(async (req, res) => {
@@ -206,7 +206,7 @@ const getAllConnectedUser = catchAsync(async (req, res) => {
 const disconnectConnectionSubscription = catchAsync(async (req, res) => {
   const userList = await userExchangeConfig.getConnectedUser();
   if (userList) {
-    const subscriptionData = await paymentDetailService.getPaymentDataByUserId(userList.userId);
+    const subscriptionData = await getPaymentDataByUserId(userList.userId);
     if (subscriptionData) {
       const retrieve = await subscriptionPlanService.retrieveStripeSubsPlan(subscriptionData.subscriptionPlanId);
       if (retrieve.status === 'canceled') {
@@ -231,6 +231,7 @@ const manuallyDisconnectAccount = catchAsync(async (req, res) => {
 });
 const manuallyConnectBinance = catchAsync(async (req, res) => {
   const connectData = await userExchangeConfig.saveBinanceApiKeyAndSecret(req.body, req.user._id);
+  console.log(connectData,"-------------------");
   if (!connectData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }

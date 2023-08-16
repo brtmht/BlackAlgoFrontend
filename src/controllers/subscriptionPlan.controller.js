@@ -10,6 +10,7 @@ const {
   transactionHistoryService,
   cryptoAccountService,
 } = require('../services');
+const { getPayments } = require('../services/paymentDetail.service');
 const { getActiveUser, updateServerTokenById, disconnectConnection } = require('../services/userExchangeConfig.service');
 const { getUserStrategyByUser } = require('../services/userStrategy.service');
 const mt4Server = require('../middlewares/mt4Server');
@@ -183,7 +184,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
   console.log(req.user._id);
   const userDetail = await userStrategyService.getUserStrategyByUser(req.user._id);
   if (userDetail) {
-    const paymentDetail = await paymentDetailService.getPayments(userDetail.paymentDetailId);
+    const paymentDetail = await getPayments(userDetail.paymentDetailId);
     if (paymentDetail) {
       if (paymentDetail.subscriptionPlanId.startsWith('sub_')) {
         const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);

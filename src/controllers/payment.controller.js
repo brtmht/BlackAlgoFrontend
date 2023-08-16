@@ -8,11 +8,11 @@ const {
   stripeAccountService,
   transactionHistoryService,
   cryptoAccountService,
-  binanceService,
   userExchangeConfig,
   subscriptionPlanService,
 } = require('../services');
 const PaymentDetail = require('../models/paymentDetail.model');
+const {createBinancePayOrder} = require('../services/binance.service');
 const mt4Server = require('../middlewares/mt4Server');
 
 // binanace API
@@ -27,7 +27,7 @@ const getPaymentById = catchAsync(async (req, res) => {
 });
 // post binanace
 const postBinance = catchAsync(async (req, res) => {
-  const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+  const binanceData = await createBinancePayOrder(req.user._id, req.body);
   res.send(binanceData);
 });
 // // log in binance
@@ -131,7 +131,7 @@ const createPayment = catchAsync(async (req, res) => {
     });
   }
   if (req.body.paymentType === 'crypto') {
-    const binanceData = await binanceService.createBinancePayOrder(req.user, req.body);
+    const binanceData = await createBinancePayOrder(req.user, req.body);
     if (binanceData.status === 'SUCCESS') {
       await userExchangeConfig.updateBinanceSubscriptionData(user,Date.now());
       res.send({
@@ -180,7 +180,7 @@ const getPaymentHistory = catchAsync(async (req, res) => {
 
 const upgradeSubscriptionPlanPayment = catchAsync(async (req, res) => {
   if (req.body.paymentType === 'crypto') {
-    const binanceData = await binanceService.createBinancePayOrder(req.user._id, req.body);
+    const binanceData = await createBinancePayOrder(req.user._id, req.body);
     if (binanceData.status === 'SUCCESS') {
       res.send({
         success: true,

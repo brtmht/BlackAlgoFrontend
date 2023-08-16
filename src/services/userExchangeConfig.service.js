@@ -6,6 +6,7 @@ const ApiError = require('../utils/ApiError');
 const { encryptData, decryptData } = require('../middlewares/common');
 const { userStrategyService, exchangeService } = require('.');
 const mt4Server = require('../middlewares/mt4Server');
+const { GetBinanceBalance } = require('./binance.service');
 /**
  * Create a UserExchangeConfig
  * @param {Object}reqData
@@ -358,40 +359,109 @@ const activeSubscription = async (id) => {
 const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
   const API_KEY = binanaceCredentials.apiKey;
   const API_SECRET = binanaceCredentials.apiSecret;
+
   try {
-    const timestamp = Date.now();
-    const params = `timestamp=${timestamp}`;
-    const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
-    const response = await axios.get('https://testnet.binancefuture.com/api/v3/account', {
-      headers: {
-        'X-MBX-APIKEY': API_KEY,
-      },
-      params: {
-        timestamp,
-        signature,
-      },
+    const exchangeConfig = await UserExchangeConfig.findOne({
+      'config.apiKey': await encryptData(API_KEY),
+      'config.apiSecret': await encryptData(API_SECRET),
+       connected: true,
     });
-    if (response.status === 200) {
-      const data = await UserExchangeConfig.findOne({ userId });
-      if (data) {
-        return UserExchangeConfig.findOneAndUpdate(
-          { userId },
-          {
-            $set: {
-              config: {
-                apiKey:await encryptData(API_KEY),
-                apiSecret:await encryptData(API_SECRET),
-              },
-            },
-          }
-        );
+    
+    if(!exchangeConfig){
+      console.log(exchangeConfig,"--------------------------");
+      const timestamp = Date.now();
+      const params = `timestamp=${timestamp}`;
+      const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
+      // const response = await axios.get('https://testnet.binancefuture.com/api/v3/account', {
+      //   headers: {
+      //     'X-MBX-APIKEY': API_KEY,
+      //   },
+      //   params: {
+      //     timestamp,
+      //     signature,
+      //   },
+      // });
+      // if (response.status === 200) {
+        // console.log(response.status,"----------------------------response.status");
+        const userBalance = await GetBinanceBalance({apiSecret:await encryptData(API_SECRET), apiKey:await encryptData(API_KEY)});
+        const data = await UserExchangeConfig.findOne({ userId });
+        if (data) {
+          return UserExchangeConfig.findOneAndUpdate(
+            { userId },
+            {
+              $set: {
+                config: {
+                  apiKey: await encryptData(API_KEY),
+                  apiSecret: await encryptData(API_SECRET),
+                },
+                walletAmount: userBalance.balance,
+              },  
+            }
+          );
+        }
+        return { success: true, code: 200, message: 'API key and secret are valid...............111111111111.'};
       }
-      return { success: true, code: 200, message: 'API key and secret are valid.' };
-    }
-    return { success: false, code: 401, message: 'API key and secret are not valid.' };
+    // }else{
+    //   return { success: false, code: 401, message: 'API key and secret already exist.............22222222222222'};
+    // }
+   
+    return { success: false, code: 401, message: 'API key and secret are not valid.....................33333333333333'};
   } catch (error) {
     console.error('Error testing API key and secret:', error);
-    return { success: true, code: 401, message: 'API key and secret are not valid.' };
+    return { success: true, code: 401, message: 'API key and secret are not valid......................44444444444444444'};
+  }
+};
+
+const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
+  const API_KEY = binanaceCredentials.apiKey;
+  const API_SECRET = binanaceCredentials.apiSecret;
+
+  try {
+    const exchangeConfig = await UserExchangeConfig.findOne({
+      'config.apiKey': await encryptData(API_KEY),
+      'config.apiSecret': await encryptData(API_SECRET),
+       connected: true,
+    });
+    if(!exchangeConfig){
+      const timestamp = Date.now();
+      const params = `timestamp=${timestamp}`;
+      const signature = crypto.createHmac('sha256', API_SECRET).update(params).digest('hex');
+      const response = await axios.get('https://testnet.binancefuture.com/api/v3/account', {
+        headers: {
+          'X-MBX-APIKEY': API_KEY,
+        },
+        params: {
+          timestamp,
+          signature,
+        },
+      });
+      if (response.status === 200) {
+        const userBalance = await GetBinanceBalance(binanaceCredentials);
+        const data = await UserExchangeConfig.findOne({ userId });
+        if (data) {
+          return UserExchangeConfig.findOneAndUpdate(
+            { userId },
+            {
+              $set: {
+                config: {
+                  apiKey: await encryptData(API_KEY),
+                  apiSecret: await encryptData(API_SECRET),
+                  walletAmount: userBalance.balance,
+                },
+              },  
+            }
+          );
+        }
+        return { success: true, code: 200, message: 'API key and secret are valid......11111111'};
+      }
+    }else{
+      return { success: false, code: 401, message: 'API key and secret already exist.......2222222222222'};
+    }
+   
+    return { success: false, code: 401, message: 'API key and secret are not valid.................3333333333333'};
+  } catch (error) {
+    console.error('Error testing API key and secret:', error);
+    return { success: true, code: 401, message: 'API key and secret are not valid..................44444444444444'};
   }
 };
 
@@ -417,4 +487,5 @@ module.exports = {
   saveBinanceApiKeyAndSecret,
   updateBinanceSubscriptionData,
   disconnectSubscription,
+  updateBinanceApiKeyAndSecret,
 };
