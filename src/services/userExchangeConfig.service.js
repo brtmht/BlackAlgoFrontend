@@ -392,7 +392,7 @@ const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
         const userBalance = await GetBinanceBalance({apiSecret:API_SECRET, apiKey:API_KEY});
         const data = await UserExchangeConfig.findOne({ userId });
         if (data) {
-           UserExchangeConfig.findOneAndUpdate(
+          await UserExchangeConfig.findOneAndUpdate(
             { userId },
             {
               $set: {
