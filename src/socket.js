@@ -5,7 +5,7 @@ let io; // Declare io variable
 module.exports = function (server) {
   io = new Server(server, {
     cors: {
-      origin: process.env.APP_URL, // Replace with your React app's URL
+      origin: '*',
       methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
     },
     transports: ['websocket', 'polling'],
