@@ -78,7 +78,7 @@ const mtSocket = () => {
                         );
                         if (orderCreated) {
                           const orderQuery = await binanceService.getBinanceOrder(user.config, orderCreated);
-                          console.log(orderQuery, '----------------------orderQuery');
+                          console.log(orderQuery, 'CreateorderQuery');
                           if(orderQuery){
                             const createdTradeOrder = await tradingOrder.createBinanceTradingOrder(
                               orderQuery,
@@ -87,7 +87,20 @@ const mtSocket = () => {
                               'orderSend', 
                               binanceLots.walletAmount
                             );
-                            console.log("-------------Order created successfully---------------",createdTradeOrder);
+                            console.log('created Binannce broker order data store in DB');
+                            await generateNotification(
+                              {
+                                title: `Order sent  successfully`,
+                                message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                              },
+                              createdTradeOrder.userId
+                            );
+                            emitData('MT4TradeUpdated', {
+                              success: true,
+                              code: 201,
+                              message: 'Order created Successfully',
+                              data: createdTradeOrder,
+                            });
                           }
                         }
                         // if (binanceLots.lots && order.StopLoss !== 0) {
@@ -122,7 +135,7 @@ const mtSocket = () => {
                       }
                       break;
                     case 'PositionModify':
-                      console.log('-------------Not Modified Binance Order  PositionModify');
+                      console.log('Not Modified Binance Order  PositionModify');
                       break;
                     case 'PositionClose':
                       const orderClosed = await binanceService.CloseBinanceTradeOrder(
@@ -131,18 +144,31 @@ const mtSocket = () => {
                         order.Lots,
                         exchangeData.name
                       );
-                      console.log(orderClosed,"--------------------orderClosed");
+                      console.log(orderClosed,"orderClosed");
                       if(orderClosed){
                         const orderQuery = await binanceService.getBinanceOrder(user.config, orderClosed); 
-                        console.log(orderQuery, '----------------------orderQuery');
+                        console.log(orderQuery, 'ClosedorderQuery');
                         if(orderQuery){
-                          const closeTradeOrder = await tradingOrder.updateCloseBinanceTradingOrder(
+                          const updatedData = await tradingOrder.updateCloseBinanceTradingOrder(
                             order.Ticket,
                             user.userId,
                             orderQuery,
                             'closeOrder',
                           );
-                          console.log(closeTradeOrder, '-------------closeTradeOrder---------------------');
+                          console.log(updatedData, 'closeTradeOrder');
+                          await generateNotification(
+                            {
+                              title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
+                              message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                            },
+                            updatedData.userId
+                          );
+                          emitData('MT4TradeUpdated', {
+                            success: true,
+                            code: 201,
+                            message: 'Order closed Successfully',
+                            data: updatedData,
+                          });
                         }
                       }
                       break;

@@ -646,8 +646,9 @@ const updateCloseBinanceTradingOrder = async (masterTicketId,userId, order,order
   if (!updateOrder) {
     throw new ApiError(httpStatus.NOT_FOUND);
   }
+  const updatedTradingOrder = await TradingOrder.findOne({ masterTicketId: masterTicketId, userId:userId });
 
-  return updateOrder;
+  return updatedTradingOrder;
 };
 module.exports = {
   createTradingOrder,
