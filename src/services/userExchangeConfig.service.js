@@ -461,13 +461,13 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
         
       }
     }else{
-      return { success: false, code: 401, message: 'API key and secret already exist.......2222222222222'};
+      return { success: false, code: 401, message: 'API key and secret already exist.'};
     }
    
-    return { success: false, code: 401, message: 'API key and secret are not valid.................3333333333333'};
+    return { success: false, code: 401, message: 'API key and secret are not valid.'};
   } catch (error) {
     console.error('Error testing API key and secret:', error);
-    return { success: true, code: 401, message: 'API key and secret are not valid..................44444444444444'};
+    return { success: true, code: 401, message: 'API key and secret are not valid.'};
   }
 };
 
