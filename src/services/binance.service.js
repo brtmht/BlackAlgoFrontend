@@ -2,7 +2,6 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const httpStatus = require('http-status');
-const paymentDetailService = require('.');
 const ApiError = require('../utils/ApiError');
 const logger = require('../config/logger');
 const { encryptData, decryptData } = require('../middlewares/common');
@@ -96,10 +95,11 @@ const createBinancePayOrder = async (user, reqData) => {
   try {
     const response = await axios.post(endpoint, jsonRequest, { headers });
     if (response.data) {
-      await paymentDetailService.saveBinacePaymentDetails(user._id, response.data, reqData);
+      // await saveBinacePaymentDetails(user._id, response.data, reqData);
       return response.data;
     }
   } catch (error) {
+    console.log(error,"------------------------test");
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
 };

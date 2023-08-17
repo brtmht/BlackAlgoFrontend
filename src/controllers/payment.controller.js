@@ -133,6 +133,7 @@ const createPayment = catchAsync(async (req, res) => {
   if (req.body.paymentType === 'crypto') {
     const binanceData = await createBinancePayOrder(req.user, req.body);
     if (binanceData.status === 'SUCCESS') {
+      await paymentDetailService.saveBinacePaymentDetails(user,binanceData, req.body);
       await userExchangeConfig.updateBinanceSubscriptionData(user,Date.now());
       res.send({
         success: true,
@@ -180,8 +181,9 @@ const getPaymentHistory = catchAsync(async (req, res) => {
 
 const upgradeSubscriptionPlanPayment = catchAsync(async (req, res) => {
   if (req.body.paymentType === 'crypto') {
-    const binanceData = await createBinancePayOrder(req.user._id, req.body);
+    const binanceData = await createBinancePayOrder(req.user, req.body);
     if (binanceData.status === 'SUCCESS') {
+      await paymentDetailService.saveBinacePaymentDetails(req.user._id,binanceData, req.body);
       res.send({
         success: true,
         code: 201,
