@@ -3,7 +3,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const { UserExchangeConfig } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { encryptData, decryptData, hashEncryptedValue } = require('../middlewares/common');
+const { encryptData, decryptData, encryptDataForBinance } = require('../middlewares/common');
 const { userStrategyService, exchangeService } = require('.');
 const mt4Server = require('../middlewares/mt4Server');
 const { GetBinanceBalance } = require('./binance.service');
@@ -357,8 +357,8 @@ const activeSubscription = async (id) => {
 };
 
 const saveBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
-  const API_KEY = await encryptData(binanaceCredentials.apiKey);
-  const API_SECRET = await encryptData(binanaceCredentials.apiSecret);
+  const API_KEY = await encryptDataForBinance(binanaceCredentials.apiKey);
+  const API_SECRET = await encryptDataForBinance(binanaceCredentials.apiSecret);
   let connectedStatus;
 
   try {
@@ -424,8 +424,8 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
 
   try {
     const exchangeConfig = await UserExchangeConfig.findOne({
-      'config.apiKey': await encryptData(API_KEY),
-      'config.apiSecret': await encryptData(API_SECRET),
+      'config.apiKey': await encryptDataForBinance(API_KEY),
+      'config.apiSecret': await encryptDataForBinance(API_SECRET),
        connected: true,
     });
     if(!exchangeConfig){
@@ -450,8 +450,8 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId) => {
             {
               $set: {
                 config: {
-                  apiKey: await encryptData(API_KEY),
-                  apiSecret: await encryptData(API_SECRET),
+                  apiKey: await encryptDataForBinance(API_KEY),
+                  apiSecret: await encryptDataForBinance(API_SECRET),
                   walletAmount: userBalance.balance,
                 },
               },  
