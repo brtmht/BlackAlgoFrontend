@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const logger = require('../config/logger');
-const { encryptData, decryptData } = require('../middlewares/common');
+const { encryptData, decryptData, encryptDataForBinance, decryptDataForBinance, compareEncryptedVal } = require('../middlewares/common');
 
 const binancePayKey = process.env.BINANCE_PAY_KEY;
 const binancePaySecret = process.env.BINANCE_PAY_SECRET_KEY;
@@ -216,8 +216,8 @@ const CreateSimpleBinanceTradeOrder = async (userData, data, lots, exchangeName)
         symbol = data?.Symbol === 'BTCUSD' ? 'BTCUSDT' : data?.Symbol === 'ETHUSD' ? 'ETHUSDT' : data?.Symbol;
         break;
     }
-    const apiKey = await decryptData(userData.config.apiKey);
-    const apiSecret = await decryptData(userData.config.apiSecret);
+    const apiKey = await decryptDataForBinance(userData.config.apiKey);
+    const apiSecret = await decryptDataForBinance(userData.config.apiSecret);
     // const apiKey = '967798605d5e7c61adc53792b77df175e194fe09bf16e1d8bb58d678e76e6d7a';
     // const apiSecret = 'c9ce975608637f4f0e8b07abed1ebcc3331dca13131c933aa89df17b0b4e3e91';
     const binanceType = 'MARKET';
@@ -291,7 +291,7 @@ const CreateBinanceTradeOrderUsingStopLoss = async (userData, data, lots, exchan
       url: `https://testnet.binancefuture.com/fapi/v1/order?${params}&signature=${signature}`,
       headers: {
         'Content-Type': 'application/json',
-        'X-MBX-APIKEY': await decryptData(userData.config.apiKey),
+        'X-MBX-APIKEY': await decryptDataForBinance(userData.config.apiKey),
       },
     };
     const response = await axios(config);
@@ -340,7 +340,7 @@ const CreateBinanceTradeOrderUsingTakeProfit = async (userData, data, lots, exch
       url: `https://testnet.binancefuture.com/fapi/v1/order?${params}&signature=${signature}`,
       headers: {
         'Content-Type': 'application/json',
-        'X-MBX-APIKEY': await decryptData(userData.config.apiKey),
+        'X-MBX-APIKEY': await decryptDataForBinance(userData.config.apiKey),
       },
     };
     const response = await axios(config);
@@ -367,7 +367,7 @@ const ModifyBinanceTradeOrder = async (data, lots, orderID, userData) => {
       }&timestamp=${timestamp}&signature=${signature}`,
       headers: {
         'Content-Type': 'application/json',
-        'X-MBX-APIKEY': await decryptData(userData.config.apiKey),
+        'X-MBX-APIKEY': await decryptDataForBinance(userData.config.apiKey),
       },
     };
     const response = await axios(config);
@@ -407,8 +407,8 @@ const CancelBinanceTradeOrder = async () => {
 
 const GetBinanceBalance = async (data) => {
   console.log(data,"=---------------------------");
-  const API_SECRET = await decryptData(data.apiSecret);
-  const API_KEY = await decryptData(data.apiKey);
+  const API_SECRET = await decryptDataForBinance(data.apiSecret);
+  const API_KEY = await decryptDataForBinance(data.apiKey);
   // const API_SECRET = 'c9ce975608637f4f0e8b07abed1ebcc3331dca13131c933aa89df17b0b4e3e91';
   // const API_KEY = '967798605d5e7c61adc53792b77df175e194fe09bf16e1d8bb58d678e76e6d7a';
   const timestamp = Date.now();
@@ -449,8 +449,8 @@ const CloseBinanceTradeOrder = async (userData, data, lots, exchangeName) => {
         symbol = data?.Symbol === 'BTCUSD' ? 'BTCUSDT' : data?.Symbol === 'ETHUSD' ? 'ETHUSDT' : data?.Symbol;
         break;
     }
-    const apiKey = await decryptData(userData.config.apiKey);
-    const apiSecret = await decryptData(userData.config.apiSecret);
+    const apiKey = await decryptDataForBinance(userData.config.apiKey);
+    const apiSecret = await decryptDataForBinance(userData.config.apiSecret);
     // const apiKey = '967798605d5e7c61adc53792b77df175e194fe09bf16e1d8bb58d678e76e6d7a';
     // const apiSecret = 'c9ce975608637f4f0e8b07abed1ebcc3331dca13131c933aa89df17b0b4e3e91';
     const binanceType = 'MARKET';
@@ -486,8 +486,8 @@ const CloseBinanceTradeOrder = async (userData, data, lots, exchangeName) => {
 
 const getBinanceOrder = async (data, order) => {
   try {
-    const API_SECRET = await decryptData(data.apiSecret);
-    const API_KEY = await decryptData(data.apiKey);
+    const API_SECRET = await decryptDataForBinance(data.apiSecret);
+    const API_KEY = await decryptDataForBinance(data.apiKey);
     const timestamp = Date.now();
     const params = `symbol=${order.symbol.toUpperCase()}&orderId=${
       order.orderId
