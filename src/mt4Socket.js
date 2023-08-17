@@ -37,7 +37,7 @@ const mtSocket = () => {
         const order = ordersData?.Data?.Update?.Order;
         const orderType = ordersData?.Data?.Update?.Action;
         const masterBalance = ordersData?.Data?.Balance;
-        console.log(order, '-------------------------order');
+        console.log(order, 'Mt4 master order');
         if (order) {
           switch (orderType) {
             case 'PositionOpen':
@@ -266,7 +266,6 @@ const mtSocket = () => {
                         );
                       }
                       break;
-
                     case 'PositionClose':
                       let closeData = { mesaage: '' };
                       try {

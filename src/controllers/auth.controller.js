@@ -2,7 +2,6 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService, userStrategyService } = require('../services');
 const constants = require('../config/constants');
-const sendNotification = require('../middlewares/firebaseNotification');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -32,13 +31,6 @@ const login = catchAsync(async (req, res) => {
     await emailService.sendEmail(user, contentData, constants.VERIFY_EMAIL_OPTIONS);
     res.send({"success": false,"error_code": 403,"message": "Verification link sent to your email . please verify it."});
   } else {
-    // if (user.notificationToken !== null) {
-    //   const notification = {
-    //     title: `Logged in succesfully`,
-    //     message: `You got to ${user.name} logged in as ${user.email}`,
-    //   };
-    //   sendNotification(notification, user);
-    // }
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({"success":true, code:201 , "message":"Logged in Successfully", "data":{user, tokens}});
   }

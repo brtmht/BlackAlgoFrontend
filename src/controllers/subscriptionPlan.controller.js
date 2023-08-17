@@ -4,7 +4,6 @@ const catchAsync = require('../utils/catchAsync');
 const {
   subscriptionPlanService,
   userStrategyService,
-  paymentDetailService,
   binanceService,
   userExchangeConfig,
   transactionHistoryService,
