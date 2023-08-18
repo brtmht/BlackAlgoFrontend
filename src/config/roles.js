@@ -90,6 +90,7 @@ const allRoles = {
     'getExchanges',
     'getAllConnectedUser',
     'binancePayment',
+    'updateUserStrategyByAdmin',
   ],
 
   admin: [
@@ -108,6 +109,7 @@ const allRoles = {
     'getAllConnectedUser',
     'getExchanges',
     'binancePayment',
+    'updateUserStrategyByAdmin',
   ],
 };
 

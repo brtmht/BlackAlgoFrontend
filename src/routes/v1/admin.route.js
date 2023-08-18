@@ -3,6 +3,8 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const { authValidation, adminValidation } = require('../../validations');
 const { adminController } = require('../../controllers');
+const { userStrategyValidation } = require('../../validations');
+const { userStrategyController } = require('../../controllers');
 
 const router = express.Router();
 
@@ -13,8 +15,11 @@ router.patch(
   validate(adminValidation.updateUser),
   adminController.updateUser
 );
-module.exports = router;
 router.get('/send2faKey/:userId', auth('updateUserEmail'), adminController.send2faBackupKey);
+router
+  .route('/updateUserStrategyByAdmin/:userId')
+  .patch(auth('updateUserStrategyByAdmin'), userStrategyController.updateUserStrategyByAdmin);
+module.exports = router;
 
 /**
  * @swagger
@@ -144,4 +149,48 @@ router.get('/send2faKey/:userId', auth('updateUserEmail'), adminController.send2
  *             example:
  *               code: 401
  *               message: 2fa sent via email
+ */
+/**
+ * @swagger
+ * /admin/updateUserStrategyByAdmin/{id}:
+ *   patch:
+ *     summary: Update user's strategy
+ *     description: admin can change user's strategy.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: userId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: Balanced
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserStrategy'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
  */
