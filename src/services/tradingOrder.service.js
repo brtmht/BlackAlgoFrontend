@@ -333,7 +333,7 @@ const getPortfolioValue = async (userId) => {
       if(exchangeData.type === 'Binance'){
         portfolioSize = await GetBinanceBalance(userConfig.config);
       }else{
-        BrokerToken;
+        let BrokerToken;
         const checkConnection = await mt4Server.checkConnection(userConfig.serverToken);
         let connectionAttempts = 0;
   
