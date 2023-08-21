@@ -218,7 +218,7 @@ const mtSocket = () => {
                     BrokerToken = user.serverToken;
                   }
                   console.log(`Order Type: ${orderType}, Order Details: { Ticket: ${order.Ticket}, Lots: ${order.Lots} }`);
-                  const tradingDataArray = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
+                  const tradingDataArray = await tradingOrder.checkAllMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {
                     case 'PositionOpen':
                       // const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
