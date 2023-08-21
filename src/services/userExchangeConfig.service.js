@@ -453,7 +453,7 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId, exchang
         const userBalance = await GetBinanceBalance({apiSecret:API_SECRET, apiKey:API_KEY});
         const data = await UserExchangeConfig.findOne({ userId });
         if (data) {
-           await UserExchangeConfig.findOneAndUpdate(
+          await UserExchangeConfig.findOneAndUpdate(
             { userId },
             {
               $set: {
@@ -467,6 +467,7 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId, exchang
               },  
             }
           );
+          return { success: true, code: 200, message: 'Binance Connected Sucessfully.'};
         }
         
       // }
