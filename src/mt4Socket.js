@@ -62,7 +62,6 @@ const mtSocket = () => {
             return new Promise(async (resolve, reject) => {
               try {
                 const exchangeData = await exchangeService.getExchangeById(user.exchangeId);
-
                 if (exchangeData.name === 'Binance Global') {
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {

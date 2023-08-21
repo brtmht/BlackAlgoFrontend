@@ -155,7 +155,7 @@ const updateUserPasword = async (userId, updateBody) => {
     await user.save();
     return user;
   }
-  throw new ApiError(httpStatus.BAD_REQUEST, 'Password doesnot match');
+  throw new ApiError(httpStatus.BAD_REQUEST, 'Password does not match');
 };
 
 // Generate Two factor authentication secret
