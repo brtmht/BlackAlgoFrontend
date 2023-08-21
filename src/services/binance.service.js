@@ -229,13 +229,15 @@ const CreateSimpleBinanceTradeOrder = async (userData, data, lots, exchangeName)
     if (data?.Type === 'Sell') {
       positionSide = 'SHORT';
     }
-    const params = `symbol=${symbol.toUpperCase()}&side=${data?.Type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots}&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
+    const params = `symbol=${symbol.toUpperCase()}&side=${data?.Type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots.toFixed(3)}&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
     const signature = crypto.createHmac('sha256', apiSecret.toString()).update(params).digest('hex');
     var config = {
       method: 'post',
       url: `https://testnet.binancefuture.com/fapi/v1/order?${params}&signature=${signature}`,
       headers: {
         'Content-Type': 'application/json',
+
+
         'X-MBX-APIKEY': apiKey,
       },
     };
@@ -462,7 +464,7 @@ const CloseBinanceTradeOrder = async (userData, data, lots, exchangeName) => {
       type = 'BUY';
       positionSide = 'SHORT';
     }
-    const params = `symbol=${symbol.toUpperCase()}&side=${type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots}&placeType=position&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
+    const params = `symbol=${symbol.toUpperCase()}&side=${type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots.toFixed(3)}&placeType=position&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
     const signature = crypto.createHmac('sha256', apiSecret.toString()).update(params).digest('hex');
     var config = {
       method: 'post',
