@@ -79,12 +79,12 @@ const mtSocket = () => {
                         if (orderCreated) {
                           const orderQuery = await binanceService.getBinanceOrder(user.config, orderCreated);
                           console.log(orderQuery, 'CreateorderQuery');
-                          if(orderQuery){
+                          if (orderQuery) {
                             const createdTradeOrder = await tradingOrder.createBinanceTradingOrder(
                               orderQuery,
                               user.userId,
                               order,
-                              'orderSend', 
+                              'orderSend',
                               binanceLots.walletAmount
                             );
                             console.log('created Binannce broker order data store in DB');
@@ -144,16 +144,16 @@ const mtSocket = () => {
                         order.Lots,
                         exchangeData.name
                       );
-                      console.log(orderClosed,"orderClosed");
-                      if(orderClosed){
-                        const orderQuery = await binanceService.getBinanceOrder(user.config, orderClosed); 
+                      console.log(orderClosed, 'orderClosed');
+                      if (orderClosed) {
+                        const orderQuery = await binanceService.getBinanceOrder(user.config, orderClosed);
                         console.log(orderQuery, 'ClosedorderQuery');
-                        if(orderQuery){
+                        if (orderQuery) {
                           const updatedData = await tradingOrder.updateCloseBinanceTradingOrder(
                             order.Ticket,
                             user.userId,
                             orderQuery,
-                            'closeOrder',
+                            'closeOrder'
                           );
                           console.log(updatedData, 'closeTradeOrder');
                           await generateNotification(
@@ -221,38 +221,91 @@ const mtSocket = () => {
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {
                     case 'PositionOpen':
+                      // const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
+                      // if (userLots.lots) {
+                      //   console.log(userLots.lots, 'userLots.lots');
+                      //   const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots, exchangeData.name);
+
+                      //   if (!tradeData.message) {
+                      //     console.log('created broker order');
+                      //     const createdTradeOrder = await tradingOrder.createTradingOrder(
+                      //       tradeData,
+                      //       user.userId,
+                      //       order,
+                      //       'orderSend',
+                      //       userLots.walletAmount
+                      //     );
+                      //     console.log('created broker order data store in DB');
+                      //     await generateNotification(
+                      //       {
+                      //         title: `Order sent  successfully`,
+                      //         message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                      //       },
+                      //       createdTradeOrder.userId
+                      //     );
+                      //     emitData('MT4TradeUpdated', {
+                      //       success: true,
+                      //       code: 201,
+                      //       message: 'Order created Successfully',
+                      //       data: createdTradeOrder,
+                      //     });
+                      //   }
+
+                      //   // Additional logic to send the order data to the user
+                      //   resolve();
+                      // }
                       const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
+
                       if (userLots.lots) {
                         console.log(userLots.lots, 'userLots.lots');
-                        const tradeData = await mt4Server.orderSend(order, BrokerToken, userLots.lots, exchangeData.name);
 
-                        if (!tradeData.message) {
-                          console.log('created broker order');
-                          const createdTradeOrder = await tradingOrder.createTradingOrder(
-                            tradeData,
-                            user.userId,
-                            order,
-                            'orderSend',
-                            userLots.walletAmount
-                          );
-                          console.log('created broker order data store in DB');
-                          await generateNotification(
-                            {
-                              title: `Order sent  successfully`,
-                              message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
-                            },
-                            createdTradeOrder.userId
-                          );
-                          emitData('MT4TradeUpdated', {
-                            success: true,
-                            code: 201,
-                            message: 'Order created Successfully',
-                            data: createdTradeOrder,
-                          });
+                        const numberOfOrders = Math.ceil(userLots.lots / 10); // Calculate the number of orders
+                        const promises = [];
+
+                        for (let i = 0; i < numberOfOrders; i++) {
+                          const lotsToSend = i === numberOfOrders - 1 ? userLots.lots % 10 || 10 : 10;
+
+                          // Push the promise of sending each order into the array
+                          promises.push(mt4Server.orderSend(order, BrokerToken, lotsToSend, exchangeData.name));
                         }
 
-                        // Additional logic to send the order data to the user
-                        resolve();
+                        try {
+                          // Use Promise.all to send all orders concurrently
+                          const tradeDataArray = await Promise.all(promises);
+
+                          for (const tradeData of tradeDataArray) {
+                            if (!tradeData.message) {
+                              console.log('created broker order');
+                              const createdTradeOrder = await tradingOrder.createTradingOrder(
+                                tradeData,
+                                user.userId,
+                                order,
+                                'orderSend',
+                                userLots.walletAmount
+                              );
+                              console.log('created broker order data store in DB');
+                              await generateNotification(
+                                {
+                                  title: `Order sent successfully`,
+                                  message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                                },
+                                createdTradeOrder.userId
+                              );
+                              emitData('MT4TradeUpdated', {
+                                success: true,
+                                code: 201,
+                                message: 'Order created Successfully',
+                                data: createdTradeOrder,
+                              });
+                            }
+                          }
+
+                          // Additional logic to send the order data to the user
+                          resolve();
+                        } catch (error) {
+                          console.error('Error sending orders:', error);
+                          // Handle errors here if needed
+                        }
                       }
                       break;
 
