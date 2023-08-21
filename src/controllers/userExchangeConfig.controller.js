@@ -238,8 +238,21 @@ const manuallyConnectBinance = catchAsync(async (req, res) => {
   }
   if(connectData.success === false){
     res.send(connectData);
+  }    
+});
+
+const UpdateBinanceConnect = catchAsync(async (req, res) => {
+  const connectData = await userExchangeConfig.updateBinanceApiKeyAndSecret(req.body, req.user._id, req.body.exchangeId );
+  if (!connectData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
   }
-    
+
+  if(connectData.success === true){
+    res.send(connectData);
+  }
+  if(connectData.success === false){
+    res.send(connectData);
+  }    
 });
 module.exports = {
   createUserExchangeConfig,
@@ -249,4 +262,5 @@ module.exports = {
   disconnectConnectionSubscription,
   manuallyDisconnectAccount,
   manuallyConnectBinance,
+  UpdateBinanceConnect,
 };
