@@ -110,6 +110,7 @@ const allRoles = {
     'getExchanges',
     'binancePayment',
     'updateUserStrategyByAdmin',
+    'searchUser',
   ],
 };
 

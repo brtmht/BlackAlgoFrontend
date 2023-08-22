@@ -12,6 +12,12 @@ const updateUser = {
   }),
 };
 
+const searchUser = {
+  body: Joi.object().keys({
+    text: Joi.string(),
+  }),
+};
 module.exports = {
   updateUser,
+  searchUser,
 };
