@@ -493,6 +493,12 @@ const calculateTodayPerformance = async (userId) => {
         .sort({ createdAt: -1 })
         .exec();
 
+        const yesterdayTradingOrderArray = await TradingOrder.find({
+          userId: userId,
+          createdAt: { $gte: startDay, $lte: endOfDay },
+        })
+          .exec();  
+
       
 
       const todayPerformance = yesterdayTradingOrder ? portfolioSize.balance - yesterdayTradingOrder.balance : 0;
@@ -507,7 +513,7 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2);
 
-      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0, tradeData: yesterdayTradingOrder };
+      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0, tradeData: yesterdayTradingOrderArray };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
