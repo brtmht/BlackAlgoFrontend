@@ -1,6 +1,8 @@
+const httpStatus = require('http-status');
 const { User } = require('../models');
 const constants = require('../config/constants');
 const { emailService } = require('./index');
+const ApiError = require('../utils/ApiError');
 
 /**
  * Create a exchange
@@ -24,7 +26,24 @@ const send2faKey = async (id) => {
   }
   return false;
 };
+const searchUserByText = async (reqData, filter, options) => {
+  // Construct regex pattern using the reqData variable
+  const regexPattern = new RegExp(reqData, 'i'); // 'i' flag for case-insensitive search
+  const users = await User.paginate(
+    {
+      $or: [{ name: { $regex: regexPattern } }, { email: { $regex: regexPattern } }],
+    },
+    options
+  );
+  if (users.length === 0) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'No matching users found');
+  }
+
+  return users;
+};
+
 module.exports = {
   updateUser,
   send2faKey,
+  searchUserByText,
 };
