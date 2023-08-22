@@ -80,7 +80,7 @@ const getUserById = async (id) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const configData = await UserExchangeConfig.find({ userId: user._id });
+  const configData = await UserExchangeConfig.find({ userId: user._id }).populate('strategyId');
   return {user ,configData};
 };
 
