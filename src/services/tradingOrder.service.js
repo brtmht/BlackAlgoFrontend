@@ -395,9 +395,8 @@ const calculateProfitLoss = async (userId) => {
       // Fetch all trading orders for the user using Promise.all
       const tradingOrders = await TradingOrder.find({ userId });
       if (tradingOrders.length === 0) {
-        return { cumulativeProfitLoss: 0, profitLoss: 0 };
+        return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders};
       }
-
       // Calculate the cumulative profit or loss concurrently
       const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
         profits.reduce((sum, profit) => sum + profit, 0)
@@ -417,9 +416,9 @@ const calculateProfitLoss = async (userId) => {
 
         const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2);
 
-        return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss.toFixed(2) };
+        return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss.toFixed(2), tradeData: tradingOrders };
       } else {
-        return { cumulativeProfitLoss: 0, profitLoss: 0 };
+        return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
       }
     }
   } catch (error) {
@@ -508,7 +507,7 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2);
 
-      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
+      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0, tradeData: yesterdayTradingOrder };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
@@ -543,11 +542,13 @@ const calculateLifetimePerformance = async (userId) => {
         return {
           lifetimePerformancePercentage: lifetimePerformancePercentageString,
           lifetimePerformance: (currentBalance - initialBalance).toFixed(2),
+          tradeData: tradingOrders
         };
       }else{
         return {
           lifetimePerformancePercentage: 0,
           lifetimePerformance: 0,
+          tradeData: tradingOrders
         };
       }
     }
@@ -589,12 +590,14 @@ const calculateLastMonthPerformance = async (userId) => {
 
         return {
           lastMonthPercentage: lastMonthPercentageString >= 0?lastMonthPercentageString:0 ,
-          lastMonth: (currentBalance - initialBalance)>= 0 ?currentBalance - initialBalance :0
+          lastMonth: (currentBalance - initialBalance)>= 0 ?currentBalance - initialBalance :0,
+          tradeData: tradingOrders
         };
       } else {
         return {
           lastMonthPercentage: 0,
           lastMonth: 0,
+          tradeData: tradingOrders
         };
       }
     }
