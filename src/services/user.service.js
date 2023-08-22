@@ -2,7 +2,7 @@
 const httpStatus = require('http-status');
 const { toDataURL } = require('qrcode');
 const { authenticator } = require('otplib');
-const { User, UserWallet, UserExchangeConfig } = require('../models');
+const { User, UserWallet, UserExchangeConfig, UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -76,14 +76,23 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
+ return await User.findById(id);
+};
+
+/**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<User>}
+ */
+const getUserByIdForAdmin = async (id) => {
   const user = await User.findById(id);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const configData = await UserExchangeConfig.find({ userId: user._id });
-  return {user ,configData};
+  const subscriptionData = await UserStrategy.find({ userId: user._id }).populate('subscriptionPlanId');
+  const configData = await UserExchangeConfig.find({ userId: user._id }).populate('strategyId');
+  return {user ,configData,subscriptionData};
 };
-
 /**
  * Get user by email
  * @param {string} email
@@ -323,6 +332,7 @@ module.exports = {
   createUser,
   queryUsers,
   getUserById,
+  getUserByIdForAdmin,
   getUserByEmail,
   updateUserById,
   updateUserDataById,
