@@ -2,7 +2,8 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userStrategyService } = require('../services');
+const { userStrategyService, userExchangeConfig } = require('../services');
+
 
 const createUserStrategy = catchAsync(async (req, res) => {
   const userId = req.user._id;
@@ -45,6 +46,7 @@ const getUserStrategyById = catchAsync(async (req, res) => {
 
 const updateUserStrategy = catchAsync(async (req, res) => {
   const userStrategy = await userStrategyService.updateUserStrategyById(req.user._id, req.body);
+  await userExchangeConfig.updateStrategyId(req.user._id, req.body.strategyId);
   res.send({ success: true, code: 201, message: 'User strategy updated Successfully', data: userStrategy });
 });
 const updateUserStrategyByAdmin = catchAsync(async (req, res) => {
