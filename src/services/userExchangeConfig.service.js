@@ -482,6 +482,16 @@ const updateBinanceApiKeyAndSecret = async (binanaceCredentials, userId, exchang
   }
 };
 
+const updateStrategyId = async (userId,strategy_Id) => {
+  const user = await userStrategyService.getUserStrategyByUser(userId);
+  if (user) {
+    return UserExchangeConfig.findOneAndUpdate(
+      { userId: user.userId },
+      { $set: { strategyId: strategy_Id } }
+    );
+  }
+};
+
 module.exports = {
   createUserExchangeConfig,
   getUserExchangeConfigById,
@@ -505,4 +515,5 @@ module.exports = {
   updateBinanceSubscriptionData,
   disconnectSubscription,
   updateBinanceApiKeyAndSecret,
+  updateStrategyId,
 };
