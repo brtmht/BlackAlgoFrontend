@@ -20,6 +20,8 @@ router
   .route('/manuallyDisconnectAccount')
   .post(auth('manuallyDisconnectAccount'), userExchangeConfigController.manuallyDisconnectAccount);
 router.route('/connectBinance').post(auth('connectBinance'), userExchangeConfigController.manuallyConnectBinance);
+router.route('/UpdateBinanceConnect').post(auth('UpdateBinanceConnect'), userExchangeConfigController.UpdateBinanceConnect);
+
 module.exports = router;
 
 /**
@@ -217,6 +219,47 @@ module.exports = router;
  *             example:
  *               apiKey: YEDRFT87645WSERXCO7RESRDTUIKBJHVCDYTUJKBUUY
  *               apiSecret: iuytdrxgcfghvjkFDThJJFTDRJH6546789765789875E4RDTFJHKJF6FJKHXFV
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /UpdateBinanceConnect:
+ *   post:
+ *     summary: update  api key and secret key
+ *     description: Manage binance connection.
+ *     tags: [UserExchangeConfig]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               apiKey:
+ *                 type: string
+ *               apiSecret:
+ *                 type: string
+ *               exchangeId:
+ *                 type: string
+ *             example:
+ *               apiKey: YEDRFT87645WSERXCO7RESRDTUIKBJHVCDYTUJKBUUY
+ *               apiSecret: iuytdrxgcfghvjkFDThJJFTDRJH6546789765789875E4RDTFJHKJF6FJKHXFV
+ *               exchangeId: 234567890456789
  *     responses:
  *       "200":
  *         description: OK

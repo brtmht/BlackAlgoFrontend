@@ -62,7 +62,6 @@ const mtSocket = () => {
             return new Promise(async (resolve, reject) => {
               try {
                 const exchangeData = await exchangeService.getExchangeById(user.exchangeId);
-
                 if (exchangeData.name === 'Binance Global') {
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {
@@ -218,7 +217,7 @@ const mtSocket = () => {
                     BrokerToken = user.serverToken;
                   }
                   console.log(`Order Type: ${orderType}, Order Details: { Ticket: ${order.Ticket}, Lots: ${order.Lots} }`);
-                  const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
+                  const tradingDataArray = await tradingOrder.checkAllMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {
                     case 'PositionOpen':
                       // const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
@@ -310,48 +309,102 @@ const mtSocket = () => {
                       break;
 
                     case 'PositionModify':
-                      const tradeData = await mt4Server.orderModify(order, BrokerToken, tradingData.ticketId);
-                      if (!tradeData.message) {
-                        updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
-                          order.Ticket,
-                          tradeData,
-                          'orderModify'
-                        );
-                      }
+                      // const tradeData = await mt4Server.orderModify(order, BrokerToken, tradingData.ticketId);
+                      // if (!tradeData.message) {
+                      //   updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
+                      //     order.Ticket,
+                      //     tradeData,
+                      //     'orderModify'
+                      //   );
+                      // }
+                      const modifyPromises = tradingDataArray.map(async (tradingData) => {
+                        const tradeData = await mt4Server.orderModify(order, BrokerToken, tradingData.ticketId);
+
+                        if (!tradeData.message) {
+                          return tradingOrder.updateTradeOrderByMasterTicket(tradingData.ticketId, tradeData, 'orderModify');
+                        } else {
+                          return null; // Return null if modification failed
+                        }
+                      });
+
+                      const modifyResults = await Promise.all(modifyPromises);
+
+                      const successfulModifyResults = modifyResults.filter((result) => result !== null);
+
+                      console.log(successfulModifyResults, 'modified order successfulResults');
+
                       break;
                     case 'PositionClose':
-                      let closeData = { mesaage: '' };
-                      try {
-                        closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId, tradingData.lots);
-                      } catch (error) {
-                        closeData.message = error;
-                        console.log(error, 'Auto closing oder on position close');
-                      }
-                      console.log('PositionClose mt4Server.orderClose ->', closeData.message);
-                      if (!closeData.message) {
-                        console.log('action: broker order close Data');
-                        updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
-                          order.Ticket,
-                          closeData,
-                          'closeOrder'
-                        );
+                      // let closeData = { mesaage: '' };
+                      // try {
+                      //   closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId, tradingData.lots);
+                      // } catch (error) {
+                      //   closeData.message = error;
+                      //   console.log(error, 'Auto closing oder on position close');
+                      // }
+                      // console.log('PositionClose mt4Server.orderClose ->', closeData.message);
+                      // if (!closeData.message) {
+                      //   console.log('action: broker order close Data');
+                      //   updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
+                      //     order.Ticket,
+                      //     closeData,
+                      //     'closeOrder'
+                      //   );
 
-                        await generateNotification(
-                          {
-                            title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
-                            message: `The order for ${updatedData.lots} lots has been successfully closed.`,
-                          },
-                          updatedData.userId
-                        );
-                        emitData('MT4TradeUpdated', {
-                          success: true,
-                          code: 201,
-                          message: 'Order closed Successfully',
-                          data: updatedData,
-                        });
-                      } else {
-                        updatedData = await tradingOrder.updateTradeOrderType(order.Ticket, user.userId, 'closeOrder');
-                      }
+                      //   await generateNotification(
+                      //     {
+                      //       title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
+                      //       message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                      //     },
+                      //     updatedData.userId
+                      //   );
+                      //   emitData('MT4TradeUpdated', {
+                      //     success: true,
+                      //     code: 201,
+                      //     message: 'Order closed Successfully',
+                      //     data: updatedData,
+                      //   });
+                      // } else {
+                      //   updatedData = await tradingOrder.updateTradeOrderType(order.Ticket, user.userId, 'closeOrder');
+                      // }
+                      const closePromises = tradingDataArray.map(async (tradingData) => {
+                        try {
+                          const closeData = await mt4Server.orderClose(BrokerToken, tradingData.ticketId, tradingData.lots);
+
+                          if (!closeData.message) {
+                            console.log('action: broker order close Data');
+                            const updatedData = await tradingOrder.updateTradeOrderByMasterTicket(
+                              tradingData.ticketId,
+                              closeData,
+                              'closeOrder'
+                            );
+
+                            await generateNotification(
+                              {
+                                title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
+                                message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                              },
+                              updatedData.userId
+                            );
+                            emitData('MT4TradeUpdated', {
+                              success: true,
+                              code: 201,
+                              message: 'Order closed Successfully',
+                              data: updatedData,
+                            });
+                          } else {
+                            await tradingOrder.updateTradeOrderType(tradingData.Ticket, user.userId, 'closeOrder');
+                          }
+                        } catch (error) {
+                          console.log(error, 'Auto closing order on position close');
+                        }
+                      });
+
+                      const closeResults = await Promise.all(closePromises);
+                      const successfulResults = closeResults.filter((result) => result !== null);
+
+                      console.log(successfulResults, 'close order successfulResults');
+
                       break;
                     default:
                       break;

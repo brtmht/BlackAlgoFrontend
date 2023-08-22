@@ -102,6 +102,12 @@ const checkMasterTradingId = async (masterTicketId, user_id) => {
   return data;
 };
 
+
+const checkAllMasterTradingId = async (masterTicketId, user_id) => {
+  const data = await TradingOrder.find({ masterTicketId, userId: user_id });
+  return data;
+};
+
 /**
  * Get Trading orders count by userId
  * @param {string} masterTicketId - The trading Master Ticket id
@@ -670,4 +676,5 @@ module.exports = {
   createBinanceTradingOrder,
   convertISOString,
   updateCloseBinanceTradingOrder,
+  checkAllMasterTradingId,
 };
