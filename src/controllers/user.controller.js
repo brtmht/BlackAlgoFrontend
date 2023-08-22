@@ -84,7 +84,7 @@ const getUsers = catchAsync(async (req, res) => {
   res.send(result);
 });
 const getUserById = catchAsync(async (req, res) => {
-  const result = await userService.getUserById(req.params.userId);
+  const result = await userService.getUserByIdForAdmin(req.params.userId);
   res.send(result);
 });
 const blockUser = catchAsync(async (req, res) => {

@@ -76,6 +76,15 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
+ return await User.findById(id);
+};
+
+/**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<User>}
+ */
+const getUserByIdForAdmin = async (id) => {
   const user = await User.findById(id);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -84,7 +93,6 @@ const getUserById = async (id) => {
   const configData = await UserExchangeConfig.find({ userId: user._id }).populate('strategyId');
   return {user ,configData,subscriptionData};
 };
-
 /**
  * Get user by email
  * @param {string} email
@@ -324,6 +332,7 @@ module.exports = {
   createUser,
   queryUsers,
   getUserById,
+  getUserByIdForAdmin,
   getUserByEmail,
   updateUserById,
   updateUserDataById,
