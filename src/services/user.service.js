@@ -2,7 +2,7 @@
 const httpStatus = require('http-status');
 const { toDataURL } = require('qrcode');
 const { authenticator } = require('otplib');
-const { User, UserWallet, UserExchangeConfig } = require('../models');
+const { User, UserWallet, UserExchangeConfig, UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -80,8 +80,9 @@ const getUserById = async (id) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
+  const subscriptionData = await UserStrategy.find({ userId: user._id }).populate('subscriptionPlanId');
   const configData = await UserExchangeConfig.find({ userId: user._id }).populate('strategyId');
-  return {user ,configData};
+  return {user ,configData,subscriptionData};
 };
 
 /**
