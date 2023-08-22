@@ -81,9 +81,7 @@ const getUserById = async (id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   const configData = await UserExchangeConfig.find({ userId: user._id });
-  console.log(configData);
-  user.config = configData;
-  return user;
+  return {user ,configData};
 };
 
 /**
