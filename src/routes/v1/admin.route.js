@@ -3,6 +3,7 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const { authValidation, adminValidation } = require('../../validations');
 const { adminController } = require('../../controllers');
+const { userStrategyController } = require('../../controllers');
 
 const router = express.Router();
 
@@ -13,8 +14,12 @@ router.patch(
   validate(adminValidation.updateUser),
   adminController.updateUser
 );
-module.exports = router;
+router.get('/searchUser/:text', auth('searchUser'), validate(adminValidation.searchUser), adminController.searchUser);
 router.get('/send2faKey/:userId', auth('updateUserEmail'), adminController.send2faBackupKey);
+router
+  .route('/updateUserStrategyByAdmin/:userId')
+  .patch(auth('updateUserStrategyByAdmin'), userStrategyController.updateUserStrategyByAdmin);
+module.exports = router;
 
 /**
  * @swagger
@@ -144,4 +149,115 @@ router.get('/send2faKey/:userId', auth('updateUserEmail'), adminController.send2
  *             example:
  *               code: 401
  *               message: 2fa sent via email
+ */
+
+/**
+ * @swagger
+ * /admin/updateUserStrategyByAdmin/{id}:
+ *   patch:
+ *     summary: Update user's strategy
+ *     description: admin can change user's strategy.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: userId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: Balanced
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/UserStrategy'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /admin/searchUser/{text}:
+ *   get:
+ *     summary: Get all users
+ *     description: Only admins can retrieve all users.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: text
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Enter name or email for user search
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum: [user]
+ *         description: User's role
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         default: 10
+ *         description: Maximum number of users
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 totalResults:
+ *                   type: integer
+ *                   example: 1
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */
