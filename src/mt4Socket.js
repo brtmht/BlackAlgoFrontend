@@ -253,7 +253,7 @@ const mtSocket = () => {
                       //   // Additional logic to send the order data to the user
                       //   resolve();
                       // }
-                      const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken);
+                      const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken, order.Symbol);
 
                       if (userLots.lots) {
                         console.log(userLots.lots, 'userLots.lots');
@@ -426,7 +426,7 @@ const mtSocket = () => {
   });
 };
 
-const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => {
+const handleSlaveStrategies = async (user, masterBalance, lots, serverToken, orderSymbol) => {
   const configData = await globalConfig.getGlobalConfig();
   const strategy = await userStrategyService.getStrategyByUserId(user.userId);
   const strategyName = strategy.strategyId.name;
