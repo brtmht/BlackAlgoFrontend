@@ -8,9 +8,9 @@ const { getExchangeById } = require('./exchange.service');
 const { GetBinanceBalance } = require('./binance.service');
 
 const convertISOString = async (timestamp) => {
-const date = new Date(timestamp);
-const openTime = date.toISOString();
-return openTime;
+  const date = new Date(timestamp);
+  const openTime = date.toISOString();
+  return openTime;
 };
 /**
  * Create a TradingOrder
@@ -99,6 +99,11 @@ const getTradingOderByID = async (_id) => {
  */
 const checkMasterTradingId = async (masterTicketId, user_id) => {
   const data = await TradingOrder.findOne({ masterTicketId, userId: user_id });
+  return data;
+};
+
+const checkAllMasterTradingId = async (masterTicketId, user_id) => {
+  const data = await TradingOrder.find({ masterTicketId, userId: user_id });
   return data;
 };
 
@@ -269,7 +274,9 @@ const getGraphTradeOrder = async (orderData, id) => {
         userId: id,
         orderType: 'closeOrder',
         createdAt: { $gte: TwentyHourAgo },
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     case '1hr':
       const oneHourAgo = new Date(orderData.timestamp - 1 * 60 * 60 * 1000);
@@ -277,7 +284,9 @@ const getGraphTradeOrder = async (orderData, id) => {
         userId: id,
         orderType: 'closeOrder',
         createdAt: { $gt: oneHourAgo },
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     case '7day':
       const sevenDaysAgo = new Date(orderData.timestamp - 7 * 24 * 60 * 60 * 1000);
@@ -285,7 +294,9 @@ const getGraphTradeOrder = async (orderData, id) => {
         userId: id,
         orderType: 'closeOrder',
         createdAt: { $gte: sevenDaysAgo },
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     case '30day':
       const thirtyDaysAgo = new Date(orderData.timestamp - 30 * 24 * 60 * 60 * 1000);
@@ -293,7 +304,9 @@ const getGraphTradeOrder = async (orderData, id) => {
         userId: id,
         orderType: 'closeOrder',
         createdAt: { $gte: thirtyDaysAgo },
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     case '90day':
       const ninetyDaysAgo = new Date(orderData.timestamp - 90 * 24 * 60 * 60 * 1000);
@@ -301,7 +314,9 @@ const getGraphTradeOrder = async (orderData, id) => {
         userId: id,
         orderType: 'closeOrder',
         createdAt: { $gte: ninetyDaysAgo },
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     case '1year':
       const oneYearAgo = new Date(orderData.timestamp - 365 * 24 * 60 * 60 * 1000);
@@ -309,13 +324,17 @@ const getGraphTradeOrder = async (orderData, id) => {
         userId: id,
         orderType: 'closeOrder',
         createdAt: { $gte: oneYearAgo },
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     case 'all':
       ordersList = await TradingOrder.find({
         userId: id,
         orderType: 'closeOrder',
-      }).sort({ updatedAt: 1 }).exec();
+      })
+        .sort({ updatedAt: 1 })
+        .exec();
       break;
     default:
       ordersList;
@@ -327,53 +346,57 @@ const getGraphTradeOrder = async (orderData, id) => {
 const getPortfolioValue = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
-    let portfolioSize;
-    if (userConfig) {
-      const exchangeData = await getExchangeById(userConfig.exchangeId);
-      if(exchangeData.type === 'Binance'){
-        portfolioSize = await GetBinanceBalance(userConfig.config);
-      }else{
-        BrokerToken;
-        const checkConnection = await mt4Server.checkConnection(userConfig.serverToken);
-        let connectionAttempts = 0;
-  
-        if (checkConnection?.message) {
-          const maxAttempts = 3;
-          const ipList = await mt4Server.getServerDataForIps(userConfig.config.server);
-  
-          for (const ip of ipList) {
-            if (connectionAttempts >= maxAttempts) {
-              break;
-            }
-  
-            let IP;
-            let PORT;
-            const [address, port] = ip.split(':');
-  
-            if (port) {
-              IP = address;
-              PORT = port;
-            } else {
-              IP = ip;
-              PORT = '443';
-            }
-  
-            const response = await mt4Server.connect(userConfig, IP, PORT);
-            console.log('action: new mt4 token generated');
-            if (!response.message) {
-              await updateServerTokenById(userConfig.id, response);
-              BrokerToken = response;
-              break;
-            } else {
-              connectionAttempts++;
-            }
-          }
+    if (userConfig.connected) {
+      let portfolioSize;
+      if (userConfig) {
+        const exchangeData = await getExchangeById(userConfig.exchangeId);
+        if (exchangeData.type === 'Binance') {
+          portfolioSize = await GetBinanceBalance(userConfig.config);
         } else {
-          BrokerToken = userConfig.serverToken;
+          let BrokerToken;
+          const checkConnection = await mt4Server.checkConnection(userConfig.serverToken);
+          let connectionAttempts = 0;
+
+          if (checkConnection?.message) {
+            const maxAttempts = 3;
+            const ipList = await mt4Server.getServerDataForIps(userConfig.config.server);
+
+            for (const ip of ipList) {
+              if (connectionAttempts >= maxAttempts) {
+                break;
+              }
+
+              let IP;
+              let PORT;
+              const [address, port] = ip.split(':');
+
+              if (port) {
+                IP = address;
+                PORT = port;
+              } else {
+                IP = ip;
+                PORT = '443';
+              }
+
+              const response = await mt4Server.connect(userConfig, IP, PORT);
+              console.log('action: new mt4 token generated');
+              if (!response.message) {
+                await updateServerTokenById(userConfig.id, response);
+                BrokerToken = response;
+                break;
+              } else {
+                connectionAttempts++;
+              }
+            }
+          } else {
+            BrokerToken = userConfig.serverToken;
+          }
+          portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
         }
-        portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
+        return { portfolioSize: portfolioSize.balance.toFixed(2) };
       }
-      return {portfolioSize:portfolioSize.balance.toFixed(2)};
+    }else{
+      return { portfolioSize: 0.00 };
     }
   } catch (error) {
     console.error('Error in getPortfolioValue:', error);
@@ -389,9 +412,8 @@ const calculateProfitLoss = async (userId) => {
       // Fetch all trading orders for the user using Promise.all
       const tradingOrders = await TradingOrder.find({ userId });
       if (tradingOrders.length === 0) {
-        return { cumulativeProfitLoss: 0, profitLoss: 0 };
+        return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
       }
-
       // Calculate the cumulative profit or loss concurrently
       const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
         profits.reduce((sum, profit) => sum + profit, 0)
@@ -411,9 +433,13 @@ const calculateProfitLoss = async (userId) => {
 
         const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2);
 
-        return { cumulativeProfitLoss: cumulativeProfitLossString, profitLoss: totalProfitLoss.toFixed(2) };
+        return {
+          cumulativeProfitLoss: cumulativeProfitLossString,
+          profitLoss: totalProfitLoss.toFixed(2),
+          tradeData: tradingOrders,
+        };
       } else {
-        return { cumulativeProfitLoss: 0, profitLoss: 0 };
+        return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
       }
     }
   } catch (error) {
@@ -428,27 +454,26 @@ const calculateTodayPerformance = async (userId) => {
     if (userConfig) {
       let portfolioSize;
       const exchangeData = await getExchangeById(userConfig.exchangeId);
-      if(exchangeData.type === 'Binance'){
+      if (exchangeData.type === 'Binance') {
         portfolioSize = await GetBinanceBalance(userConfig.config);
-      }
-      else{
+      } else {
         let BrokerToken;
         const checkConnection = await mt4Server.checkConnection(userConfig.serverToken);
         let connectionAttempts = 0;
-  
+
         if (checkConnection?.message) {
           const maxAttempts = 3;
           const ipList = await mt4Server.getServerDataForIps(userConfig.config.server);
-  
+
           for (const ip of ipList) {
             if (connectionAttempts >= maxAttempts) {
               break;
             }
-  
+
             let IP;
             let PORT;
             const [address, port] = ip.split(':');
-  
+
             if (port) {
               IP = address;
               PORT = port;
@@ -456,7 +481,7 @@ const calculateTodayPerformance = async (userId) => {
               IP = ip;
               PORT = '443';
             }
-  
+
             const response = await mt4Server.connect(userConfig, IP, PORT);
             console.log('action: new mt4 token generated');
             if (!response.message) {
@@ -473,12 +498,10 @@ const calculateTodayPerformance = async (userId) => {
 
         portfolioSize = await mt4Server.accountSummary(BrokerToken);
       }
-     
+
       const currentDate = new Date();
       const startDay = moment(currentDate).subtract(1, 'days').startOf('day').toDate();
       const endOfDay = moment(currentDate).subtract(1, 'days').endOf('day').toDate();
-
-     
 
       // Get the latest trading order for yesterday
       const yesterdayTradingOrder = await TradingOrder.findOne({
@@ -488,7 +511,10 @@ const calculateTodayPerformance = async (userId) => {
         .sort({ createdAt: -1 })
         .exec();
 
-      
+      const yesterdayTradingOrderArray = await TradingOrder.find({
+        userId: userId,
+        createdAt: { $gte: startDay, $lte: endOfDay },
+      }).exec();
 
       const todayPerformance = yesterdayTradingOrder ? portfolioSize.balance - yesterdayTradingOrder.balance : 0;
 
@@ -502,7 +528,11 @@ const calculateTodayPerformance = async (userId) => {
       // Convert the percentage to a string with 2 decimal places and a profit/loss sign (e.g., '+25.23%' or '-10.12%')
       const todayPerformancePercentageString = sign + Math.abs(todayPerformancePercentage).toFixed(2);
 
-      return { todayPerformance: todayPerformance.toFixed(2), todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0 };
+      return {
+        todayPerformance: todayPerformance.toFixed(2),
+        todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0,
+        tradeData: yesterdayTradingOrderArray,
+      };
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
@@ -537,11 +567,13 @@ const calculateLifetimePerformance = async (userId) => {
         return {
           lifetimePerformancePercentage: lifetimePerformancePercentageString,
           lifetimePerformance: (currentBalance - initialBalance).toFixed(2),
+          tradeData: tradingOrders,
         };
-      }else{
+      } else {
         return {
           lifetimePerformancePercentage: 0,
           lifetimePerformance: 0,
+          tradeData: tradingOrders,
         };
       }
     }
@@ -582,13 +614,15 @@ const calculateLastMonthPerformance = async (userId) => {
         const lastMonthPercentageString = sign + Math.abs(lastMonthPercentage).toFixed(2);
 
         return {
-          lastMonthPercentage: lastMonthPercentageString >= 0?lastMonthPercentageString:0 ,
-          lastMonth: (currentBalance - initialBalance)>= 0 ?currentBalance - initialBalance :0
+          lastMonthPercentage: lastMonthPercentageString >= 0 ? lastMonthPercentageString : 0,
+          lastMonth: currentBalance - initialBalance >= 0 ? currentBalance - initialBalance : 0,
+          tradeData: tradingOrders,
         };
       } else {
         return {
           lastMonthPercentage: 0,
           lastMonth: 0,
+          tradeData: tradingOrders,
         };
       }
     }
@@ -630,10 +664,10 @@ const calculateLastMonthPerformance = async (userId) => {
 //   return updateOrder;
 // };
 
-const updateCloseBinanceTradingOrder = async (masterTicketId,userId, order,orderType) => {
-  const orderData = await TradingOrder.findOne({ masterTicketId: masterTicketId, userId:userId });
+const updateCloseBinanceTradingOrder = async (masterTicketId, userId, order, orderType) => {
+  const orderData = await TradingOrder.findOne({ masterTicketId: masterTicketId, userId: userId });
   const updateOrder = await TradingOrder.findOneAndUpdate(
-    { masterTicketId: masterTicketId, userId:userId },
+    { masterTicketId: masterTicketId, userId: userId },
     {
       $set: {
         closeTime: await convertISOString(order.time),
@@ -646,7 +680,7 @@ const updateCloseBinanceTradingOrder = async (masterTicketId,userId, order,order
   if (!updateOrder) {
     throw new ApiError(httpStatus.NOT_FOUND);
   }
-  const updatedTradingOrder = await TradingOrder.findOne({ masterTicketId: masterTicketId, userId:userId });
+  const updatedTradingOrder = await TradingOrder.findOne({ masterTicketId: masterTicketId, userId: userId });
 
   return updatedTradingOrder;
 };
@@ -670,4 +704,5 @@ module.exports = {
   createBinanceTradingOrder,
   convertISOString,
   updateCloseBinanceTradingOrder,
+  checkAllMasterTradingId,
 };

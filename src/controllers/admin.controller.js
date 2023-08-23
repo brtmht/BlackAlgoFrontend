@@ -1,11 +1,15 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
+const pick = require('../utils/pick');
 const { adminService, authService, tokenService } = require('../services');
 const ApiError = require('../utils/ApiError');
 
 const adminlogin = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
+  if (user.isDeleted === true || user.isBlocked === true) {
+    res.send({ success: false, error_code: 401, message: 'This user is deleted or bloacked' });
+  }
   if (user.role === 'user') {
     throw new ApiError(httpStatus.FORBIDDEN, 'user cannot loggin as admin');
   }
@@ -30,8 +34,18 @@ const send2faBackupKey = catchAsync(async (req, res) => {
   }
   res.status(httpStatus.NO_CONTENT).send();
 });
+const searchUser = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['role']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const result = await adminService.searchUserByText(req.params.text, filter, options);
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'there is no user with this text');
+  }
+  res.send(result);
+});
 module.exports = {
   adminlogin,
   updateUser,
   send2faBackupKey,
+  searchUser,
 };

@@ -4,11 +4,11 @@ const catchAsync = require('../utils/catchAsync');
 const {
   subscriptionPlanService,
   userStrategyService,
-  paymentDetailService,
   binanceService,
   userExchangeConfig,
   transactionHistoryService,
   cryptoAccountService,
+  exchangeService,
 } = require('../services');
 const { getPayments } = require('../services/paymentDetail.service');
 const { getActiveUser, updateServerTokenById, disconnectConnection } = require('../services/userExchangeConfig.service');
@@ -97,83 +97,88 @@ const requestForSubscription = catchAsync(async (req, res) => {
 const upgradeSubscriptionPlan = catchAsync(async (req, res) => {
   try {
     const user = await getActiveUser(req.user._id);
-    if (user && user?.serverToken) {
-      const userSubscription = await getUserStrategyByUser(user.userId);
+    const exchangeData = await exchangeService.getExchangeById(user.exchangeId);
+    const userSubscription = await getUserStrategyByUser(user.userId);
+    if (userSubscription) {
+      let userPortfolio;
+      const subscription = await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
+      if (exchangeData.type === 'Binance') {
+        userPortfolio = await binanceService.GetBinanceBalance(user.config);
+      } else if (exchangeData.type === 'MT4') {
+        if (user && user?.serverToken) {
+          let BrokerToken;
+          const checkConnection = await mt4Server.checkConnection(user.serverToken);
+          let connectionAttempts = 0;
 
-      if (userSubscription) {
-        const subscription = await subscriptionPlanService.getSubscriptionPlanById(userSubscription.subscriptionPlanId);
-        let BrokerToken;
-        const checkConnection = await mt4Server.checkConnection(user.serverToken);
-        let connectionAttempts = 0;
+          if (checkConnection?.message) {
+            const maxAttempts = 3;
+            const ipList = await mt4Server.getServerDataForIps(user.config.server);
 
-        if (checkConnection?.message) {
-          const maxAttempts = 3;
-          const ipList = await mt4Server.getServerDataForIps(user.config.server);
+            for (const ip of ipList) {
+              if (connectionAttempts >= maxAttempts) {
+                break;
+              }
 
-          for (const ip of ipList) {
-            if (connectionAttempts >= maxAttempts) {
-              break;
+              let IP;
+              let PORT;
+              const [address, port] = ip.split(':');
+
+              if (port) {
+                IP = address;
+                PORT = port;
+              } else {
+                IP = ip;
+                PORT = '443';
+              }
+
+              const response = await mt4Server.connect(user, IP, PORT);
+              console.log('action: new mt4 token generated');
+              if (!response.message) {
+                await updateServerTokenById(user.id, response);
+                BrokerToken = response;
+                break;
+              } else {
+                connectionAttempts++;
+              }
             }
-
-            let IP;
-            let PORT;
-            const [address, port] = ip.split(':');
-
-            if (port) {
-              IP = address;
-              PORT = port;
-            } else {
-              IP = ip;
-              PORT = '443';
-            }
-
-            const response = await mt4Server.connect(user, IP, PORT);
-            console.log('action: new mt4 token generated');
-            if (!response.message) {
-              await updateServerTokenById(user.id, response);
-              BrokerToken = response;
-              break;
-            } else {
-              connectionAttempts++;
-            }
+          } else {
+            BrokerToken = user.serverToken;
           }
-        } else {
-          BrokerToken = user.serverToken;
+           userPortfolio = await mt4Server.accountSummary(BrokerToken);
         }
-        const userPortfolio = await mt4Server.accountSummary(BrokerToken);
-        if (subscription.name === 'Monthly') {
-          if (
-            subscription.max_portfolio_size === userPortfolio.balance ||
-            subscription.max_portfolio_size < userPortfolio.balance
-          ) {
-            await disconnectConnection(user.userId);
-            const portfolioAmount = userPortfolio.balance;
-            const percentage = constants.YEARLYPERCENTAGE;
+      } else {
+        res.send({ success: true, code: 200, message: 'User Connection not found' });
+      }
+      if (subscription.name === 'Monthly') {
+        if (
+          subscription.max_portfolio_size === userPortfolio.balance ||
+          subscription.max_portfolio_size < userPortfolio.balance
+        ) {
+          await disconnectConnection(user.userId);
+          const portfolioAmount = userPortfolio.balance;
+          const percentage = constants.YEARLYPERCENTAGE;
 
-            const orderAmount = (portfolioAmount * percentage) / 100;
-            const allPlans = await subscriptionPlanService.getAllSubscriptionPlans();
+          const orderAmount = (portfolioAmount * percentage) / 100;
+          const allPlans = await subscriptionPlanService.getAllSubscriptionPlans();
 
-            res.send({
-              success: false,
-              error_code: 403,
-              message: 'Please upgrade your subscription plan to start your trading',
-              data: {
-                portfolioAmount: portfolioAmount.toFixed(2),
-                orderAmount: orderAmount.toFixed(2),
-                subscriptionId: allPlans[1],
-              },
-            });
-          } else if (subscription.max_portfolio_size > userPortfolio.balance) {
-            res.send({ success: true, code: 200, message: 'No need to change subscription' });
-          }
-        } else {
+          res.send({
+            success: false,
+            error_code: 403,
+            message: 'Please upgrade your subscription plan to start your trading',
+            data: {
+              portfolioAmount: portfolioAmount.toFixed(2),
+              orderAmount: orderAmount.toFixed(2),
+              subscriptionId: allPlans[1],
+            },
+          });
+        } else if (subscription.max_portfolio_size > userPortfolio.balance) {
           res.send({ success: true, code: 200, message: 'No need to change subscription' });
         }
       } else {
-        res.send({ success: true, code: 200, message: 'User subscription not found' });
+        res.send({ success: true, code: 200, message: 'No need to change subscription' });
       }
     } else {
-      res.send({ success: true, code: 200, message: 'User Connection not found' });
+      res.send({ success: true, code: 200, message: 'User subscription not found' });
     }
   } catch (error) {
     console.error(error);
@@ -189,7 +194,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
       if (paymentDetail.subscriptionPlanId.startsWith('sub_')) {
         const stripeResponse = await subscriptionPlanService.deactivateStripeSubscription(paymentDetail.subscriptionPlanId);
         if (stripeResponse.status === 'canceled') {
-          const response = await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId,'user');
+          const response = await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId, 'user');
           res.send({ success: true, code: 200, message: 'Stripe Subscription cancelled Successfully' });
         }
       } else {
@@ -204,7 +209,7 @@ const terminateSubscription = catchAsync(async (req, res) => {
             );
             console.log(binanceResponse);
             if (binanceResponse) {
-              await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId,'user');
+              await userExchangeConfig.disconnectConnectionSubscription(userDetail.userId, 'user');
               await cryptoAccountService.manuallyUpdatedTerminatedContract(transaction.merchantTradeNo);
               res.send({ success: true, code: 200, message: 'Binance Subscription cancelled Successfully' });
             }
@@ -212,10 +217,9 @@ const terminateSubscription = catchAsync(async (req, res) => {
         }
       }
     }
-  }else{
+  } else {
     throw new ApiError(httpStatus.NOT_FOUND, 'Error in user data');
   }
-  
 });
 
 module.exports = {

@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const logger = require('../config/logger');
-const { encryptData, decryptData, encryptDataForBinance, decryptDataForBinance, compareEncryptedVal } = require('../middlewares/common');
+const { decryptData, decryptDataForBinance } = require('../middlewares/common');
 
 const binancePayKey = process.env.BINANCE_PAY_KEY;
 const binancePaySecret = process.env.BINANCE_PAY_SECRET_KEY;
@@ -99,7 +99,7 @@ const createBinancePayOrder = async (user, reqData) => {
       return response.data;
     }
   } catch (error) {
-    console.log(error,"------------------------test");
+    console.log(error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.response.data.errorMessage, error.response.data.status);
   }
 };
@@ -229,13 +229,15 @@ const CreateSimpleBinanceTradeOrder = async (userData, data, lots, exchangeName)
     if (data?.Type === 'Sell') {
       positionSide = 'SHORT';
     }
-    const params = `symbol=${symbol.toUpperCase()}&side=${data?.Type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots}&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
+    const params = `symbol=${symbol.toUpperCase()}&side=${data?.Type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots.toFixed(3)}&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
     const signature = crypto.createHmac('sha256', apiSecret.toString()).update(params).digest('hex');
     var config = {
       method: 'post',
       url: `https://testnet.binancefuture.com/fapi/v1/order?${params}&signature=${signature}`,
       headers: {
         'Content-Type': 'application/json',
+
+
         'X-MBX-APIKEY': apiKey,
       },
     };
@@ -406,7 +408,6 @@ const CancelBinanceTradeOrder = async () => {
 };
 
 const GetBinanceBalance = async (data) => {
-  console.log(data,"=---------------------------");
   const API_SECRET = await decryptDataForBinance(data.apiSecret);
   const API_KEY = await decryptDataForBinance(data.apiKey);
   // const API_SECRET = 'c9ce975608637f4f0e8b07abed1ebcc3331dca13131c933aa89df17b0b4e3e91';
@@ -425,7 +426,6 @@ const GetBinanceBalance = async (data) => {
   };
   const response = await axios(config);
   const binanceData = response.data;
-  console.log(response,"=====================qwerty");
   // Find the asset with symbol "USDT"
   const usdtAsset = binanceData.find((asset) => asset.asset === 'USDT');
   if (usdtAsset) {
@@ -464,7 +464,7 @@ const CloseBinanceTradeOrder = async (userData, data, lots, exchangeName) => {
       type = 'BUY';
       positionSide = 'SHORT';
     }
-    const params = `symbol=${symbol.toUpperCase()}&side=${type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots}&placeType=position&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
+    const params = `symbol=${symbol.toUpperCase()}&side=${type.toUpperCase()}&type=${binanceType.toUpperCase()}&quantity=${lots.toFixed(3)}&placeType=position&timestamp=${timestamp}&recvWindow=5000&positionSide=${positionSide.toUpperCase()}`;
     const signature = crypto.createHmac('sha256', apiSecret.toString()).update(params).digest('hex');
     var config = {
       method: 'post',

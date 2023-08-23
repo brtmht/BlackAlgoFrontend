@@ -1,5 +1,4 @@
 const httpStatus = require('http-status');
-const Binance = require('node-binance-api');
 const { CryptoAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { getPaymentsByMerchantTrade } = require('../services/transactionHistory.service');

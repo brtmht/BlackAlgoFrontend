@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { tradingOrderService, userExchangeConfig } = require('../services');
+const { tradingOrderService } = require('../services');
 // Mt account crud apis
 const createTradingOrder = catchAsync(async (req, res) => {
   const userId = req.user._id;

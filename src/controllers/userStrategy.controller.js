@@ -2,12 +2,13 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userStrategyService } = require('../services');
+const { userStrategyService, userExchangeConfig } = require('../services');
+
 
 const createUserStrategy = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const userStrategy = await userStrategyService.createUserStrategy(req.body, userId);
-  res.send({"success":true, code:201 , "message":"User strategy created Successfully", "data":userStrategy});
+  res.send({ success: true, code: 201, message: 'User strategy created Successfully', data: userStrategy });
 });
 
 const getUserStrategies = catchAsync(async (req, res) => {
@@ -23,7 +24,7 @@ const getUserStrategy = catchAsync(async (req, res) => {
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  res.send({"success":true, code:201 , "message":"User strategy data get Successfully", "data":userStrategy});
+  res.send({ success: true, code: 201, message: 'User strategy data get Successfully', data: userStrategy });
 });
 
 const onBoardUserStrategy = catchAsync(async (req, res) => {
@@ -32,7 +33,7 @@ const onBoardUserStrategy = catchAsync(async (req, res) => {
   if (!userStrategy) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
-  res.send({"success":true, code:200 , "message":"User strategyonboard status updated Successfully"});
+  res.send({ success: true, code: 200, message: 'User strategyonboard status updated Successfully' });
 });
 
 const getUserStrategyById = catchAsync(async (req, res) => {
@@ -45,9 +46,13 @@ const getUserStrategyById = catchAsync(async (req, res) => {
 
 const updateUserStrategy = catchAsync(async (req, res) => {
   const userStrategy = await userStrategyService.updateUserStrategyById(req.user._id, req.body);
-  res.send({"success":true, code:201 , "message":"User strategy updated Successfully", "data":userStrategy});
+  await userExchangeConfig.updateStrategyId(req.user._id, req.body.strategyId);
+  res.send({ success: true, code: 201, message: 'User strategy updated Successfully', data: userStrategy });
 });
-
+const updateUserStrategyByAdmin = catchAsync(async (req, res) => {
+  const userStrategy = await userStrategyService.updateUserStrategyByAdmin(req.params.userId, req.body);
+  res.send({ success: true, code: 201, message: 'User strategy updated Successfully', data: userStrategy });
+});
 const deleteUserStrategy = catchAsync(async (req, res) => {
   await userStrategyService.deleteUserStrategyById(req.params.userStrategyId);
   res.status(httpStatus.NO_CONTENT).send();
@@ -62,6 +67,7 @@ module.exports = {
   getUserStrategies,
   getUserStrategy,
   updateUserStrategy,
+  updateUserStrategyByAdmin,
   deleteUserStrategy,
   getUserStrategyById,
   onBoardUserStrategy,

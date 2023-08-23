@@ -78,6 +78,7 @@ const allRoles = {
     'getPaymentById',
     'terminateSubscription',
     'connectBinance',
+    'UpdateBinanceConnect',
     'groupedNotification',
   ],
   manager: [
@@ -90,6 +91,7 @@ const allRoles = {
     'getExchanges',
     'getAllConnectedUser',
     'binancePayment',
+    'updateUserStrategyByAdmin',
   ],
 
   admin: [
@@ -108,6 +110,8 @@ const allRoles = {
     'getAllConnectedUser',
     'getExchanges',
     'binancePayment',
+    'updateUserStrategyByAdmin',
+    'searchUser',
   ],
 };
 

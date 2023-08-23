@@ -2,7 +2,7 @@
 const httpStatus = require('http-status');
 const { toDataURL } = require('qrcode');
 const { authenticator } = require('otplib');
-const { User, UserWallet } = require('../models');
+const { User, UserWallet, UserExchangeConfig, UserStrategy } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -76,9 +76,23 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
-  return User.findById(id);
+ return await User.findById(id);
 };
 
+/**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<User>}
+ */
+const getUserByIdForAdmin = async (id) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const subscriptionData = await UserStrategy.find({ userId: user._id }).populate('subscriptionPlanId');
+  const configData = await UserExchangeConfig.find({ userId: user._id }).populate('strategyId');
+  return {user ,configData,subscriptionData};
+};
 /**
  * Get user by email
  * @param {string} email
@@ -101,14 +115,14 @@ const updateUserDataById = async (userId, updateData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   const { file } = updateData;
-  const updatedFilePath =  updateData?.file?.path?.replace(/\\/g, '/').replace('public/', '');
+  const updatedFilePath = updateData?.file?.path?.replace(/\\/g, '/').replace('public/', '');
   if (file || Object.keys(updateData.body).length !== 0) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       {
         $set: {
           name: updateData.body.name ? updateData.body.name : user.name,
-          discordId:  updateData.body.discordId ? updateData.body.discordId : user.discordId,
+          discordId: updateData.body.discordId ? updateData.body.discordId : user.discordId,
           image: updateData?.file?.path ? updatedFilePath : user.image,
         },
       }
@@ -155,7 +169,7 @@ const updateUserPasword = async (userId, updateBody) => {
     await user.save();
     return user;
   }
-  throw new ApiError(httpStatus.BAD_REQUEST, 'Password doesnot match');
+  throw new ApiError(httpStatus.BAD_REQUEST, 'Password does not match');
 };
 
 // Generate Two factor authentication secret
@@ -179,13 +193,13 @@ const turnOff2fa = async (user) => {
 
 const verify2faSecret = async (req) => {
   const authCode = req.body.secret;
-  
+
   const user = await User.findById(req.user._id);
 
   const googleSecret = user.google_2fa_secret;
   const isValid = authenticator.verify({ token: authCode, secret: googleSecret });
   if (!isValid) {
-    throw new ApiError(httpStatus.BAD_REQUEST,"Invalid 2fa code");
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid 2fa code');
   }
   return isValid;
 };
@@ -220,8 +234,8 @@ const activateNew2faSecret = async (req) => {
 
 const getBackUpSecretKey = async (req) => {
   const user = await User.findById(req.user._id);
-  if(user.google_2fa_secret===''){
-    throw new ApiError(httpStatus.NOT_FOUND,"No 2FA found");
+  if (user.google_2fa_secret === '') {
+    throw new ApiError(httpStatus.NOT_FOUND, 'No 2FA found');
   }
   return user.google_2fa_secret;
 };
@@ -307,17 +321,18 @@ const getUserWalletAmount = async (userId) => {
  * @returns {Promise<User>}
  */
 const uploadShareImage = async (reqData) => {
-  if(!reqData.file){
-    throw new ApiError(httpStatus.NOT_FOUND,'Image not found');
+  if (!reqData.file) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Image not found');
   }
   const { file } = reqData;
-  const updatedFilePath =  reqData?.file?.path?.replace(/\\/g, '/').replace('public/', '');
+  const updatedFilePath = reqData?.file?.path?.replace(/\\/g, '/').replace('public/', '');
   return updatedFilePath;
-}
+};
 module.exports = {
   createUser,
   queryUsers,
   getUserById,
+  getUserByIdForAdmin,
   getUserByEmail,
   updateUserById,
   updateUserDataById,

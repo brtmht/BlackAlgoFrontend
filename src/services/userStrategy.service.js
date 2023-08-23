@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 const httpStatus = require('http-status');
-const { UserStrategy } = require('../models');
+const { UserStrategy, Strategy } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { TransactionHistory } = require('../models');
 const { exchangeService } = require('.');
@@ -79,7 +79,10 @@ const createUserStrategy = async (userStrategyBody, id) => {
       );
       break;
     case 'payment':
-      const transactionData = await TransactionHistory.findOne({ transactionId: userStrategyBody.paymentDetailId, paymentStatus:'success' });
+      const transactionData = await TransactionHistory.findOne({
+        transactionId: userStrategyBody.paymentDetailId,
+        paymentStatus: 'success',
+      });
       if (transactionData) {
         await UserStrategy.updateOne(
           { _id: strategyId },
@@ -119,12 +122,25 @@ const queryUserStrategies = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<UserStrategy>}
  */
-  const getUserStrategyByUserId = async (id) => {
-    
+const getUserStrategyByUserId = async (id) => {
   const response = await UserStrategy.findOne({ userId: id });
   const exchange = await exchangeService.getExchangeById(response.exchangeId);
-  const { _id, userId, use_futures, onBoardProcess, isDeleted, status, createdAt, updatedAt, __v, strategyId, exchangeId, paymentDetailId, subscriptionPlanId } = response._doc;
-  
+  const {
+    _id,
+    userId,
+    use_futures,
+    onBoardProcess,
+    isDeleted,
+    status,
+    createdAt,
+    updatedAt,
+    __v,
+    strategyId,
+    exchangeId,
+    paymentDetailId,
+    subscriptionPlanId,
+  } = response._doc;
+
   const updatedResponse = {
     _id,
     userId,
@@ -137,13 +153,13 @@ const queryUserStrategies = async (filter, options) => {
     __v,
     strategyId,
     exchangeId,
-    exchangeType: exchange?exchange.type:"",
+    exchangeType: exchange ? exchange.type : '',
     paymentDetailId,
-    subscriptionPlanId
+    subscriptionPlanId,
   };
 
-   return updatedResponse;
-  };
+  return updatedResponse;
+};
 
 /**
  * Get userStrategy by Userid and name
@@ -188,13 +204,31 @@ const getUserStrategyByName = async (name) => {
  * @returns {Promise<UserStrategy>}
  */
 const updateUserStrategyById = async (userId, updateBody) => {
-  const userData = UserStrategy.findOneAndUpdate({userId}, { ...updateBody });
+  const userData = UserStrategy.findOneAndUpdate({ userId }, { ...updateBody });
   if (!userData) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
   return userData;
 };
-
+/**
+ * Update userStrategy by admin
+ * @param {ObjectId} strategyId
+ * @param {Object} updateBody
+ * @returns {Promise<UserStrategy>}
+ */
+const updateUserStrategyByAdmin = async (userId, updateBody) => {
+  const strategy = await Strategy.findOne({ name: updateBody.name });
+  try {
+    const userData = await UserStrategy.findOneAndUpdate(
+      { userId },
+      { strategyId: strategy._id },
+      { new: true } // To return the updated document
+    );
+    return userData;
+  } catch (error) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
+  }
+};
 /**
  * Delete userStrategy by id
  * @param {ObjectId} userStrategyId
@@ -246,4 +280,5 @@ module.exports = {
   updateOnBoardStrategy,
   getStrategyByUserId,
   getUserStrategyByUser,
+  updateUserStrategyByAdmin,
 };
