@@ -18,7 +18,6 @@ const allRoles = {
     'updateOnBoarding',
     'getBackUpSecretKey',
     'getExchanges',
-    'manageExchanges',
     'manageRegions',
     'getRegions',
     'getPayments',
@@ -112,6 +111,7 @@ const allRoles = {
     'binancePayment',
     'updateUserStrategyByAdmin',
     'searchUser',
+    'manageExchanges',
   ],
 };
 

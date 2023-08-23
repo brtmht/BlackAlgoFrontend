@@ -31,14 +31,20 @@ const searchUserByText = async (reqData, filter, options) => {
   const regexPattern = new RegExp(reqData, 'i'); // 'i' flag for case-insensitive search
   const users = await User.paginate(
     {
-      $or: [{ name: { $regex: regexPattern } }, { email: { $regex: regexPattern } }],
+      $and: [
+        {
+          $or: [{ name: { $regex: regexPattern } }, { email: { $regex: regexPattern } }],
+        },
+        { isDeleted: false },
+        { isBlocked: false },
+        { role: filter.role },
+      ],
     },
     options
   );
   if (users.length === 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'No matching users found');
   }
-
   return users;
 };
 
