@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const pingInterval = 5 * 1000;
+const pingInterval = 9 * 1000;
 
 let io; // Declare io variable
 
