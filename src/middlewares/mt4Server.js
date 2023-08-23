@@ -324,6 +324,27 @@ const getServerDataForIps = async (serverName) => {
   }
 };
 
+const getCoinPrice = async (symbol) => {
+  try {
+    const config = {
+      method: 'get',
+      url: `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin`,
+      headers: {
+        accept: 'text/json',
+      },
+    };
+
+    const response = await axios(config);
+    console.log(JSON.stringify(response.data));
+    logger.info('Get coin balance ', response.data);
+    return response.data;
+ 
+  } catch (error) {
+    console.log(error?.response?.data ? error?.response?.data.msg : error);
+    return error?.response?.data ? error?.response?.data.msg : error;
+  }
+};
+
 module.exports = {
   connectSrv,
   connect,
@@ -337,4 +358,5 @@ module.exports = {
   connectWithOutEncryption,
   orderModify,
   checkOpenOrder,
+  getCoinPrice,
 };
