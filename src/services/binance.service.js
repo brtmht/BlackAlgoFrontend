@@ -514,6 +514,7 @@ const getBinanceOrder = async (data, order) => {
 };
 
 const getTickerPrice = async(keyData,symbol) =>{
+  try {
   var config = {
     method: 'get',
     url: `https://testnet.binancefuture.com/fapi/v1/ticker/price?symbol=${symbol}`,
@@ -522,16 +523,15 @@ const getTickerPrice = async(keyData,symbol) =>{
       'X-MBX-APIKEY': await decryptDataForBinance(keyData.apiKey),
     },
   };
-  axios(config)
-  .then(function (response) {
+  const response = await axios(config);
     console.log(JSON.stringify(response.data));
+    logger.info('Get coin balance ', response.data);
     return response.data;
-  })
-  .catch(function (error) {
-    console.log(error);
-    return error;
-  });
  
+  } catch (error) {
+    console.log(error?.response?.data ? error?.response?.data.msg : error);
+    return error?.response?.data ? error?.response?.data.msg : error;
+  }
 
 } 
 
