@@ -216,7 +216,7 @@ module.exports = router;
  *         name: role
  *         schema:
  *           type: string
- *           enum: [user]
+ *           enum: [user,admin]
  *         description: User's role
  *       - in: query
  *         name: limit
