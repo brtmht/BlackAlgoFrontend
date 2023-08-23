@@ -524,6 +524,7 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots, orderSymb
       }else{
         finalLots = userBalance.balance/tokenPrice.price;
       }
+      console.log(finalLots, '---------------DYNAMIC--------finalLots',currentLots,volume);
     }
 
     return { lots: finalLots, walletAmount: userBalance.balance };
