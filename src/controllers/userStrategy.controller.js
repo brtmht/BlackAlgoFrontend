@@ -49,10 +49,7 @@ const updateUserStrategy = catchAsync(async (req, res) => {
   await userExchangeConfig.updateStrategyId(req.user._id, req.body.strategyId);
   res.send({ success: true, code: 201, message: 'User strategy updated Successfully', data: userStrategy });
 });
-const updateUserStrategyByAdmin = catchAsync(async (req, res) => {
-  const userStrategy = await userStrategyService.updateUserStrategyByAdmin(req.params.userId, req.body);
-  res.send({ success: true, code: 201, message: 'User strategy updated Successfully', data: userStrategy });
-});
+
 const deleteUserStrategy = catchAsync(async (req, res) => {
   await userStrategyService.deleteUserStrategyById(req.params.userStrategyId);
   res.status(httpStatus.NO_CONTENT).send();
@@ -67,7 +64,6 @@ module.exports = {
   getUserStrategies,
   getUserStrategy,
   updateUserStrategy,
-  updateUserStrategyByAdmin,
   deleteUserStrategy,
   getUserStrategyById,
   onBoardUserStrategy,

@@ -8,10 +8,10 @@ const adminlogin = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   if (user.isDeleted === true || user.isBlocked === true) {
-    res.send({ success: false, error_code: 401, message: 'This user is deleted or bloacked' });
+    res.send({ success: false, error_code: 401, message: 'This user is deleted or blocked' });
   }
   if (user.role === 'user') {
-    throw new ApiError(httpStatus.FORBIDDEN, 'user cannot loggin as admin');
+    throw new ApiError(httpStatus.FORBIDDEN, 'user cannot login as admin');
   }
   if (user.role === 'admin' || user.role === 'manager') {
     const tokens = await tokenService.generateAuthTokens(user);

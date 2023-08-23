@@ -25,7 +25,7 @@ const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   if (user.isDeleted === true || user.isBlocked === true) {
-    res.send({ success: false, error_code: 401, message: 'This user is deleted or bloacked' });
+    res.send({ success: false, error_code: 401, message: 'This user is deleted or blocked' });
   }
 
   if (user.role === 'admin' || user.role === 'manager') {

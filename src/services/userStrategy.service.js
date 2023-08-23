@@ -211,25 +211,6 @@ const updateUserStrategyById = async (userId, updateBody) => {
   return userData;
 };
 /**
- * Update userStrategy by admin
- * @param {ObjectId} strategyId
- * @param {Object} updateBody
- * @returns {Promise<UserStrategy>}
- */
-const updateUserStrategyByAdmin = async (userId, updateBody) => {
-  const strategy = await Strategy.findOne({ name: updateBody.name });
-  try {
-    const userData = await UserStrategy.findOneAndUpdate(
-      { userId },
-      { strategyId: strategy._id },
-      { new: true } // To return the updated document
-    );
-    return userData;
-  } catch (error) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
-  }
-};
-/**
  * Delete userStrategy by id
  * @param {ObjectId} userStrategyId
  * @returns {Promise<UserStrategy>}
@@ -280,5 +261,4 @@ module.exports = {
   updateOnBoardStrategy,
   getStrategyByUserId,
   getUserStrategyByUser,
-  updateUserStrategyByAdmin,
 };

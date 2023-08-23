@@ -18,6 +18,7 @@ const allRoles = {
     'updateOnBoarding',
     'getBackUpSecretKey',
     'getExchanges',
+    'manageExchanges',
     'manageRegions',
     'getRegions',
     'getPayments',

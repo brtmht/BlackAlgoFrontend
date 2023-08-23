@@ -1,18 +1,45 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const { User, Strategy, UserStrategy, UserExchangeConfig } = require('../models');
 const constants = require('../config/constants');
 const { emailService } = require('./index');
 const ApiError = require('../utils/ApiError');
 
 /**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<User>}
+ */
+const getUserById = async (id) => {
+  return await User.findById(id);
+};
+/**
  * Create a exchange
  * @param {Object} userBody
  * @returns {Promise<Exchange>}
  */
-const updateUser = async (userBody, id) => {
-  return User.findByIdAndUpdate(id, {
-    ...userBody,
-  });
+const updateUser = async (userBody, userId) => {
+  const user = await getUserById(userId);
+  if(user.email !== userBody?.email){
+    if (await User.isEmailTaken(userBody.email)) {
+      throw new ApiError(httpStatus.CONFLICT, 'Email already taken');
+    }
+  }
+  const strategy = await Strategy.findOne({ name: userBody.strategyName });
+  try {
+    await UserStrategy.findOneAndUpdate({ userId }, { strategyId: strategy._id });
+    await UserExchangeConfig.findOneAndUpdate({ userId }, { strategyId: strategy._id });
+    return User.findByIdAndUpdate(
+      { _id: exchangeId },
+      {
+        $set: {
+          name: userBody?.name || user.name,
+          email: userBody?.email || user.email,
+        },
+      }
+    );
+  } catch (error) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
+  }
 };
 const send2faKey = async (id) => {
   const user = await User.findById(id);
