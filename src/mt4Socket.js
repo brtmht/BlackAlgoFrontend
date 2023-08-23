@@ -517,8 +517,7 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots, orderSymb
         configData.dynamic_check_amount
       );
       const volume = (lots / priceRatio) * configData.dynamic_check_amount;
-      finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      const currentLots = lots / priceRatio > configData.lots_min_amount ? lots / priceRatio : configData.lots_min_amount;
+      const currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
       if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
         finalLots = currentLots;
       }else{
