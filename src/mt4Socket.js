@@ -66,7 +66,7 @@ const mtSocket = () => {
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {
                     case 'PositionOpen':
-                      const binanceLots = await handleBinanceSlaveStrategies(user, masterBalance, order.Lots);
+                      const binanceLots = await handleBinanceSlaveStrategies(user, masterBalance, order.Lots, order.Symbol);
                       if (binanceLots.lots) {
                         console.log(binanceLots.lots, 'binanceLots.lots');
                         const orderCreated = await binanceService.CreateSimpleBinanceTradeOrder(
@@ -468,13 +468,13 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken) => 
   }
 };
 
-const handleBinanceSlaveStrategies = async (user, masterBalance, lots) => {
+const handleBinanceSlaveStrategies = async (user, masterBalance, lots, orderSymbol) => {
   const configData = await globalConfig.getGlobalConfig();
   const strategy = await userStrategyService.getStrategyByUserId(user.userId);
   const strategyName = strategy.strategyId.name;
   if (strategyName) {
     const userBalance = await binanceService.GetBinanceBalance(user.config);
-    const symbol = symbol === 'BTCUSD' ? 'BTCUSDT' : Symbol === 'ETHUSD' ? 'ETHUSDT' : Symbol;
+    const symbol = orderSymbol === 'BTCUSD' ? 'BTCUSDT' : orderSymbol === 'ETHUSD' ? 'ETHUSDT' : orderSymbol;
     const tokenPrice = await binanceService.getTickerPrice(user.config,symbol);
     console.log('get userBalance', userBalance);
     let finalLots;
