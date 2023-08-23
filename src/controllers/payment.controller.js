@@ -33,6 +33,7 @@ const postBinance = catchAsync(async (req, res) => {
 // // log in binance
 const binanceWebhook = catchAsync(async (req, res) => {
   if (req.body) {
+    console.log("req.body for binance pay webhook -> ", req.body)
     if (req.body.bizType === 'PAY') {
       if (req.body.bizStatus === 'PAY_SUCCESS') {
         await transactionHistoryService.saveBinanceTransactionHistory(req.body);

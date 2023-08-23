@@ -112,6 +112,7 @@ const allRoles = {
     'binancePayment',
     'updateUserStrategyByAdmin',
     'searchUser',
+    'manageExchanges',
   ],
 };
 

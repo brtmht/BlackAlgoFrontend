@@ -71,10 +71,10 @@ const updateExchangeById = async (exchangeId, updateBody) => {
       { _id: exchangeId },
       {
         $set: {
-          name: updateBody.body.name,
-          description: updateBody.body.description,
-          url: updateBody.body.url,
-          image: updatedFilePath,
+          name: updateBody?.body?.name || exchange.name,
+          description: updateBody.body.description || exchange.description,
+          url: updateBody?.body?.url || exchange.url,
+          image: updatedFilePath || exchange.url,
         },
       }
     );
