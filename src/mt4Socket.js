@@ -432,6 +432,7 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken, ord
   const strategyName = strategy.strategyId.name;
   const symbol = orderSymbol === 'BTCUSD' ? 'bitcoin' : orderSymbol === 'ETHUSD' ? 'ethereum' : orderSymbol;
   const tokenPrice = await mt4Server.getCoinPrice(symbol);
+  const actualPrice = tokenPrice[0].current_price;
   if (strategyName) {
     const userBalance = await mt4Server.accountSummary(serverToken);
     console.log('get userBalance');
@@ -447,20 +448,20 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken, ord
       );
       const volume = lots / priceRatio / configData.conservative_check_amount;
       currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >tokenPrice.current_price*currentLots || userBalance.balance == tokenPrice.current_price*currentLots){
+      if(userBalance.balance >actualPrice*currentLots || userBalance.balance == actualPrice*currentLots){
         finalLots = currentLots;
       }else{
-        finalLots = userBalance.balance/tokenPrice.current_price;
+        finalLots = userBalance.balance/actualPrice;
       }
       console.log(finalLots, '---------------CONSERVATIVE--------finalLots');
     }
     if (strategyName === 'Balanced' && userBalance.balance > configData.balanced_min_amount) {
       console.log(lots, '---------------BALANCED--------', lots / priceRatio);
       currentLots = lots / priceRatio;
-      if(userBalance.balance >tokenPrice.current_price*currentLots || userBalance.balance == tokenPrice.current_price*currentLots){
+      if(userBalance.balance >actualPrice*currentLots || userBalance.balance == actualPrice*currentLots){
         finalLots = currentLots;
       }else{
-        finalLots = userBalance.balance/tokenPrice.current_price;
+        finalLots = userBalance.balance/actualPrice;
       }
     }
     if (strategyName === 'Dynamic' && userBalance.balance > configData.dynamic_min_amount) {
@@ -473,10 +474,10 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken, ord
       );
       const volume = (lots / priceRatio) * configData.dynamic_check_amount;
       currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >tokenPrice.current_price*currentLots || userBalance.balance == tokenPrice.current_price*currentLots){
+      if(userBalance.balance >actualPrice*currentLots || userBalance.balance == actualPrice*currentLots){
         finalLots = currentLots;
       }else{
-        finalLots = userBalance.balance/tokenPrice.current_price;
+        finalLots = userBalance.balance/actualPrice;
       }
     }
 
