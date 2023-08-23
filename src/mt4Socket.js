@@ -474,6 +474,8 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots) => {
   const strategyName = strategy.strategyId.name;
   if (strategyName) {
     const userBalance = await binanceService.GetBinanceBalance(user.config);
+    const symbol = symbol === 'BTCUSD' ? 'BTCUSDT' : Symbol === 'ETHUSD' ? 'ETHUSDT' : Symbol;
+    const tokenPrice = await binanceService.getTickerPrice(user.config,symbol);
     console.log('get userBalance', userBalance);
     let finalLots;
     const priceRatio = masterBalance / userBalance.balance;
@@ -486,11 +488,25 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots) => {
         configData.conservative_check_amount
       );
       const volume = lots / priceRatio / configData.conservative_check_amount;
-      finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
+      const currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
+      if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
+        finalLots = currentLots;
+      }else{
+        finalLots = userBalance.balance/tokenPrice.price;
+      }
+      console.log(finalLots, '---------------CONSERVATIVE--------finalLots');
+      
     }
     if (strategyName === 'Balanced' && userBalance.balance > configData.balanced_min_amount) {
       console.log(lots, '---------------BALANCED--------', lots / priceRatio);
-      finalLots = lots / priceRatio;
+      const volume = lots / priceRatio
+      const currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
+      if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
+        finalLots = currentLots;
+      }else{
+        finalLots = userBalance.balance/tokenPrice.price;
+      }
+      console.log(finalLots, '---------------BALANCED--------finalLots');
     }
     if (strategyName === 'Dynamic' && userBalance.balance > configData.dynamic_min_amount) {
       console.log(
@@ -502,6 +518,12 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots) => {
       );
       const volume = (lots / priceRatio) * configData.dynamic_check_amount;
       finalLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
+      const currentLots = lots / priceRatio > configData.lots_min_amount ? lots / priceRatio : configData.lots_min_amount;
+      if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
+        finalLots = currentLots;
+      }else{
+        finalLots = userBalance.balance/tokenPrice.price;
+      }
     }
 
     return { lots: finalLots, walletAmount: userBalance.balance };
