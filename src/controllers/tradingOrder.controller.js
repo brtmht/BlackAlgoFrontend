@@ -57,13 +57,9 @@ const graphTradeOrders = catchAsync(async (req, res) => {
   res.send({ success: true, code: 201, message: 'Transaction history data listed', data: cumulativeResults });
 });
 
-const performanceCalculation = catchAsync(async (req, res) => {
+const getPortfolioValue = catchAsync(async (req, res) => {
   try {
     const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
-    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
-    const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
-    const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
-    const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
 
     res.send({
       success: true,
@@ -71,9 +67,97 @@ const performanceCalculation = catchAsync(async (req, res) => {
       message: 'Data listed',
       data: {
         portfolio:portfolioValue,
+      },
+    });
+  } catch (error) {
+    console.error('Error in performanceCalculation:', error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      code: 500,
+      message: 'Error fetching performance data',
+      data: null,
+    });
+  }
+});
+
+const calculateProfitLoss = catchAsync(async (req, res) => {
+  try {
+    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
+
+    res.send({
+      success: true,
+      code: 201,
+      message: 'Data listed',
+      data: {
         profitLoss: profitLoss,
+      },
+    });
+  } catch (error) {
+    console.error('Error in performanceCalculation:', error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      code: 500,
+      message: 'Error fetching performance data',
+      data: null,
+    });
+  }
+});
+
+const calculateLastMonthPerformance = catchAsync(async (req, res) => {
+  try {
+    const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
+
+    res.send({
+      success: true,
+      code: 201,
+      message: 'Data listed',
+      data: {
         lastMonthPerformance:lastMonthPerformance,
+      },
+    });
+  } catch (error) {
+    console.error('Error in performanceCalculation:', error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      code: 500,
+      message: 'Error fetching performance data',
+      data: null,
+    });
+  }
+});
+
+const calculateLifetimePerformance = catchAsync(async (req, res) => {
+  try {
+    const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
+
+    res.send({
+      success: true,
+      code: 201,
+      message: 'Data listed',
+      data: {
         lifeTimePerformance:lifeTimePerformance,
+      },
+    });
+  } catch (error) {
+    console.error('Error in performanceCalculation:', error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      code: 500,
+      message: 'Error fetching performance data',
+      data: null,
+    });
+  }
+});
+
+const calculateTodayPerformance = catchAsync(async (req, res) => {
+  try {
+    const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
+
+    res.send({
+      success: true,
+      code: 201,
+      message: 'Data listed',
+      data: {
         todayPerformance:todayPerformance,
       },
     });
@@ -95,5 +179,11 @@ module.exports = {
   deleteTradingOrder,
   tradingOrderWithPagination,
   graphTradeOrders,
-  performanceCalculation,
+  calculateTodayPerformance,
+  calculateLifetimePerformance,
+  calculateLastMonthPerformance,
+  calculateProfitLoss,
+  getPortfolioValue,
+
+
 };
