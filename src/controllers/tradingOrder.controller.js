@@ -172,6 +172,37 @@ const calculateTodayPerformance = catchAsync(async (req, res) => {
   }
 });
 
+const performanceCalculation = catchAsync(async (req, res) => {
+  try {
+    const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
+    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
+    const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
+    const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
+    const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
+
+    res.send({
+      success: true,
+      code: 201,
+      message: 'Data listed',
+      data: {
+        portfolio:portfolioValue,
+        profitLoss: profitLoss,
+        lastMonthPerformance:lastMonthPerformance,
+        lifeTimePerformance:lifeTimePerformance,
+        todayPerformance:todayPerformance,
+      },
+    });
+  } catch (error) {
+    console.error('Error in performanceCalculation:', error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      code: 500,
+      message: 'Error fetching performance data',
+      data: null,
+    });
+  }
+});
+
 module.exports = {
   createTradingOrder,
   getTradingOrderById,
@@ -184,6 +215,7 @@ module.exports = {
   calculateLastMonthPerformance,
   calculateProfitLoss,
   getPortfolioValue,
+  performanceCalculation,
 
 
 };
