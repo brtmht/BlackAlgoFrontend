@@ -80,6 +80,12 @@ const allRoles = {
     'connectBinance',
     'UpdateBinanceConnect',
     'groupedNotification',
+    'graphTradeOrders',
+    'calculateTodayPerformance',
+    'calculateLifetimePerformance',
+    'calculateLastMonthPerformance',
+    'calculateProfitLoss',
+    'getPortfolioValue',
   ],
   manager: [
     'getUser',

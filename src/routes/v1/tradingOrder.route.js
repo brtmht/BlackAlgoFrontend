@@ -14,8 +14,12 @@ router
     tradingController.createTradingOrder
   )
   .get(auth('tradingOrderWithPagination'), tradingController.tradingOrderWithPagination);
-router.route('/graphTradeOrders').post(auth(), tradingController.graphTradeOrders);
-router.route('/getPerformanceData').get(auth(), tradingController.performanceCalculation);
+router.route('/graphTradeOrders').post(auth('graphTradeOrders'), tradingController.graphTradeOrders);
+router.route('/calculateTodayPerformance').get(auth('calculateTodayPerformance'), tradingController.calculateTodayPerformance);
+router.route('/calculateLifetimePerformance').get(auth('calculateLifetimePerformance'), tradingController.calculateLifetimePerformance);
+router.route('/calculateLastMonthPerformance').get(auth('calculateLastMonthPerformance'), tradingController.calculateLastMonthPerformance);
+router.route('/calculateProfitLoss').get(auth('calculateProfitLoss'), tradingController.calculateProfitLoss);
+router.route('/getPortfolioValue').get(auth('getPortfolioValue'), tradingController.getPortfolioValue);
 
 router
   .route('/tradingOrder/:orderId')
@@ -353,10 +357,102 @@ module.exports = router;
  */
 /**
  * @swagger
- * /getPerformanceData:
+ * /calculateTodayPerformance:
  *   get:
- *     summary: Get trade performance data
- *     description: Get trade performance for last month and today.
+ *     summary: Get Today Performance data
+ *     description: Get trade performance for today.
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /calculateLifetimePerformance:
+ *   get:
+ *     summary: Get trade Lifetime performance data
+ *     description: Get trade performance for Lifetime data.
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /calculateLastMonthPerformance:
+ *   get:
+ *     summary: Get trade last month performance data
+ *     description: Get trade performance for last month.
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /calculateProfitLoss:
+ *   get:
+ *     summary: Get trade profit loss data
+ *     description: Get trade performance profit loss data.
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /getPortfolioValue:
+ *   get:
+ *     summary: Get account portfolio value
+ *     description: Get account portfolio value
  *     tags: [TradingOrder]
  *     security:
  *       - bearerAuth: []
