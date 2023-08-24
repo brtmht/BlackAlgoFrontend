@@ -513,6 +513,30 @@ const getBinanceOrder = async (data, order) => {
   }
 };
 
+const getTickerPrice = async(keyData,symbol) =>{
+  try {
+  var config = {
+    method: 'get',
+    url: `https://testnet.binancefuture.com/fapi/v1/ticker/price?symbol=${symbol}`,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-MBX-APIKEY': await decryptDataForBinance(keyData.apiKey),
+    },
+  };
+  const response = await axios(config);
+    console.log(JSON.stringify(response.data));
+    logger.info('Get coin balance ', response.data);
+    return response.data;
+ 
+  } catch (error) {
+    console.log(error?.response?.data ? error?.response?.data.msg : error);
+    return error?.response?.data ? error?.response?.data.msg : error;
+  }
+
+} 
+
+
+
 module.exports = {
   createBinancePayOrder,
   createBinanceContract,
@@ -526,4 +550,5 @@ module.exports = {
   CancelBinanceTradeOrder,
   CloseBinanceTradeOrder,
   getBinanceOrder,
+  getTickerPrice,
 };
