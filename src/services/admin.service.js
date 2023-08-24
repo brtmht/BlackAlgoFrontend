@@ -25,11 +25,9 @@ const updateUser = async (userBody, userId) => {
     }
   }
   const strategy = await Strategy.findOne({ name: userBody.strategyName });
-  try {
-    await UserStrategy.findOneAndUpdate({ userId }, { strategyId: strategy._id });
-    await UserExchangeConfig.findOneAndUpdate({ userId }, { strategyId: strategy._id });
-    return User.findByIdAndUpdate(
-      { _id: exchangeId },
+  if(!strategy){
+    const user = await User.findByIdAndUpdate(
+      { _id: userId },
       {
         $set: {
           name: userBody?.name || user.name,
@@ -37,6 +35,22 @@ const updateUser = async (userBody, userId) => {
         },
       }
     );
+    return { user, message:`User doesn't have any selected strategy`, status:202}
+  }
+  try {
+    await UserStrategy.findOneAndUpdate({ userId }, { strategyId: strategy._id });
+    await UserExchangeConfig.findOneAndUpdate({ userId }, { strategyId: strategy._id });
+    const user = await User.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          name: userBody?.name || user.name,
+          email: userBody?.email || user.email,
+        },
+      }
+    );
+    return { user, message:`User and strategy  updated succecfully`, status:200}
+
   } catch (error) {
     throw new ApiError(httpStatus.NOT_FOUND, 'UserStrategy not found');
   }
