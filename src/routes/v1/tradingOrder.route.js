@@ -20,6 +20,8 @@ router.route('/calculateLifetimePerformance').get(auth('calculateLifetimePerform
 router.route('/calculateLastMonthPerformance').get(auth('calculateLastMonthPerformance'), tradingController.calculateLastMonthPerformance);
 router.route('/calculateProfitLoss').get(auth('calculateProfitLoss'), tradingController.calculateProfitLoss);
 router.route('/getPortfolioValue').get(auth('getPortfolioValue'), tradingController.getPortfolioValue);
+router.route('/getPerformanceData').get(auth(), tradingController.performanceCalculation);
+
 
 router
   .route('/tradingOrder/:orderId')
@@ -453,6 +455,29 @@ module.exports = router;
  *   get:
  *     summary: Get account portfolio value
  *     description: Get account portfolio value
+ *     tags: [TradingOrder]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/SucessResponse'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateName'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+/**
+ * @swagger
+ * /getPerformanceData:
+ *   get:
+ *     summary: Get account Performance Data
+ *     description: Get account Performance Data
  *     tags: [TradingOrder]
  *     security:
  *       - bearerAuth: []
