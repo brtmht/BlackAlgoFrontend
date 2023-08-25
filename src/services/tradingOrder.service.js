@@ -404,16 +404,69 @@ const getPortfolioValue = async (userId) => {
   }
 };
 
-const calculateProfitLoss = async (userId) => {
+// const calculateProfitLoss = async (userId) => {
+//   try {
+//     const userConfig = await getUserExchangeConfigByUserId(userId);
+
+//     if (userConfig) {
+//       // Fetch all trading orders for the user using Promise.all
+//       const tradingOrders = await TradingOrder.find({ userId });
+//       if (tradingOrders.length === 0) {
+//         return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
+//       }
+//       // Calculate the cumulative profit or loss concurrently
+//       const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
+//         profits.reduce((sum, profit) => sum + profit, 0)
+//       );
+
+//       if (cumulativeProfitLoss) {
+//         // Determine if it's a profit or loss
+//         const isProfit = cumulativeProfitLoss >= 0;
+//         const sign = isProfit ? '+' : '-';
+
+//         // Calculate the profit or loss percentage
+//         const initialBalance = userConfig.walletAmount;
+//         const lastTradingOrder = tradingOrders[tradingOrders.length - 1];
+//         const currentBalance = lastTradingOrder.balance;
+//         const totalProfitLoss = currentBalance - initialBalance;
+//         const profitLossPercentage = (totalProfitLoss / initialBalance) * 100;
+
+//         const cumulativeProfitLossString = sign + Math.abs(cumulativeProfitLoss).toFixed(2);
+
+//         return {
+//           cumulativeProfitLoss: cumulativeProfitLossString,
+//           profitLoss: totalProfitLoss.toFixed(2),
+//           tradeData: tradingOrders,
+//         };
+//       } else {
+//         return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error in calculateCumulativeProfitLoss:', error);
+//     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating cumulative profit/loss');
+//   }
+// };
+
+const calculateProfitLoss = async (userId, timeFrame) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
 
     if (userConfig) {
-      // Fetch all trading orders for the user using Promise.all
-      const tradingOrders = await TradingOrder.find({ userId });
-      if (tradingOrders.length === 0) {
-        return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
+      // Fetch trading orders based on time frame
+      const currentTime = new Date();
+      const fromDate = new Date();
+
+      if (timeFrame === '7_days') {
+        fromDate.setDate(currentTime.getDate() - 7);
+      } else if (timeFrame === '1_month') {
+        fromDate.setMonth(currentTime.getMonth() - 1);
+      } else if (timeFrame === '3_months') {
+        fromDate.setMonth(currentTime.getMonth() - 3);
       }
+
+      const tradingOrders = await TradingOrder.find({ userId, createdAt: { $gte: fromDate } });
+
       // Calculate the cumulative profit or loss concurrently
       const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
         profits.reduce((sum, profit) => sum + profit, 0)
@@ -443,8 +496,8 @@ const calculateProfitLoss = async (userId) => {
       }
     }
   } catch (error) {
-    console.error('Error in calculateCumulativeProfitLoss:', error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating cumulative profit/loss');
+    console.error('Error in calculateProfitLoss:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error calculating profit/loss');
   }
 };
 
