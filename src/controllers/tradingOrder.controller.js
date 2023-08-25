@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { tradingOrderService } = require('../services');
+const { getUserExchangeConfigByUserId } = require('../services/userExchangeConfig.service');
 // Mt account crud apis
 const createTradingOrder = catchAsync(async (req, res) => {
   const userId = req.user._id;
@@ -63,7 +64,7 @@ const graphTradeOrders = catchAsync(async (req, res) => {
 
 const getPortfolioValue = catchAsync(async (req, res) => {
   try {
-    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    const userConfig = await getUserExchangeConfigByUserId(req.user._id);
     if (userConfig.connected === true) {
       const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
 
@@ -91,7 +92,7 @@ const getPortfolioValue = catchAsync(async (req, res) => {
 
 const calculateProfitLoss = catchAsync(async (req, res) => {
   try {
-    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    const userConfig = await getUserExchangeConfigByUserId(req.user._id);
     if (userConfig.connected === true) {
       const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id, req.body.timeFrame);
 
@@ -119,7 +120,7 @@ const calculateProfitLoss = catchAsync(async (req, res) => {
 
 const calculateLastMonthPerformance = catchAsync(async (req, res) => {
   try {
-    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    const userConfig = await getUserExchangeConfigByUserId(req.user._id);
     if (userConfig.connected === true) {
       const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
 
@@ -147,7 +148,7 @@ const calculateLastMonthPerformance = catchAsync(async (req, res) => {
 
 const calculateLifetimePerformance = catchAsync(async (req, res) => {
   try {
-    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    const userConfig = await getUserExchangeConfigByUserId(req.user._id);
     if (userConfig.connected === true) {
       const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
 
@@ -175,7 +176,7 @@ const calculateLifetimePerformance = catchAsync(async (req, res) => {
 
 const calculateTodayPerformance = catchAsync(async (req, res) => {
   try {
-    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    const userConfig = await getUserExchangeConfigByUserId(req.user._id);
     if (userConfig.connected === true) {
       const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
 
@@ -203,7 +204,7 @@ const calculateTodayPerformance = catchAsync(async (req, res) => {
 
 const performanceCalculation = catchAsync(async (req, res) => {
   try {
-    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    const userConfig = await getUserExchangeConfigByUserId(req.user._id);
     if (userConfig.connected === true) {
       const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
       const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
