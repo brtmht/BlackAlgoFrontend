@@ -82,7 +82,7 @@ const getPortfolioValue = catchAsync(async (req, res) => {
 
 const calculateProfitLoss = catchAsync(async (req, res) => {
   try {
-    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
+    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id, req.body.timeFrame);
 
     res.send({
       success: true,

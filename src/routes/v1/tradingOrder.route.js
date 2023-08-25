@@ -18,7 +18,7 @@ router.route('/graphTradeOrders').post(auth('graphTradeOrders'), tradingControll
 router.route('/calculateTodayPerformance').get(auth('calculateTodayPerformance'), tradingController.calculateTodayPerformance);
 router.route('/calculateLifetimePerformance').get(auth('calculateLifetimePerformance'), tradingController.calculateLifetimePerformance);
 router.route('/calculateLastMonthPerformance').get(auth('calculateLastMonthPerformance'), tradingController.calculateLastMonthPerformance);
-router.route('/calculateProfitLoss').get(auth('calculateProfitLoss'), tradingController.calculateProfitLoss);
+router.route('/calculateProfitLoss').post(auth('calculateProfitLoss'), tradingController.calculateProfitLoss);
 router.route('/getPortfolioValue').get(auth('getPortfolioValue'), tradingController.getPortfolioValue);
 router.route('/getPerformanceData').get(auth(), tradingController.performanceCalculation);
 
@@ -429,12 +429,23 @@ module.exports = router;
 /**
  * @swagger
  * /calculateProfitLoss:
- *   get:
+ *   post:
  *     summary: Get trade profit loss data
  *     description: Get trade performance profit loss data.
  *     tags: [TradingOrder]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       description: <h4>Options for filter ( 7_days,1_month,3_months,all).</h4>
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               timeFrame:
+ *                 type: string
+ *             example:
+ *               timeFrame: 7_days
  *     responses:
  *       "201":
  *         description: Created
