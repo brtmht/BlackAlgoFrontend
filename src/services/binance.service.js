@@ -535,6 +535,58 @@ const getTickerPrice = async(keyData,symbol) =>{
 
 } 
 
+const getPositionSide = async(keyData) =>{
+  try {
+    const apiKey = await decryptDataForBinance(keyData.apiKey);
+    const apiSecret = await decryptDataForBinance(keyData.apiSecret);
+    const timestamp = Date.now();
+    const params = `timestamp=${timestamp}&recvWindow=5000`;
+    const signature = crypto.createHmac('sha256', apiSecret.toString()).update(params).digest('hex');
+  var config = {
+    method: 'get',
+    url: `https://testnet.binancefuture.com/fapi/v1/positionSide/dual?timestamp=${timestamp}&recvWindow=5000&signature=${signature}`,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-MBX-APIKEY': apiKey,
+    },
+  };
+  const response = await axios(config);
+    logger.info('Get position side data ', response.data);
+    return response.data;
+ 
+  } catch (error) {
+    console.log(error?.response?.data ? error?.response?.data.msg : error);
+    return error?.response?.data ? error?.response?.data.msg : error;
+  }
+}
+
+const changePositionSide = async(keyData) =>{
+  try {
+    const apiKey = await decryptDataForBinance(keyData.apiKey);
+    const apiSecret = await decryptDataForBinance(keyData.apiSecret);
+    const timestamp = Date.now();
+    const params = `timestamp=${timestamp}&recvWindow=5000&dualSidePosition=true`;
+    const signature = crypto.createHmac('sha256', apiSecret.toString()).update(params).digest('hex');
+  var config = {
+    method: 'post',
+    url: `https://testnet.binancefuture.com/fapi/v1/positionSide/dual?${params}&signature=${signature}`,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-MBX-APIKEY': apiKey,
+    },
+  };
+  const response = await axios(config);
+    logger.info('Get position side data ', response.data);
+    return response.data;
+ 
+  } catch (error) {
+    console.log(error?.response?.data ? error?.response?.data.msg : error);
+    return error?.response?.data ? error?.response?.data.msg : error;
+  }
+
+}
+
+
 
 
 module.exports = {
@@ -551,4 +603,6 @@ module.exports = {
   CloseBinanceTradeOrder,
   getBinanceOrder,
   getTickerPrice,
+  getPositionSide,
+  changePositionSide
 };

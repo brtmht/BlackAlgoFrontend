@@ -63,6 +63,10 @@ const mtSocket = () => {
               try {
                 const exchangeData = await exchangeService.getExchangeById(user.exchangeId);
                 if (exchangeData.name === 'Binance Global') {
+                  const DualPositionStatus = await binanceService.getPositionSide(user.config);
+                  if (DualPositionStatus.dualSidePosition === false) {
+                    await binanceService.changePositionSide(user.config);
+                  }
                   const tradingData = await tradingOrder.checkMasterTradingId(order.Ticket, user.userId);
                   switch (orderType) {
                     case 'PositionOpen':
@@ -89,8 +93,8 @@ const mtSocket = () => {
                             console.log('created Binannce broker order data store in DB');
                             await generateNotification(
                               {
-                                title: `Order sent  successfully`,
-                                message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                                title: `Order placed for ${order.Symbol}`,
+                                message: `${order.Symbol} BUY @ ${createdTradeOrder.openPrice}`,
                               },
                               createdTradeOrder.userId
                             );
@@ -157,8 +161,8 @@ const mtSocket = () => {
                           console.log(updatedData, 'closeTradeOrder');
                           await generateNotification(
                             {
-                              title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
-                              message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                              title: `Order Sell for ${order.Symbol}`,
+                              message: `${order.Symbol} SELL @ ${createdTradeOrder.closePrice}`,
                             },
                             updatedData.userId
                           );
@@ -253,7 +257,13 @@ const mtSocket = () => {
                       //   // Additional logic to send the order data to the user
                       //   resolve();
                       // }
-                      const userLots = await handleSlaveStrategies(user, masterBalance, order.Lots, BrokerToken, order.Symbol);
+                      const userLots = await handleSlaveStrategies(
+                        user,
+                        masterBalance,
+                        order.Lots,
+                        BrokerToken,
+                        order.Symbol
+                      );
 
                       if (userLots.lots) {
                         console.log(userLots.lots, 'userLots.lots');
@@ -285,8 +295,8 @@ const mtSocket = () => {
                               console.log('created broker order data store in DB');
                               await generateNotification(
                                 {
-                                  title: `Order sent successfully`,
-                                  message: `The order for ${createdTradeOrder.lots} items has been successfully sent.`,
+                                  title: `Order placed for ${order.Symbol}`,
+                                  message: `${order.Symbol} BUY @ ${createdTradeOrder.openPrice}`,
                                 },
                                 createdTradeOrder.userId
                               );
@@ -381,8 +391,8 @@ const mtSocket = () => {
 
                             await generateNotification(
                               {
-                                title: `Ticket Id  ${updatedData.ticketId} order closed successfully`,
-                                message: `The order for ${updatedData.lots} lots has been successfully closed.`,
+                                title: `Order Sell for ${order.Symbol}`,
+                                message: `${order.Symbol} SELL @ ${createdTradeOrder.closePrice}`,
                               },
                               updatedData.userId
                             );
@@ -448,20 +458,20 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken, ord
       );
       const volume = lots / priceRatio / configData.conservative_check_amount;
       currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >actualPrice*currentLots || userBalance.balance == actualPrice*currentLots){
+      if (userBalance.balance > actualPrice * currentLots || userBalance.balance == actualPrice * currentLots) {
         finalLots = currentLots;
-      }else{
-        finalLots = userBalance.balance/actualPrice;
+      } else {
+        finalLots = userBalance.balance / actualPrice;
       }
       console.log(finalLots, '---------------CONSERVATIVE--------finalLots');
     }
     if (strategyName === 'Balanced' && userBalance.balance > configData.balanced_min_amount) {
       console.log(lots, '---------------BALANCED--------', lots / priceRatio);
       currentLots = lots / priceRatio;
-      if(userBalance.balance >actualPrice*currentLots || userBalance.balance == actualPrice*currentLots){
+      if (userBalance.balance > actualPrice * currentLots || userBalance.balance == actualPrice * currentLots) {
         finalLots = currentLots;
-      }else{
-        finalLots = userBalance.balance/actualPrice;
+      } else {
+        finalLots = userBalance.balance / actualPrice;
       }
     }
     if (strategyName === 'Dynamic' && userBalance.balance > configData.dynamic_min_amount) {
@@ -474,10 +484,10 @@ const handleSlaveStrategies = async (user, masterBalance, lots, serverToken, ord
       );
       const volume = (lots / priceRatio) * configData.dynamic_check_amount;
       currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >actualPrice*currentLots || userBalance.balance == actualPrice*currentLots){
+      if (userBalance.balance > actualPrice * currentLots || userBalance.balance == actualPrice * currentLots) {
         finalLots = currentLots;
-      }else{
-        finalLots = userBalance.balance/actualPrice;
+      } else {
+        finalLots = userBalance.balance / actualPrice;
       }
     }
 
@@ -494,7 +504,7 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots, orderSymb
   if (strategyName) {
     const userBalance = await binanceService.GetBinanceBalance(user.config);
     const symbol = orderSymbol === 'BTCUSD' ? 'BTCUSDT' : orderSymbol === 'ETHUSD' ? 'ETHUSDT' : orderSymbol;
-    const tokenPrice = await binanceService.getTickerPrice(user.config,symbol);
+    const tokenPrice = await binanceService.getTickerPrice(user.config, symbol);
     console.log('get userBalance', userBalance);
     let finalLots;
     const priceRatio = masterBalance / userBalance.balance;
@@ -508,22 +518,21 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots, orderSymb
       );
       const volume = lots / priceRatio / configData.conservative_check_amount;
       const currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
+      if (userBalance.balance > tokenPrice.price * currentLots || userBalance.balance == tokenPrice.price * currentLots) {
         finalLots = currentLots;
-      }else{
-        finalLots = userBalance.balance/tokenPrice.price;
+      } else {
+        finalLots = userBalance.balance / tokenPrice.price;
       }
       console.log(finalLots, '---------------CONSERVATIVE--------finalLots');
-      
     }
     if (strategyName === 'Balanced' && userBalance.balance > configData.balanced_min_amount) {
       console.log(lots, '---------------BALANCED--------', lots / priceRatio);
-      const volume = lots / priceRatio
+      const volume = lots / priceRatio;
       const currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
+      if (userBalance.balance > tokenPrice.price * currentLots || userBalance.balance == tokenPrice.price * currentLots) {
         finalLots = currentLots;
-      }else{
-        finalLots = userBalance.balance/tokenPrice.price;
+      } else {
+        finalLots = userBalance.balance / tokenPrice.price;
       }
       console.log(finalLots, '---------------BALANCED--------finalLots');
     }
@@ -537,12 +546,12 @@ const handleBinanceSlaveStrategies = async (user, masterBalance, lots, orderSymb
       );
       const volume = (lots / priceRatio) * configData.dynamic_check_amount;
       const currentLots = volume > configData.lots_min_amount ? volume : configData.lots_min_amount;
-      if(userBalance.balance >tokenPrice.price*currentLots || userBalance.balance == tokenPrice.price*currentLots){
+      if (userBalance.balance > tokenPrice.price * currentLots || userBalance.balance == tokenPrice.price * currentLots) {
         finalLots = currentLots;
-      }else{
-        finalLots = userBalance.balance/tokenPrice.price;
+      } else {
+        finalLots = userBalance.balance / tokenPrice.price;
       }
-      console.log(finalLots, '---------------DYNAMIC--------finalLots',currentLots,volume);
+      console.log(finalLots, '---------------DYNAMIC--------finalLots', currentLots, volume);
     }
 
     return { lots: finalLots, walletAmount: userBalance.balance };

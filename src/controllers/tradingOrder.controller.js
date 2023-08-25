@@ -103,6 +103,8 @@ const calculateProfitLoss = catchAsync(async (req, res) => {
   }
 });
 
+
+
 const calculateLastMonthPerformance = catchAsync(async (req, res) => {
   try {
     const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
