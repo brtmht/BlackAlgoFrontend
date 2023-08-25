@@ -49,7 +49,11 @@ const graphTradeOrders = catchAsync(async (req, res) => {
   transactions.forEach((transaction) => {
     const profit = parseFloat(transaction.profit);
     cumulativeProfit += profit;
-    cumulativeResults.push({ profit:cumulativeProfit.toFixed(2), closeTime: transaction.updatedAt, symbol:transaction.symbol });
+    cumulativeResults.push({
+      profit: cumulativeProfit.toFixed(2),
+      closeTime: transaction.updatedAt,
+      symbol: transaction.symbol,
+    });
   });
   if (!transactions) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Data not found');
@@ -66,7 +70,7 @@ const getPortfolioValue = catchAsync(async (req, res) => {
       code: 201,
       message: 'Data listed',
       data: {
-        portfolio:portfolioValue,
+        portfolio: portfolioValue,
       },
     });
   } catch (error) {
@@ -103,8 +107,6 @@ const calculateProfitLoss = catchAsync(async (req, res) => {
   }
 });
 
-
-
 const calculateLastMonthPerformance = catchAsync(async (req, res) => {
   try {
     const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
@@ -114,7 +116,7 @@ const calculateLastMonthPerformance = catchAsync(async (req, res) => {
       code: 201,
       message: 'Data listed',
       data: {
-        lastMonthPerformance:lastMonthPerformance,
+        lastMonthPerformance: lastMonthPerformance,
       },
     });
   } catch (error) {
@@ -137,7 +139,7 @@ const calculateLifetimePerformance = catchAsync(async (req, res) => {
       code: 201,
       message: 'Data listed',
       data: {
-        lifeTimePerformance:lifeTimePerformance,
+        lifeTimePerformance: lifeTimePerformance,
       },
     });
   } catch (error) {
@@ -160,7 +162,7 @@ const calculateTodayPerformance = catchAsync(async (req, res) => {
       code: 201,
       message: 'Data listed',
       data: {
-        todayPerformance:todayPerformance,
+        todayPerformance: todayPerformance,
       },
     });
   } catch (error) {
@@ -176,24 +178,29 @@ const calculateTodayPerformance = catchAsync(async (req, res) => {
 
 const performanceCalculation = catchAsync(async (req, res) => {
   try {
-    const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
-    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
-    const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
-    const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
-    const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
+    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    if (userConfig.connected) {
+      const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
+      const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
+      const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
+      const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
+      const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
 
-    res.send({
-      success: true,
-      code: 201,
-      message: 'Data listed',
-      data: {
-        portfolio:portfolioValue,
-        profitLoss: profitLoss,
-        lastMonthPerformance:lastMonthPerformance,
-        lifeTimePerformance:lifeTimePerformance,
-        todayPerformance:todayPerformance,
-      },
-    });
+      res.send({
+        success: true,
+        code: 201,
+        message: 'Data listed',
+        data: {
+          portfolio: portfolioValue,
+          profitLoss: profitLoss,
+          lastMonthPerformance: lastMonthPerformance,
+          lifeTimePerformance: lifeTimePerformance,
+          todayPerformance: todayPerformance,
+        },
+      });
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+    }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -218,6 +225,4 @@ module.exports = {
   calculateProfitLoss,
   getPortfolioValue,
   performanceCalculation,
-
-
 };

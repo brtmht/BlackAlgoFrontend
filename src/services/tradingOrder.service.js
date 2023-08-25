@@ -348,7 +348,7 @@ const getPortfolioValue = async (userId) => {
     const userConfig = await getUserExchangeConfigByUserId(userId);
     if (userConfig.connected) {
       let portfolioSize;
-      if (userConfig) {
+      if (userConfig.connected) {
         const exchangeData = await getExchangeById(userConfig.exchangeId);
         if (exchangeData.type === 'Binance') {
           portfolioSize = await GetBinanceBalance(userConfig.config);
@@ -394,6 +394,8 @@ const getPortfolioValue = async (userId) => {
           portfolioSize = await mt4Server.accountSummary(BrokerToken); // Use BrokerToken here
         }
         return { portfolioSize: portfolioSize.balance.toFixed(2) };
+      }else{
+        throw new ApiError(httpStatus.NOT_FOUND, 'user not connected');
       }
     }else{
       return { portfolioSize: 0.00 };
@@ -452,7 +454,7 @@ const calculateProfitLoss = async (userId, timeFrame) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
 
-    if (userConfig) {
+    if (userConfig.connected) {
       // Fetch trading orders based on time frame
       const currentTime = new Date();
       const fromDate = new Date();
@@ -494,6 +496,8 @@ const calculateProfitLoss = async (userId, timeFrame) => {
       } else {
         return { cumulativeProfitLoss: 0, profitLoss: 0, tradeData: tradingOrders };
       }
+    }else{
+      throw new ApiError(httpStatus.NOT_FOUND, 'user not connected');
     }
   } catch (error) {
     console.error('Error in calculateProfitLoss:', error);
@@ -504,7 +508,7 @@ const calculateProfitLoss = async (userId, timeFrame) => {
 const calculateTodayPerformance = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
-    if (userConfig) {
+    if (userConfig.connected) {
       let portfolioSize;
       const exchangeData = await getExchangeById(userConfig.exchangeId);
       if (exchangeData.type === 'Binance') {
@@ -588,6 +592,8 @@ const calculateTodayPerformance = async (userId) => {
         todayPerformancePercentage: yesterdayTradingOrder ? todayPerformancePercentageString : 0,
         tradeData: yesterdayTradingOrderArray,
       };
+    }else{
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
     }
   } catch (error) {
     console.error('Error in calculateTodayPerformance:', error);
@@ -599,7 +605,7 @@ const calculateLifetimePerformance = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
 
-    if (userConfig) {
+    if (userConfig.connected) {
       // Get the user's trading orders
       const tradingOrders = await TradingOrder.find({ userId, orderType:"closeOrder" });
 
@@ -631,6 +637,8 @@ const calculateLifetimePerformance = async (userId) => {
           tradeData: tradingOrders,
         };
       }
+    }else{
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
     }
   } catch (error) {
     console.error('Error in calculateLifetimePerformance:', error);
@@ -642,7 +650,7 @@ const calculateLastMonthPerformance = async (userId) => {
   try {
     const userConfig = await getUserExchangeConfigByUserId(userId);
 
-    if (userConfig) {
+    if (userConfig.connected) {
       // Get the user's trading orders for the last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -681,6 +689,8 @@ const calculateLastMonthPerformance = async (userId) => {
           tradeData: tradingOrders,
         };
       }
+    }else{
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
     }
   } catch (error) {
     console.error('Error in calculateLifetimePerformance:', error);
