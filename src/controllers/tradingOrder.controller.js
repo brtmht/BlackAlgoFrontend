@@ -77,7 +77,7 @@ const getPortfolioValue = catchAsync(async (req, res) => {
         },
       });
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+      res.send({ success: false, code: 404, message: 'User not connected' });
     }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
@@ -105,7 +105,7 @@ const calculateProfitLoss = catchAsync(async (req, res) => {
         },
       });
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+      res.send({ success: false, code: 404, message: 'User not connected' });
     }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
@@ -133,7 +133,7 @@ const calculateLastMonthPerformance = catchAsync(async (req, res) => {
         },
       });
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+      res.send({ success: false, code: 404, message: 'User not connected' });
     }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
@@ -161,7 +161,7 @@ const calculateLifetimePerformance = catchAsync(async (req, res) => {
         },
       });
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+      res.send({ success: false, code: 404, message: 'User not connected' });
     }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
@@ -189,7 +189,7 @@ const calculateTodayPerformance = catchAsync(async (req, res) => {
         },
       });
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+      res.send({ success: false, code: 404, message: 'User not connected' });
     }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
@@ -225,7 +225,7 @@ const performanceCalculation = catchAsync(async (req, res) => {
         },
       });
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+      res.send({ success: false, code: 404, message: 'User not connected' });
     }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
