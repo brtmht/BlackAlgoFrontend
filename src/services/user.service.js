@@ -76,7 +76,7 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
- return await User.findById(id);
+  return await User.findById(id);
 };
 
 /**
@@ -89,9 +89,9 @@ const getUserByIdForAdmin = async (id) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const subscriptionData = await UserStrategy.find({ userId: user._id }).populate('subscriptionPlanId');
-  const configData = await UserExchangeConfig.find({ userId: user._id }).populate('strategyId');
-  return {user ,configData,subscriptionData};
+  const subscriptionData = await UserStrategy.find({ userId: user._id }).populate('subscriptionPlanId').populate('strategyId');
+  const configData = await UserExchangeConfig.find({ userId: user._id });
+  return { user, configData, subscriptionData};
 };
 /**
  * Get user by email

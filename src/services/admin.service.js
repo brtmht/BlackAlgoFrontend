@@ -24,7 +24,7 @@ const updateUser = async (userBody, userId) => {
       throw new ApiError(httpStatus.CONFLICT, 'Email already taken');
     }
   }
-  const strategy = await Strategy.findOne({ name: userBody.strategyName });
+  const strategy = await Strategy.findOne({ name: userBody.strategy });
   if(!strategy){
     const user = await User.findByIdAndUpdate(
       { _id: userId },
