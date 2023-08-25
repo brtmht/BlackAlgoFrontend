@@ -63,16 +63,21 @@ const graphTradeOrders = catchAsync(async (req, res) => {
 
 const getPortfolioValue = catchAsync(async (req, res) => {
   try {
-    const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
+    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    if (userConfig.connected === true) {
+      const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
 
-    res.send({
-      success: true,
-      code: 201,
-      message: 'Data listed',
-      data: {
-        portfolio: portfolioValue,
-      },
-    });
+      res.send({
+        success: true,
+        code: 201,
+        message: 'Data listed',
+        data: {
+          portfolio: portfolioValue,
+        },
+      });
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+    }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -86,16 +91,21 @@ const getPortfolioValue = catchAsync(async (req, res) => {
 
 const calculateProfitLoss = catchAsync(async (req, res) => {
   try {
-    const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id, req.body.timeFrame);
+    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    if (userConfig.connected === true) {
+      const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id, req.body.timeFrame);
 
-    res.send({
-      success: true,
-      code: 201,
-      message: 'Data listed',
-      data: {
-        profitLoss: profitLoss,
-      },
-    });
+      res.send({
+        success: true,
+        code: 201,
+        message: 'Data listed',
+        data: {
+          profitLoss: profitLoss,
+        },
+      });
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+    }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -109,16 +119,21 @@ const calculateProfitLoss = catchAsync(async (req, res) => {
 
 const calculateLastMonthPerformance = catchAsync(async (req, res) => {
   try {
-    const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
+    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    if (userConfig.connected === true) {
+      const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
 
-    res.send({
-      success: true,
-      code: 201,
-      message: 'Data listed',
-      data: {
-        lastMonthPerformance: lastMonthPerformance,
-      },
-    });
+      res.send({
+        success: true,
+        code: 201,
+        message: 'Data listed',
+        data: {
+          lastMonthPerformance: lastMonthPerformance,
+        },
+      });
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+    }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -132,16 +147,21 @@ const calculateLastMonthPerformance = catchAsync(async (req, res) => {
 
 const calculateLifetimePerformance = catchAsync(async (req, res) => {
   try {
-    const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
+    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    if (userConfig.connected === true) {
+      const lifeTimePerformance = await tradingOrderService.calculateLifetimePerformance(req.user._id);
 
-    res.send({
-      success: true,
-      code: 201,
-      message: 'Data listed',
-      data: {
-        lifeTimePerformance: lifeTimePerformance,
-      },
-    });
+      res.send({
+        success: true,
+        code: 201,
+        message: 'Data listed',
+        data: {
+          lifeTimePerformance: lifeTimePerformance,
+        },
+      });
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+    }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -155,16 +175,21 @@ const calculateLifetimePerformance = catchAsync(async (req, res) => {
 
 const calculateTodayPerformance = catchAsync(async (req, res) => {
   try {
-    const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
+    const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
+    if (userConfig.connected === true) {
+      const todayPerformance = await tradingOrderService.calculateTodayPerformance(req.user._id);
 
-    res.send({
-      success: true,
-      code: 201,
-      message: 'Data listed',
-      data: {
-        todayPerformance: todayPerformance,
-      },
-    });
+      res.send({
+        success: true,
+        code: 201,
+        message: 'Data listed',
+        data: {
+          todayPerformance: todayPerformance,
+        },
+      });
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not connected');
+    }
   } catch (error) {
     console.error('Error in performanceCalculation:', error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -179,7 +204,7 @@ const calculateTodayPerformance = catchAsync(async (req, res) => {
 const performanceCalculation = catchAsync(async (req, res) => {
   try {
     const userConfig = await tradingOrderService.getUserExchangeConfigByUserId(req.user._id);
-    if (userConfig.connected) {
+    if (userConfig.connected === true) {
       const portfolioValue = await tradingOrderService.getPortfolioValue(req.user._id);
       const profitLoss = await tradingOrderService.calculateProfitLoss(req.user._id);
       const lastMonthPerformance = await tradingOrderService.calculateLastMonthPerformance(req.user._id);
