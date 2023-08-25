@@ -436,7 +436,7 @@ module.exports = router;
  *     security:
  *       - bearerAuth: []
  *     requestBody:
- *       description: <h4>Options for filter ( 7_days,1_month,3_months,all).</h4>
+ *       description: <h4>Options for filter ( 7_days,1_month,3_months).</h4>
  *       content:
  *         application/json:
  *           schema:
