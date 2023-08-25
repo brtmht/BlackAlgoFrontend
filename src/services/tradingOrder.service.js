@@ -463,6 +463,8 @@ const calculateProfitLoss = async (userId, timeFrame) => {
         fromDate.setMonth(currentTime.getMonth() - 1);
       } else if (timeFrame === '3_months') {
         fromDate.setMonth(currentTime.getMonth() - 3);
+      }else if (timeFrame === 'all') {
+        fromDate
       }
 
       const tradingOrders = await TradingOrder.find({ userId, createdAt: { $gte: fromDate } });
