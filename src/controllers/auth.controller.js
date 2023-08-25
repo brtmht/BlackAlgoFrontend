@@ -56,12 +56,13 @@ const refreshTokens = catchAsync(async (req, res) => {
 });
 
 const forgotPassword = catchAsync(async (req, res) => {
+  const user = await userService.getUserByEmail(req.body.email);
   const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
   const contentData = {
     token: resetPasswordToken,
     url: process.env.APP_URL,
   };
-  await emailService.sendEmail(req.body, contentData, constants.RESETPASSWORD_EMAIL_OPTIONS);
+  await emailService.sendEmail(user, contentData, constants.RESETPASSWORD_EMAIL_OPTIONS);
 
   res.send({ success: true, code: 200, message: 'Reset password link sent to your email account' });
 });
