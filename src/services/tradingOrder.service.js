@@ -465,7 +465,7 @@ const calculateProfitLoss = async (userId, timeFrame) => {
         fromDate.setMonth(currentTime.getMonth() - 3);
       }
 
-      const tradingOrders = await TradingOrder.find({ userId, createdAt: { $gte: fromDate } });
+      const tradingOrders = await TradingOrder.find({ userId, orderType:"closeOrder", createdAt: { $gte: fromDate } });
 
       // Calculate the cumulative profit or loss concurrently
       const cumulativeProfitLoss = await Promise.all(tradingOrders.map((order) => order.profit)).then((profits) =>
@@ -559,6 +559,7 @@ const calculateTodayPerformance = async (userId) => {
       // Get the latest trading order for yesterday
       const yesterdayTradingOrder = await TradingOrder.findOne({
         userId: userId,
+        orderType:"closeOrder",
         createdAt: { $gte: startDay, $lte: endOfDay },
       })
         .sort({ createdAt: -1 })
@@ -566,6 +567,7 @@ const calculateTodayPerformance = async (userId) => {
 
       const yesterdayTradingOrderArray = await TradingOrder.find({
         userId: userId,
+        orderType:"closeOrder",
         createdAt: { $gte: startDay, $lte: endOfDay },
       }).exec();
 
@@ -599,7 +601,7 @@ const calculateLifetimePerformance = async (userId) => {
 
     if (userConfig) {
       // Get the user's trading orders
-      const tradingOrders = await TradingOrder.find({ userId });
+      const tradingOrders = await TradingOrder.find({ userId, orderType:"closeOrder" });
 
       if (tradingOrders.length > 0) {
         // Calculate the initial and current balance
@@ -647,6 +649,7 @@ const calculateLastMonthPerformance = async (userId) => {
 
       const tradingOrders = await TradingOrder.find({
         userId,
+        orderType:"closeOrder",
         createdAt: { $gte: thirtyDaysAgo },
       });
 

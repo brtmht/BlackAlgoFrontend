@@ -172,6 +172,36 @@ const mtSocket = () => {
                             message: 'Order closed Successfully',
                             data: updatedData,
                           });
+                          emitData('portfolioValue', {
+                            success: true,
+                            code: 201,
+                            message: 'Data Update Successfully',
+                            data: await tradingOrder.getPortfolioValue(updatedData.userId),
+                          });
+                          emitData('profitLoss', {
+                            success: true,
+                            code: 201,
+                            message: 'Data Update Successfully',
+                            data: await tradingOrder.calculateProfitLoss(updatedData.userId,'3_months'),
+                          });
+                          emitData('lastMonthPerformance', {
+                            success: true,
+                            code: 201,
+                            message: 'Data Update Successfully',
+                            data: await tradingOrder.calculateLastMonthPerformance(updatedData.userId),
+                          });
+                          emitData('lifetimeEarning', {
+                            success: true,
+                            code: 201,
+                            message: 'Data Update Successfully',
+                            data: await tradingOrder.calculateLifetimePerformance(updatedData.userId),
+                          });
+                          emitData('todayPerformance', {
+                            success: true,
+                            code: 201,
+                            message: 'Data Update Successfully',
+                            data: await tradingOrder.calculateTodayPerformance(updatedData.userId),
+                          });
                         }
                       }
                       break;
@@ -401,6 +431,36 @@ const mtSocket = () => {
                               code: 201,
                               message: 'Order closed Successfully',
                               data: updatedData,
+                            });
+                            emitData('portfolioValue', {
+                              success: true,
+                              code: 201,
+                              message: 'Data Update Successfully',
+                              data: await tradingOrder.getPortfolioValue(updatedData.userId),
+                            });
+                            emitData('profitLoss', {
+                              success: true,
+                              code: 201,
+                              message: 'Data Update Successfully',
+                              data: await tradingOrder.calculateProfitLoss(updatedData.userId,'3_months'),
+                            });
+                            emitData('lastMonthPerformance', {
+                              success: true,
+                              code: 201,
+                              message: 'Data Update Successfully',
+                              data: await tradingOrder.calculateLastMonthPerformance(updatedData.userId),
+                            });
+                            emitData('lifetimeEarning', {
+                              success: true,
+                              code: 201,
+                              message: 'Data Update Successfully',
+                              data: await tradingOrder.calculateLifetimePerformance(updatedData.userId),
+                            });
+                            emitData('todayPerformance', {
+                              success: true,
+                              code: 201,
+                              message: 'Data Update Successfully',
+                              data: await tradingOrder.calculateTodayPerformance(updatedData.userId),
                             });
                           } else {
                             await tradingOrder.updateTradeOrderType(tradingData.Ticket, user.userId, 'closeOrder');
